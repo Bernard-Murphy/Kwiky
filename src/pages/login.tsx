@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import { transitions as t } from "../lib/utils";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -37,11 +37,14 @@ export default function LoginPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      transition={t.transition}
+      exit={t.fade_out_scale_1}
+      animate={t.normalize}
+      initial={t.fade_out}
       className="container mx-auto px-6 py-8 max-w-md"
     >
+      <h1 className="text-2xl font-bold text-center mb-8">Login</h1>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-2">
@@ -75,7 +78,9 @@ export default function LoginPage() {
 
         <div className="text-center">
           <Link to="/forgot-password">
-            <AnimatedButton variant="secondary">Forgot Password</AnimatedButton>
+            <AnimatedButton variant="outline" className="w-full">
+              Forgot Password
+            </AnimatedButton>
           </Link>
         </div>
       </form>

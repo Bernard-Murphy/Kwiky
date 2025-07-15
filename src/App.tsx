@@ -41,6 +41,12 @@ export const useApp = () => {
 export default function App() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [user, setUser] = useState<User | null>(null);
+  // const [user, setUser] = useState<User | null>({
+  //   username: "",
+  //   email: "",
+  //   bio: "",
+  //   avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
+  // });
 
   const location = useLocation();
 
@@ -70,7 +76,7 @@ export default function App() {
           </Routes>
         </AnimatePresence>
         <ThemeSelector />
-        <div className="fixed bottom-4 right-4 text-xs opacity-75">
+        <div className="fixed bottom-4 left-0 right-0 text-xs opacity-75  text-center">
           Created by Bernard Murphy
         </div>
       </div>

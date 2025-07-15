@@ -1,5 +1,4 @@
 import type React from "react";
-import { transitions as t } from "../lib/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -9,7 +8,13 @@ interface AnimatedButtonProps {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   className?: string;
-  variant?: "primary" | "secondary";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "destructive"
+    | "outline"
+    | "ghost"
+    | "link";
 }
 
 export default function AnimatedButton({
@@ -52,6 +57,10 @@ export default function AnimatedButton({
     primary: "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400",
     secondary:
       "bg-gray-200 text-gray-900 hover:bg-gray-300 disabled:bg-gray-100",
+    destructive: "bg-red-200 text-white hover:bg-red-300 disabled:bg-gray-500",
+    outline: "bg-gray-700 text-white hover:bg-gray-700 disabled:bg-gray-500",
+    ghost: "text-white hover:bg-gray-700 disabled:bg-gray-500",
+    link: "text-white hover:bg-gray-700 disabled:bg-gray-500",
   };
 
   return (
@@ -62,9 +71,6 @@ export default function AnimatedButton({
       className={`${baseClasses} ${variantClasses[variant]} ${className} ${
         pressing ? "scale-90" : ""
       }`}
-      // whileHover={{ scale: 1.02 }}
-      // whileTap={{ scale: 0.33 }}
-      // transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       {children}
       {ripples.map((ripple) => (

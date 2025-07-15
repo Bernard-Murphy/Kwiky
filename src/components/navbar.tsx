@@ -50,7 +50,7 @@ export default function Navbar() {
             <div>
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="w-10 h-10 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all"
+                className="w-10 h-10 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all cursor-pointer"
               >
                 {user.avatar ? (
                   <img
@@ -75,13 +75,13 @@ export default function Navbar() {
                   >
                     <button
                       onClick={handleProfileClick}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
                     >
                       Profile
                     </button>
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors text-red-400"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors text-red-400 cursor-pointer"
                     >
                       Logout
                     </button>
@@ -93,7 +93,9 @@ export default function Navbar() {
             <div className="space-x-1">
               <Link
                 to="/login"
-                className={`text-lg font-medium hover:text-blue-400 transition-colors`}
+                className={`text-lg font-medium hover:text-blue-400 transition-colors ${
+                  location.pathname === "/login" ? "text-blue-400" : ""
+                }`}
               >
                 Login
               </Link>
@@ -101,7 +103,9 @@ export default function Navbar() {
                 <Dot className="inline" />
               </span>
               <Link
-                className={`text-lg font-medium hover:text-blue-400 transition-colors`}
+                className={`text-lg font-medium hover:text-blue-400 transition-colors ${
+                  location.pathname === "/register" ? "text-blue-400" : ""
+                }`}
                 to="/register"
               >
                 Register

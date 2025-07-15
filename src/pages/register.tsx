@@ -1,5 +1,5 @@
 import type React from "react";
-
+import { transitions as t } from "../lib/utils";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -58,9 +58,10 @@ export default function RegisterPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      transition={t.transition}
+      exit={t.fade_out_scale_1}
+      animate={t.normalize}
+      initial={t.fade_out}
       className="container mx-auto px-6 py-8 max-w-md"
     >
       <div className="text-center mb-6">
@@ -68,7 +69,7 @@ export default function RegisterPage() {
           to="/login"
           className="text-blue-400 hover:text-blue-300 transition-colors"
         >
-          Already have an account? Login here
+          Already have an account? Login
         </Link>
       </div>
 

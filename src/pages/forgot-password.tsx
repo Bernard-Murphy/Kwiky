@@ -1,33 +1,35 @@
-import type React from "react"
-
-import { useState } from "react"
-import { motion } from "framer-motion"
-import AnimatedButton from "../components/animated-button"
+import type React from "react";
+import { transitions as t } from "../lib/utils";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import AnimatedButton from "../components/animated-button";
+import { Link } from "react-router-dom";
 
 export default function ForgotPasswordPage() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-  })
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Simulate password reset
-    alert("Password reset instructions sent to your email!")
-  }
+    alert("Password reset instructions sent to your email!");
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      transition={t.transition}
+      exit={t.fade_out_scale_1}
+      animate={t.normalize}
+      initial={t.fade_out}
       className="container mx-auto px-6 py-8 max-w-md"
     >
       <h1 className="text-2xl font-bold text-center mb-8">Reset Password</h1>
@@ -46,7 +48,9 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Email Address</label>
+          <label className="block text-sm font-medium mb-2">
+            Email Address
+          </label>
           <input
             type="email"
             name="email"
@@ -60,7 +64,14 @@ export default function ForgotPasswordPage() {
         <AnimatedButton type="submit" className="w-full">
           Send Reset Instructions
         </AnimatedButton>
+        <div className="text-center">
+          <Link to="/login">
+            <AnimatedButton type="button" variant="outline" className="w-full">
+              Back to Login
+            </AnimatedButton>
+          </Link>
+        </div>
       </form>
     </motion.div>
-  )
+  );
 }

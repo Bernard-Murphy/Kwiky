@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import AnimatedButton from "../components/animated-button";
+import { transitions as t } from "../lib/utils";
 
 export default function BrowsePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,9 +33,10 @@ export default function BrowsePage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      transition={t.transition}
+      exit={t.fade_out_scale_1}
+      animate={t.normalize}
+      initial={t.fade_out}
       className="container mx-auto px-6 py-8"
     >
       <div className="max-w-2xl mx-auto">
@@ -47,13 +49,13 @@ export default function BrowsePage() {
               placeholder="Search for content..."
               className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
             />
-            <AnimatedButton onClick={handleSearch}>Search</AnimatedButton>
+            <AnimatedButton onClick={handleSearch}>Submit</AnimatedButton>
           </div>
 
           <div>
             <AnimatedButton
               onClick={() => setShowSearchOptions(!showSearchOptions)}
-              variant="secondary"
+              variant="ghost"
               className="flex items-center space-x-2"
             >
               <span>Search Options</span>
@@ -70,7 +72,7 @@ export default function BrowsePage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mt-4 p-6 bg-black/20 rounded-lg border border-gray-600 space-y-4"
+                  className="mt-4 p-6 bg-black/20 rounded-lg border border-gray-600 space-y-4 overflow-hidden"
                 >
                   <div>
                     <label className="block text-sm font-medium mb-3">
@@ -153,11 +155,6 @@ export default function BrowsePage() {
               )}
             </AnimatePresence>
           </div>
-        </div>
-
-        {/* Search Results Placeholder */}
-        <div className="mt-8 text-center text-gray-400">
-          <p>Search results will appear here...</p>
         </div>
       </div>
     </motion.div>
