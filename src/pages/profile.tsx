@@ -1,0 +1,112 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useApp } from "../App";
+
+type ProfileTab = "userInfo" | "myContent";
+
+export default function ProfilePage() {
+  const [activeTab, setActiveTab] = useState<ProfileTab>("userInfo");
+  const { user } = useApp();
+
+  if (!user) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="container mx-auto px-6 py-8 text-center"
+      >
+        <p>Please log in to view your profile.</p>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="container mx-auto px-6 py-8"
+    >
+      <div className="flex">
+        {/* Left Sidebar - Tab Navigation */}
+        <div className="w-64 mr-8">
+          <div className="space-y-2">
+            <button
+              onClick={() => setActiveTab("userInfo")}
+              className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                activeTab === "userInfo"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-300 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              User Info
+            </button>
+            <button
+              onClick={() => setActiveTab("myContent")}
+              className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                activeTab === "myContent"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-300 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              My Content
+            </button>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {activeTab === "userInfo" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold mb-6">User Information</h2>
+
+                <div className="flex items-center space-x-6">
+                  <div className="w-24 h-24 rounded-full bg-gray-600 overflow-hidden">
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar || "/placeholder.svg"}
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-2xl">
+                        {user.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold">{user.username}</h3>
+                    <p className="text-gray-400">{user.email}</p>
+                  </div>
+                </div>
+
+                {user.bio && (
+                  <div>
+                    <h4 className="text-lg font-medium mb-2">Bio</h4>
+                    <p className="text-gray-300">{user.bio}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "myContent" && (
+              <div>
+                <h2 className="text-2xl font-bold mb-6">My Content</h2>
+                <div className="text-center text-gray-400 py-12">
+                  <p>Your created content will appear here...</p>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
