@@ -11,6 +11,7 @@ import LoginPage from "./pages/login";
 import ForgotPasswordPage from "./pages/forgot-password";
 import BrowsePage from "./pages/browse";
 import ProfilePage from "./pages/profile";
+import { Toaster } from "./components/ui/sonner";
 
 type Theme = "light" | "dark" | "red" | "blue" | "pink" | "green";
 
@@ -40,13 +41,13 @@ export const useApp = () => {
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>("dark");
-  const [user, setUser] = useState<User | null>(null);
-  // const [user, setUser] = useState<User | null>({
-  //   username: "",
-  //   email: "",
-  //   bio: "",
-  //   avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
-  // });
+  // const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({
+    username: "",
+    email: "",
+    bio: "",
+    avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
+  });
 
   const location = useLocation();
 
@@ -76,9 +77,16 @@ export default function App() {
           </Routes>
         </AnimatePresence>
         <ThemeSelector />
-        <div className="fixed bottom-4 left-0 right-0 text-xs opacity-75  text-center">
+        <div
+          className={`fixed bottom-4 ${
+            location.pathname !== "/register"
+              ? "left-0 text-center right-0"
+              : "right-5"
+          }  text-xs opacity-75`}
+        >
           Created by Bernard Murphy
         </div>
+        <Toaster position="bottom-right" richColors />
       </div>
     </AppContext.Provider>
   );

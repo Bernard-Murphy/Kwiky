@@ -64,17 +64,41 @@ export default function RegisterPage() {
       initial={t.fade_out}
       className="container mx-auto px-6 py-8 max-w-md"
     >
-      <div className="text-center mb-6">
+      <motion.div
+        transition={t.transition}
+        exit={{
+          opacity: 0,
+          y: -40,
+        }}
+        animate={t.normalize}
+        initial={{
+          opacity: 0,
+          y: -40,
+        }}
+        className="text-center mb-6"
+      >
         <Link
           to="/login"
           className="text-blue-400 hover:text-blue-300 transition-colors"
         >
           Already have an account? Login
         </Link>
-      </div>
+      </motion.div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="text-center">
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            y: -25,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            y: -25,
+          }}
+          className="text-center"
+        >
           <div className="relative inline-block">
             <input
               type="file"
@@ -101,9 +125,20 @@ export default function RegisterPage() {
             </label>
           </div>
           <p className="text-sm text-gray-400 mt-2">Click to upload avatar</p>
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            x: 70,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            x: 70,
+          }}
+        >
           <label className="block text-sm font-medium mb-2">Username *</label>
           <input
             type="text"
@@ -113,9 +148,20 @@ export default function RegisterPage() {
             onChange={handleInputChange}
             className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
           />
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            x: -70,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            x: -70,
+          }}
+        >
           <label className="block text-sm font-medium mb-2">Password *</label>
           <input
             type="password"
@@ -125,9 +171,20 @@ export default function RegisterPage() {
             onChange={handleInputChange}
             className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
           />
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            x: 70,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            x: 70,
+          }}
+        >
           <label className="block text-sm font-medium mb-2">
             Re-enter Password *
           </label>
@@ -139,9 +196,20 @@ export default function RegisterPage() {
             onChange={handleInputChange}
             className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
           />
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            x: -70,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            x: -70,
+          }}
+        >
           <label className="block text-sm font-medium mb-2">
             Email Address *
           </label>
@@ -153,9 +221,20 @@ export default function RegisterPage() {
             onChange={handleInputChange}
             className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
           />
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            x: 70,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            x: 70,
+          }}
+        >
           <label className="block text-sm font-medium mb-2">Bio</label>
           <textarea
             name="bio"
@@ -164,11 +243,24 @@ export default function RegisterPage() {
             rows={3}
             className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
           />
-        </div>
+        </motion.div>
 
-        <AnimatedButton type="submit" className="w-full">
-          Register
-        </AnimatedButton>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            x: -70,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            x: -70,
+          }}
+        >
+          <AnimatedButton type="submit" className="w-full">
+            Register
+          </AnimatedButton>
+        </motion.div>
       </form>
     </motion.div>
   );

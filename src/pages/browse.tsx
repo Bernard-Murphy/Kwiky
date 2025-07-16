@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import AnimatedButton from "../components/animated-button";
 import { transitions as t } from "../lib/utils";
+import { DatePicker } from "../components/date-picker";
 
 export default function BrowsePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,14 +33,27 @@ export default function BrowsePage() {
   };
 
   return (
-    <motion.div
-      transition={t.transition}
-      exit={t.fade_out_scale_1}
-      animate={t.normalize}
-      initial={t.fade_out}
+    <div
+      // motion.div
+      // transition={t.transition}
+      // exit={t.fade_out_scale_1}
+      // animate={t.normalize}
+      // initial={t.fade_out}
       className="container mx-auto px-6 py-8"
     >
-      <div className="max-w-2xl mx-auto">
+      <motion.div
+        transition={t.transition}
+        exit={{
+          opacity: 0,
+          y: -25,
+        }}
+        animate={t.normalize}
+        initial={{
+          opacity: 0,
+          y: -25,
+        }}
+        className="max-w-2xl mx-auto"
+      >
         <div className="space-y-6">
           <div className="flex space-x-4">
             <input
@@ -59,11 +73,11 @@ export default function BrowsePage() {
               className="flex items-center space-x-2"
             >
               <span>Search Options</span>
-              {showSearchOptions ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
+              <ChevronDown
+                className={`w-4 h-4 duration-300 ${
+                  showSearchOptions ? "rotate-180" : ""
+                }`}
+              />
             </AnimatedButton>
 
             <AnimatePresence>
@@ -127,18 +141,35 @@ export default function BrowsePage() {
                       Date Range
                     </label>
                     <div className="flex space-x-4">
-                      <input
-                        type="date"
-                        value={dateRange.start}
-                        onChange={(e) =>
+                      <DatePicker
+                        date={new Date(dateRange.start || new Date())}
+                        setDate={(e) => {
+                          console.log(e);
                           setDateRange((prev) => ({
                             ...prev,
-                            start: e.target.value,
+                            start: e?.toISOString() || "",
+                          }));
+                        }}
+                        className="flex-1 px-4 py-3"
+                      />
+                      <DatePicker
+                        date={new Date(dateRange.end || new Date())}
+                        setDate={(e) =>
+                          setDateRange((prev) => ({
+                            ...prev,
+                            end: e?.toISOString() || "",
                           }))
                         }
-                        className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+                        className="flex-1 px-4 py-3"
                       />
-                      <input
+                      {/* <input
+                        type="date"
+                        value={dateRange.start}
+                        onChange={
+                        }
+                        className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+                      /> */}
+                      {/* <input
                         type="date"
                         value={dateRange.end}
                         onChange={(e) =>
@@ -148,7 +179,7 @@ export default function BrowsePage() {
                           }))
                         }
                         className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
-                      />
+                      /> */}
                     </div>
                   </div>
                 </motion.div>
@@ -156,7 +187,7 @@ export default function BrowsePage() {
             </AnimatePresence>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }

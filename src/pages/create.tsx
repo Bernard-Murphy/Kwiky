@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Music, ImageIcon, Gamepad2, MessageCircle } from "lucide-react";
 import AnimatedButton from "../components/animated-button";
 import { transitions as t } from "../lib/utils";
+import { toast } from "sonner";
 
 type Tab = "music" | "images" | "games" | "chat";
 
@@ -22,6 +23,20 @@ export default function CreatePage() {
     Array<{ text: string; isUser: boolean }>
   >([]);
   const [chatInput, setChatInput] = useState("");
+
+  useEffect(() => {
+    if (uncensoredChat)
+      toast.error("Uncensored chat may produce HIGHLY offensive results", {
+        closeButton: true,
+      });
+  }, [uncensoredChat]);
+
+  useEffect(() => {
+    if (uncensoredMusic)
+      toast.error("Uncensored music may produce HIGHLY offensive results", {
+        closeButton: true,
+      });
+  }, [uncensoredMusic]);
 
   const tabs = [
     { id: "music" as Tab, label: "Create Music", icon: Music },
@@ -53,7 +68,19 @@ export default function CreatePage() {
       className="container mx-auto px-6 py-8"
     >
       {/* Tab Navigation */}
-      <div className="flex space-x-1 bg-black/20 rounded-lg p-1">
+      <motion.div
+        transition={t.transition}
+        exit={{
+          opacity: 0,
+          y: -30,
+        }}
+        animate={t.normalize}
+        initial={{
+          opacity: 0,
+          y: -30,
+        }}
+        className="flex space-x-1 bg-black/20 rounded-lg p-1"
+      >
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -68,11 +95,22 @@ export default function CreatePage() {
             <span>{tab.label}</span>
           </button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Tab Content */}
-      <div>
-        <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        transition={t.transition}
+        exit={{
+          opacity: 0,
+          y: 50,
+        }}
+        animate={t.normalize}
+        initial={{
+          opacity: 0,
+          y: 50,
+        }}
+      >
+        <AnimatePresence mode="wait">
           {activeTab === "music" && (
             <motion.div
               transition={t.transition}
@@ -82,7 +120,19 @@ export default function CreatePage() {
               className="space-y-6 pt-8"
               key="music"
             >
-              <div className="space-y-4">
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  x: -50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  x: -50,
+                }}
+                className="space-y-4"
+              >
                 <label className="block">
                   <input
                     type="checkbox"
@@ -110,9 +160,20 @@ export default function CreatePage() {
                   />
                   Uncensored
                 </label>
-              </div>
+              </motion.div>
 
-              <div>
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  x: 50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  x: 50,
+                }}
+              >
                 <label className="block text-sm font-medium mb-2">
                   {generateLyrics
                     ? "Make a Song About..."
@@ -128,28 +189,45 @@ export default function CreatePage() {
                   }
                   className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
                 />
-              </div>
-              <AnimatePresence>
-                {!generateStyle && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                  >
-                    <input
-                      type="text"
-                      value={musicStyle}
-                      onChange={(e) => setMusicStyle(e.target.value)}
-                      placeholder="lofi electro, male vocal"
-                      className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
 
-              <AnimatedButton onClick={() => console.log("Create music")}>
-                Submit
-              </AnimatedButton>
+                <AnimatePresence>
+                  {!generateStyle && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{
+                        opacity: { duration: 0.25 },
+                        height: { duration: 0.26 },
+                      }}
+                    >
+                      <input
+                        type="text"
+                        value={musicStyle}
+                        onChange={(e) => setMusicStyle(e.target.value)}
+                        placeholder="lofi electro, male vocal"
+                        className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  y: 50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  y: 50,
+                }}
+              >
+                <AnimatedButton onClick={() => console.log("Create music")}>
+                  Submit
+                </AnimatedButton>
+              </motion.div>
             </motion.div>
           )}
           {activeTab === "images" && (
@@ -161,7 +239,18 @@ export default function CreatePage() {
               className="space-y-6 pt-8"
               key="images"
             >
-              <div>
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  x: 50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  x: 50,
+                }}
+              >
                 <label className="block text-sm font-medium mb-2">
                   Create the Following Image...
                 </label>
@@ -171,10 +260,23 @@ export default function CreatePage() {
                   placeholder="Police bust illegal pepperoni operation"
                   className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
                 />
-              </div>
-              <AnimatedButton onClick={() => console.log("Create image")}>
-                Submit
-              </AnimatedButton>
+              </motion.div>
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  y: 50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  y: 50,
+                }}
+              >
+                <AnimatedButton onClick={() => console.log("Create image")}>
+                  Submit
+                </AnimatedButton>
+              </motion.div>
             </motion.div>
           )}
           {activeTab === "games" && (
@@ -186,7 +288,18 @@ export default function CreatePage() {
               className="space-y-6 pt-8"
               key="games"
             >
-              <div>
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  x: 50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  x: 50,
+                }}
+              >
                 <label className="block text-sm font-medium mb-2">
                   Create the Following Game...
                 </label>
@@ -196,10 +309,23 @@ export default function CreatePage() {
                   placeholder="Shooting Game"
                   className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
                 />
-              </div>
-              <AnimatedButton onClick={() => console.log("Create game")}>
-                Submit
-              </AnimatedButton>
+              </motion.div>
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  y: 50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  y: 50,
+                }}
+              >
+                <AnimatedButton onClick={() => console.log("Create game")}>
+                  Submit
+                </AnimatedButton>
+              </motion.div>
             </motion.div>
           )}
           {activeTab === "chat" && (
@@ -211,7 +337,19 @@ export default function CreatePage() {
               key="chat"
               className="h-[calc(100vh-200px)] flex flex-col pt-2"
             >
-              <div className="flex-1 bg-black/20 rounded-lg p-4 mb-4 overflow-y-auto">
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  scale: 0.85,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  scale: 0.85,
+                }}
+                className="flex-1 bg-black/20 rounded-lg p-4 mb-4 overflow-y-auto"
+              >
                 {chatMessages.length === 0 ? (
                   <div className="text-gray-400 text-center mt-8">
                     Start a conversation...
@@ -238,42 +376,54 @@ export default function CreatePage() {
                     ))}
                   </div>
                 )}
-              </div>
-
-              <div className="flex space-x-4 items-end">
-                <div className="flex-1 relative">
-                  <textarea
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    onKeyPress={(e) =>
-                      e.key === "Enter" &&
-                      !e.shiftKey &&
-                      (e.preventDefault(), handleChatSubmit())
-                    }
-                    placeholder="Type your message..."
-                    className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-                    rows={2}
-                  />
-                  <div className="absolute right-3 top-3">
-                    <AnimatedButton onClick={handleChatSubmit}>
-                      Send
-                    </AnimatedButton>
+              </motion.div>
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  y: 50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  y: 50,
+                }}
+              >
+                <div className="flex space-x-4 items-end">
+                  <div className="flex-1 relative">
+                    <textarea
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyPress={(e) =>
+                        e.key === "Enter" &&
+                        !e.shiftKey &&
+                        (e.preventDefault(), handleChatSubmit())
+                      }
+                      placeholder="Type your message..."
+                      className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
+                      rows={2}
+                    />
+                    <div className="absolute right-3 top-3">
+                      <AnimatedButton onClick={handleChatSubmit}>
+                        Send
+                      </AnimatedButton>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <label className="flex items-center mt-2 ml-auto">
-                <input
-                  type="checkbox"
-                  checked={uncensoredChat}
-                  onChange={(e) => setUncensoredChat(e.target.checked)}
-                  className="mr-2"
-                />
-                Uncensored
-              </label>
+                <label className="flex justify-end mt-2 ml-auto">
+                  <input
+                    type="checkbox"
+                    checked={uncensoredChat}
+                    onChange={(e) => setUncensoredChat(e.target.checked)}
+                    className="mr-2"
+                  />
+                  Uncensored
+                </label>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

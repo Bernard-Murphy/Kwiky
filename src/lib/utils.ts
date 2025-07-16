@@ -29,7 +29,21 @@ export const transitions = {
 
   fade_out_up: {
     opacity: 0,
-    y: 200,
+    y: -50,
+  },
+  fade_out_down: {
+    opacity: 0,
+    y: 50,
+  },
+
+  fade_out_right: {
+    opacity: 0,
+    x: 50,
+  },
+
+  fade_out_left: {
+    opacity: 0,
+    x: -50,
   },
 
   fade_out_top: {
@@ -57,16 +71,6 @@ export const transitions = {
   bob_right: {
     x: 20,
     opacity: 0.5,
-  },
-
-  fade_out_left: {
-    opacity: 0,
-    x: -1000,
-  },
-
-  fade_out_right: {
-    opacity: 0,
-    x: 1000,
   },
 
   fade_out_left_minor: {

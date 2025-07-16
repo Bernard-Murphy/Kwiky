@@ -43,10 +43,35 @@ export default function LoginPage() {
       initial={t.fade_out}
       className="container mx-auto px-6 py-8 max-w-md"
     >
-      <h1 className="text-2xl font-bold text-center mb-8">Login</h1>
+      <motion.h1
+        transition={t.transition}
+        exit={{
+          opacity: 0,
+          y: 40,
+        }}
+        animate={t.normalize}
+        initial={{
+          opacity: 0,
+          y: 40,
+        }}
+        className="text-2xl font-bold text-center mb-8"
+      >
+        Login
+      </motion.h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            y: 55,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            y: 55,
+          }}
+        >
           <label className="block text-sm font-medium mb-2">
             Username or Email Address
           </label>
@@ -58,9 +83,20 @@ export default function LoginPage() {
             onChange={handleInputChange}
             className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
           />
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            y: 70,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            y: 70,
+          }}
+        >
           <label className="block text-sm font-medium mb-2">Password</label>
           <input
             type="password"
@@ -70,19 +106,43 @@ export default function LoginPage() {
             onChange={handleInputChange}
             className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
           />
-        </div>
+        </motion.div>
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            y: 85,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            y: 85,
+          }}
+        >
+          <AnimatedButton type="submit" className="w-full">
+            Login
+          </AnimatedButton>
+        </motion.div>
 
-        <AnimatedButton type="submit" className="w-full">
-          Login
-        </AnimatedButton>
-
-        <div className="text-center">
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            y: 100,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            y: 100,
+          }}
+          className="text-center"
+        >
           <Link to="/forgot-password">
             <AnimatedButton variant="outline" className="w-full">
               Forgot Password
             </AnimatedButton>
           </Link>
-        </div>
+        </motion.div>
       </form>
     </motion.div>
   );

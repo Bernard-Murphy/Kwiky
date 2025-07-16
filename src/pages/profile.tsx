@@ -32,7 +32,19 @@ export default function ProfilePage() {
     >
       <div className="flex">
         {/* Left Sidebar - Tab Navigation */}
-        <div className="w-64 mr-8">
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            x: -100,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            x: -100,
+          }}
+          className="w-64 mr-8"
+        >
           <div className="space-y-2">
             <button
               onClick={() => setActiveTab("userInfo")}
@@ -55,18 +67,36 @@ export default function ProfilePage() {
               My Content
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Main Content */}
-        <div className="flex-1">
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            x: 100,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            x: 100,
+          }}
+          className="flex-1"
+        >
           <div>
             <AnimatePresence mode="wait" initial={false}>
               {activeTab === "userInfo" && (
                 <motion.div
                   transition={t.transition}
-                  exit={t.fade_out_scale_1}
+                  exit={{
+                    opacity: 0,
+                    x: 100,
+                  }}
                   animate={t.normalize}
-                  initial={t.fade_out}
+                  initial={{
+                    opacity: 0,
+                    x: 100,
+                  }}
                   className="space-y-6"
                   key="userInfo"
                 >
@@ -104,9 +134,15 @@ export default function ProfilePage() {
               {activeTab === "myContent" && (
                 <motion.div
                   transition={t.transition}
-                  exit={t.fade_out_scale_1}
+                  exit={{
+                    opacity: 0,
+                    x: 100,
+                  }}
                   animate={t.normalize}
-                  initial={t.fade_out}
+                  initial={{
+                    opacity: 0,
+                    x: 100,
+                  }}
                   key="myContent"
                 >
                   <h2 className="text-2xl font-bold mb-6">My Content</h2>
@@ -117,7 +153,7 @@ export default function ProfilePage() {
               )}
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       </div>
     </motion.div>
   );
