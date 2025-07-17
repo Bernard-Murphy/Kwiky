@@ -1,6 +1,6 @@
 "use client";
 
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { useState, createContext, useContext } from "react";
 import Navbar from "./components/navbar";
@@ -10,6 +10,7 @@ import RegisterPage from "./pages/register";
 import LoginPage from "./pages/login";
 import ForgotPasswordPage from "./pages/forgot-password";
 import BrowsePage from "./pages/browse";
+import ChatPage from "./pages/chat";
 import ProfilePage from "./pages/profile";
 import { Toaster } from "./components/ui/sonner";
 
@@ -74,6 +75,8 @@ export default function App() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/browse" element={<BrowsePage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="*" element={<Navigate replace to="/" />} />
           </Routes>
         </AnimatePresence>
         <ThemeSelector />

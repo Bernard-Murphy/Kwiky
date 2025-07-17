@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../App";
 import { Dot } from "lucide-react";
+import AnimatedButton from "./animated-button";
 
 export default function Navbar() {
   const location = useLocation();
@@ -26,22 +27,45 @@ export default function Navbar() {
   return (
     <nav className="bg-black/20 backdrop-blur-sm border-b border-white/10 px-6 py-4">
       <div className="flex justify-between items-center">
-        <div className="flex space-x-6">
+        <div className="flex space-x-2">
           <Link
             to="/"
-            className={`text-lg font-medium hover:text-blue-400 transition-colors ${
-              location.pathname === "/" ? "text-blue-400" : ""
-            }`}
+            className={`text-lg font-medium  transition-colors duration-200`}
           >
-            Create
+            <AnimatedButton
+              variant="custom"
+              className={`text-left px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-700 disabled:bg-gray-500 hover:text-blue-400  ${
+                location.pathname === "/" ? "text-blue-400" : ""
+              }`}
+            >
+              Create
+            </AnimatedButton>
           </Link>
           <Link
             to="/browse"
-            className={`text-lg font-medium hover:text-blue-400 transition-colors ${
-              location.pathname === "/browse" ? "text-blue-400" : ""
-            }`}
+            className={`text-lg font-medium  transition-colors duration-200`}
           >
-            Browse
+            <AnimatedButton
+              variant="custom"
+              className={`text-left px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-700 disabled:bg-gray-500 hover:text-blue-400  ${
+                location.pathname === "/browse" ? "text-blue-400" : ""
+              }`}
+            >
+              Browse
+            </AnimatedButton>
+          </Link>
+          <Link
+            to="/chat"
+            className={`text-lg font-medium  transition-colors duration-200`}
+          >
+            <AnimatedButton
+              variant="custom"
+              className={`text-left px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-700 disabled:bg-gray-500 hover:text-blue-400  ${
+                location.pathname === "/chat" ? "text-blue-400" : ""
+              }`}
+            >
+              AI Chat
+            </AnimatedButton>
           </Link>
         </div>
 

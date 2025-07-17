@@ -15,7 +15,7 @@ export default function BrowsePage() {
     images: true,
     games: true,
   });
-  const [author, setAuthor] = useState("");
+  const [keywords, setKeywords] = useState("");
   const [dateRange, setDateRange] = useState({
     start: "",
     end: "",
@@ -29,18 +29,16 @@ export default function BrowsePage() {
   };
 
   const handleSearch = () => {
-    console.log("Searching with:", { searchQuery, filters, author, dateRange });
+    console.log("Searching with:", {
+      searchQuery,
+      filters,
+      keywords,
+      dateRange,
+    });
   };
 
   return (
-    <div
-      // motion.div
-      // transition={t.transition}
-      // exit={t.fade_out_scale_1}
-      // animate={t.normalize}
-      // initial={t.fade_out}
-      className="container mx-auto px-6 py-8"
-    >
+    <div className="container mx-auto px-6 py-8">
       <motion.div
         transition={t.transition}
         exit={{
@@ -70,11 +68,11 @@ export default function BrowsePage() {
             <AnimatedButton
               onClick={() => setShowSearchOptions(!showSearchOptions)}
               variant="ghost"
-              className="flex items-center space-x-2"
+              className="flex items-center"
             >
               <span>Search Options</span>
               <ChevronDown
-                className={`w-4 h-4 duration-300 ${
+                className={`w-4 h-4 duration-300 ml-2 ${
                   showSearchOptions ? "rotate-180" : ""
                 }`}
               />
@@ -125,13 +123,13 @@ export default function BrowsePage() {
 
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Author
+                      Keywords
                     </label>
                     <input
                       type="text"
-                      value={author}
-                      onChange={(e) => setAuthor(e.target.value)}
-                      placeholder="Enter author name..."
+                      value={keywords}
+                      onChange={(e) => setKeywords(e.target.value)}
+                      placeholder="Enter keywords..."
                       className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
                     />
                   </div>
@@ -162,24 +160,6 @@ export default function BrowsePage() {
                         }
                         className="flex-1 px-4 py-3"
                       />
-                      {/* <input
-                        type="date"
-                        value={dateRange.start}
-                        onChange={
-                        }
-                        className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
-                      /> */}
-                      {/* <input
-                        type="date"
-                        value={dateRange.end}
-                        onChange={(e) =>
-                          setDateRange((prev) => ({
-                            ...prev,
-                            end: e.target.value,
-                          }))
-                        }
-                        className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
-                      /> */}
                     </div>
                   </div>
                 </motion.div>

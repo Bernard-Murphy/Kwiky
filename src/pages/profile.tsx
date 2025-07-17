@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../App";
 import { transitions as t } from "../lib/utils";
+import AnimatedButton from "../components/animated-button";
+import { User, Palette } from "lucide-react";
 
 type ProfileTab = "userInfo" | "myContent";
 
@@ -46,26 +48,30 @@ export default function ProfilePage() {
           className="w-64 mr-8"
         >
           <div className="space-y-2">
-            <button
+            <AnimatedButton
               onClick={() => setActiveTab("userInfo")}
-              className={`w-full text-left px-4 py-3 rounded-lg transition-colors cursor-pointer ${
+              variant="custom"
+              className={`flex items-center w-full text-left px-4 py-3 rounded-lg cursor-pointer ${
                 activeTab === "userInfo"
                   ? "bg-blue-600 text-white"
                   : "text-gray-300 hover:text-white hover:bg-white/10"
               }`}
             >
+              <User className="w-5 h-5 mr-2" />
               User Info
-            </button>
-            <button
+            </AnimatedButton>
+            <AnimatedButton
               onClick={() => setActiveTab("myContent")}
-              className={`w-full text-left px-4 py-3 rounded-lg transition-colors cursor-pointer ${
+              variant="custom"
+              className={`flex items-center w-full text-left px-4 py-3 rounded-lg cursor-pointer ${
                 activeTab === "myContent"
                   ? "bg-blue-600 text-white"
                   : "text-gray-300 hover:text-white hover:bg-white/10"
               }`}
             >
+              <Palette className="w-5 h-5 mr-2" />
               My Content
-            </button>
+            </AnimatedButton>
           </div>
         </motion.div>
 
@@ -81,13 +87,13 @@ export default function ProfilePage() {
             opacity: 0,
             x: 100,
           }}
-          className="flex-1"
+          className="flex-1 overflow-hidden"
         >
           <div>
             <AnimatePresence mode="wait" initial={false}>
               {activeTab === "userInfo" && (
                 <motion.div
-                  transition={t.transition}
+                  transition={t.transition_fast}
                   exit={{
                     opacity: 0,
                     x: 100,

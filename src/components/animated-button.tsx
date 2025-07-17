@@ -14,7 +14,8 @@ interface AnimatedButtonProps {
     | "destructive"
     | "outline"
     | "ghost"
-    | "link";
+    | "link"
+    | "custom";
 }
 
 export default function AnimatedButton({
@@ -61,6 +62,7 @@ export default function AnimatedButton({
     outline: "bg-gray-700 text-white hover:bg-gray-700 disabled:bg-gray-500",
     ghost: "text-white hover:bg-gray-700 disabled:bg-gray-500",
     link: "text-white hover:bg-gray-700 disabled:bg-gray-500",
+    custom: "",
   };
 
   return (
