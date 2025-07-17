@@ -8,6 +8,7 @@ interface AnimatedButtonProps {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   className?: string;
+  id?: string;
   variant?:
     | "primary"
     | "secondary"
@@ -25,6 +26,7 @@ export default function AnimatedButton({
   disabled = false,
   className = "",
   variant = "primary",
+  id = "test",
 }: AnimatedButtonProps) {
   const [ripples, setRipples] = useState<
     Array<{ id: number; x: number; y: number }>
@@ -66,7 +68,8 @@ export default function AnimatedButton({
   };
 
   return (
-    <motion.button
+    <button
+      id={id}
       type={type}
       disabled={disabled}
       onClick={handleClick}
@@ -90,6 +93,6 @@ export default function AnimatedButton({
           transition={{ duration: 0.3 }}
         />
       ))}
-    </motion.button>
+    </button>
   );
 }

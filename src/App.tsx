@@ -12,6 +12,7 @@ import ForgotPasswordPage from "./pages/forgot-password";
 import BrowsePage from "./pages/browse";
 import ChatPage from "./pages/chat";
 import ProfilePage from "./pages/profile";
+import Test from "./pages/test";
 import { Toaster } from "./components/ui/sonner";
 
 type Theme = "light" | "dark" | "red" | "blue" | "pink" | "green";
@@ -76,6 +77,7 @@ export default function App() {
             <Route path="/browse" element={<BrowsePage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/chat" element={<ChatPage />} />
+            <Route path="/test" element={<Test />} />
             <Route path="*" element={<Navigate replace to="/" />} />
           </Routes>
         </AnimatePresence>
