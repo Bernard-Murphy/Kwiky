@@ -5,9 +5,8 @@ import {
   ChevronRightIcon,
 } from "lucide-react";
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
-
-import { cn } from "../../lib/utils";
-import { Button, buttonVariants } from "../../components/ui/button";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 function Calendar({
   className,
@@ -27,7 +26,7 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
-        "bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
+        "text-white bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-gray-900 [[data-slot=popover-content]_&]:bg-gray-900",
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
         String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className
@@ -41,7 +40,7 @@ function Calendar({
       classNames={{
         root: cn("w-fit", defaultClassNames.root),
         months: cn(
-          "flex gap-4 flex-col md:flex-row relative",
+          "flex gap-4 flex-col md:flex-row relative bg-gray-900 text-white",
           defaultClassNames.months
         ),
         month: cn("flex flex-col w-full gap-4", defaultClassNames.month),
@@ -64,15 +63,15 @@ function Calendar({
           defaultClassNames.month_caption
         ),
         dropdowns: cn(
-          "w-full flex items-center text-sm font-medium justify-center h-(--cell-size) gap-1.5",
+          "w-full flex items-center text-sm font-medium justify-center h-(--cell-size) gap-1.5 bg-gray-900 text-white",
           defaultClassNames.dropdowns
         ),
         dropdown_root: cn(
-          "relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md",
+          "relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md bg-gray-900 text-white",
           defaultClassNames.dropdown_root
         ),
         dropdown: cn(
-          "absolute bg-popover inset-0 opacity-0",
+          "absolute bg-popover inset-0 opacity-0 bg-gray-900 text-white",
           defaultClassNames.dropdown
         ),
         caption_label: cn(
@@ -112,7 +111,7 @@ function Calendar({
           defaultClassNames.today
         ),
         outside: cn(
-          "text-muted-foreground aria-selected:text-muted-foreground",
+          "text-muted-foreground aria-selected:text-muted-foreground bg-gray-900 text-white",
           defaultClassNames.outside
         ),
         disabled: cn(

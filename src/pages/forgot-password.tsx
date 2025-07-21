@@ -1,8 +1,8 @@
 import type React from "react";
-import { transitions as t } from "../lib/utils";
+import { transitions as t } from "@/lib/utils";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import AnimatedButton from "../components/animated-button";
+import AnimatedButton from "@/components/animated-button";
 import { Link } from "react-router-dom";
 
 export default function ForgotPasswordPage() {

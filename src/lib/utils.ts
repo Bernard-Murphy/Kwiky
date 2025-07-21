@@ -84,10 +84,14 @@ export const transitions = {
   },
 
   transition: {
-    x: { duration: 0.33 },
-    y: { duration: 0.33 },
-    opacity: { duration: 0.25 },
-    scale: { duration: 0.26 },
+    // x: { duration: 0.33 },
+    // y: { duration: 0.33 },
+    // opacity: { duration: 0.25 },
+    // scale: { duration: 0.26 },
+    x: { duration: 0.25 },
+    y: { duration: 0.25 },
+    opacity: { duration: 0.17 },
+    scale: { duration: 0.18 },
   },
 
   transition_fast: {

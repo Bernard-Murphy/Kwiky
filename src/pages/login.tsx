@@ -1,12 +1,12 @@
 "use client";
 
 import type React from "react";
-import { transitions as t } from "../lib/utils";
+import { transitions as t } from "@/lib/utils";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import AnimatedButton from "../components/animated-button";
-import { useApp } from "../App";
+import AnimatedButton from "@/components/animated-button";
+import { useApp } from "@/App";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({

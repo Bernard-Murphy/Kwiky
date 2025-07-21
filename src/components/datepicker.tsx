@@ -3,15 +3,27 @@
 import * as React from "react";
 import { CalendarDays } from "lucide-react";
 import { motion } from "framer-motion";
-import { Calendar } from "./ui/calendar";
-import { Label } from "./ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
-// w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none
+export interface DatepickerProps {
+  date: Date | undefined;
+  setDate: (d: Date) => void;
+  className?: string;
+  buttonClasses?: string;
+}
 
-export default function Calendar22() {
+export default function Calendar22({
+  date,
+  setDate,
+  className,
+  buttonClasses,
+}: DatepickerProps) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
 
   const [ripples, setRipples] = React.useState<
     Array<{ id: number; x: number; y: number }>
@@ -37,15 +49,12 @@ export default function Calendar22() {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <Label htmlFor="date" className="px-1">
-        Date of birth
-      </Label>
+    <div className={`flex flex-col gap-3 ${className}`}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
             onClick={handleClick}
-            className={`inline-flex items-center gap-2 bg-black/20 whitespace-nowrap rounded-md text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent-foreground hover:text-accent dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-48 justify-between font-normal cursor-pointer relative overflow-hidden rounded-lg px-6 py-3 font-medium transition-all duration-200 cursor-pointer ${
+            className={`inline-flex items-center gap-2 bg-black/20 whitespace-nowrap rounded-md text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent-foreground hover:text-accent dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-48 justify-between font-normal cursor-pointer relative overflow-hidden rounded-lg px-6 py-3 font-medium transition-all duration-200 cursor-pointer ${buttonClasses} ${
               pressing ? "scale-90" : ""
             }`}
           >
@@ -74,7 +83,8 @@ export default function Calendar22() {
             selected={date}
             captionLayout="dropdown"
             onSelect={(date) => {
-              setDate(date);
+              console.log("select");
+              setDate(date || new Date());
               setOpen(false);
             }}
           />

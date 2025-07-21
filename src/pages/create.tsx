@@ -2,23 +2,69 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Music, ImageIcon, Gamepad2 } from "lucide-react";
-import AnimatedButton from "../components/animated-button";
-import { transitions as t } from "../lib/utils";
+import { Music as MusicIcon, ImageIcon, Gamepad2 } from "lucide-react";
+import AnimatedButton from "@/components/animated-button";
+import { transitions as t } from "@/lib/utils";
 import { toast } from "sonner";
+import { Socket } from "socket.io-client";
+import Images from "./create/images";
+import Games from "./create/games";
+import Music from "./create/music";
 
 type Tab = "music" | "images" | "games" | "chat";
 
-export default function CreatePage() {
+export default function CreatePage({ socket }: { socket: Socket }) {
   const [activeTab, setActiveTab] = useState<Tab>("music");
-  const [generateLyrics, setGenerateLyrics] = useState(true);
-  const [generateStyle, setGenerateStyle] = useState(false);
+  const [generateLyrics, setGenerateLyrics] = useState<boolean>(true);
+  const [generateStyle, setGenerateStyle] = useState<boolean>(true);
   const [uncensoredMusic, setUncensoredMusic] = useState(false);
+  const [musicWorking, setMusicWorking] = useState(false);
+  const [musicLinks, setMusicLinks] = useState<string[]>([]);
+  const [customLyrics, setCustomLyrics] = useState<string>("");
+  const [lyrics, setLyrics] = useState<string>("");
+  const [musicStatus, setMusicStatus] = useState<string>("");
 
-  const [musicText, setMusicText] = useState("");
+  const [musicPrompt, setMusicPrompt] = useState("");
   const [musicStyle, setMusicStyle] = useState("");
   const [imageText, setImageText] = useState("");
   const [gameText, setGameText] = useState("");
+
+  useEffect(() => {
+    socket.on("music-lyrics", (lyrics) => {
+      setMusicStatus(`Generating song`);
+      setLyrics(lyrics);
+    });
+    socket.on("music-links", (links) => {
+      setMusicLinks(links);
+    });
+    socket.on("music-error", (err) => {
+      try {
+        console.log(err);
+        toast.error(
+          "An error occurred while generating the song. Check the console for more details.",
+          {
+            closeButton: true,
+          }
+        );
+      } catch (err) {
+        console.log("music-error err", err);
+      }
+      setMusicStatus("Errored");
+      setMusicWorking(false);
+    });
+    socket.on("music-links", (links) => {
+      try {
+        console.log("music links", links);
+        setMusicLinks(links);
+        setMusicStatus("");
+      } catch (err) {
+        console.log("music links error", err);
+        setCustomLyrics("");
+        setMusicStatus("Errored");
+      }
+      setMusicWorking(false);
+    });
+  });
 
   useEffect(() => {
     if (uncensoredMusic)
@@ -29,10 +75,28 @@ export default function CreatePage() {
   }, [uncensoredMusic]);
 
   const tabs = [
-    { id: "music" as Tab, label: "Create Music", icon: Music },
+    { id: "music" as Tab, label: "Create Music", icon: MusicIcon },
     { id: "images" as Tab, label: "Create Images", icon: ImageIcon },
     { id: "games" as Tab, label: "Create Games", icon: Gamepad2 },
   ];
+
+  const musicSubmit = () => {
+    try {
+      setMusicWorking(true);
+      setLyrics("");
+      setMusicLinks([]);
+      setMusicStatus(generateLyrics ? `Generating lyrics` : `Generating song`);
+      socket.emit(
+        "music-new-song",
+        musicPrompt,
+        generateLyrics ? "" : customLyrics,
+        generateStyle ? "" : musicStyle,
+        uncensoredMusic
+      );
+    } catch (err) {
+      console.log("musicSubmit error", err);
+    }
+  };
 
   return (
     <motion.div
@@ -75,6 +139,7 @@ export default function CreatePage() {
 
       {/* Tab Content */}
       <motion.div
+        className="p-1"
         transition={t.transition}
         exit={{
           opacity: 0,
@@ -88,221 +153,36 @@ export default function CreatePage() {
       >
         <AnimatePresence mode="wait">
           {activeTab === "music" && (
-            <motion.div
-              transition={t.transition}
-              exit={t.fade_out_scale_1}
-              animate={t.normalize}
-              initial={t.fade_out}
-              className="space-y-6 pt-8"
+            <Music
+              generateLyrics={generateLyrics}
+              setGenerateLyrics={setGenerateLyrics}
+              generateStyle={generateStyle}
+              setGenerateStyle={setGenerateStyle}
+              uncensoredMusic={uncensoredMusic}
+              setUncensoredMusic={setUncensoredMusic}
+              musicPrompt={musicPrompt}
+              setMusicPrompt={setMusicPrompt}
+              musicStyle={musicStyle}
+              setMusicStyle={setMusicStyle}
+              working={musicWorking}
+              musicSubmit={musicSubmit}
+              musicLinks={musicLinks}
+              customLyrics={customLyrics}
+              setCustomLyrics={setCustomLyrics}
+              musicStatus={musicStatus}
+              lyrics={lyrics}
               key="music"
-            >
-              <motion.div
-                transition={t.transition}
-                exit={{
-                  opacity: 0,
-                  x: -50,
-                }}
-                animate={t.normalize}
-                initial={{
-                  opacity: 0,
-                  x: -50,
-                }}
-                className="space-y-4"
-              >
-                <label className="block">
-                  <input
-                    type="checkbox"
-                    checked={generateLyrics}
-                    onChange={(e) => setGenerateLyrics(e.target.checked)}
-                    className="mr-2"
-                  />
-                  Generate Lyrics Automatically
-                </label>
-                <label className="block">
-                  <input
-                    type="checkbox"
-                    checked={generateStyle}
-                    onChange={(e) => setGenerateStyle(e.target.checked)}
-                    className="mr-2"
-                  />
-                  Generate Music Style Automatically
-                </label>
-                <label className="block">
-                  <input
-                    type="checkbox"
-                    checked={uncensoredMusic}
-                    onChange={(e) => setUncensoredMusic(e.target.checked)}
-                    className="mr-2"
-                  />
-                  Uncensored
-                </label>
-              </motion.div>
-
-              <motion.div
-                transition={t.transition}
-                exit={{
-                  opacity: 0,
-                  x: 50,
-                }}
-                animate={t.normalize}
-                initial={{
-                  opacity: 0,
-                  x: 50,
-                }}
-              >
-                <label className="block text-sm font-medium mb-2">
-                  {generateLyrics
-                    ? "Make a Song About..."
-                    : "Make a Song With These Lyrics..."}
-                </label>
-                <textarea
-                  value={musicText}
-                  onChange={(e) => setMusicText(e.target.value)}
-                  placeholder={
-                    generateLyrics
-                      ? "Sitting at my desk making AI music while my cat watches."
-                      : "Enter lyrics..."
-                  }
-                  className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-                />
-
-                <AnimatePresence>
-                  {!generateStyle && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{
-                        opacity: { duration: 0.25 },
-                        height: { duration: 0.26 },
-                      }}
-                    >
-                      <input
-                        type="text"
-                        value={musicStyle}
-                        onChange={(e) => setMusicStyle(e.target.value)}
-                        placeholder="lofi electro, male vocal"
-                        className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-              <motion.div
-                transition={t.transition}
-                exit={{
-                  opacity: 0,
-                  y: 50,
-                }}
-                animate={t.normalize}
-                initial={{
-                  opacity: 0,
-                  y: 50,
-                }}
-              >
-                <AnimatedButton onClick={() => console.log("Create music")}>
-                  Submit
-                </AnimatedButton>
-              </motion.div>
-            </motion.div>
+            />
           )}
           {activeTab === "images" && (
-            <motion.div
-              transition={t.transition}
-              exit={t.fade_out_scale_1}
-              animate={t.normalize}
-              initial={t.fade_out}
-              className="space-y-6 pt-8"
+            <Images
+              imageText={imageText}
+              setImageText={setImageText}
               key="images"
-            >
-              <motion.div
-                transition={t.transition}
-                exit={{
-                  opacity: 0,
-                  x: 50,
-                }}
-                animate={t.normalize}
-                initial={{
-                  opacity: 0,
-                  x: 50,
-                }}
-              >
-                <label className="block text-sm font-medium mb-2">
-                  Create the Following Image...
-                </label>
-                <textarea
-                  value={imageText}
-                  onChange={(e) => setImageText(e.target.value)}
-                  placeholder="Police bust illegal pepperoni operation"
-                  className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-                />
-              </motion.div>
-              <motion.div
-                transition={t.transition}
-                exit={{
-                  opacity: 0,
-                  y: 50,
-                }}
-                animate={t.normalize}
-                initial={{
-                  opacity: 0,
-                  y: 50,
-                }}
-              >
-                <AnimatedButton onClick={() => console.log("Create image")}>
-                  Submit
-                </AnimatedButton>
-              </motion.div>
-            </motion.div>
+            />
           )}
           {activeTab === "games" && (
-            <motion.div
-              transition={t.transition}
-              exit={t.fade_out_scale_1}
-              animate={t.normalize}
-              initial={t.fade_out}
-              className="space-y-6 pt-8"
-              key="games"
-            >
-              <motion.div
-                transition={t.transition}
-                exit={{
-                  opacity: 0,
-                  x: 50,
-                }}
-                animate={t.normalize}
-                initial={{
-                  opacity: 0,
-                  x: 50,
-                }}
-              >
-                <label className="block text-sm font-medium mb-2">
-                  Create the Following Game...
-                </label>
-                <textarea
-                  value={gameText}
-                  onChange={(e) => setGameText(e.target.value)}
-                  placeholder="Shooting Game"
-                  className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-                />
-              </motion.div>
-              <motion.div
-                transition={t.transition}
-                exit={{
-                  opacity: 0,
-                  y: 50,
-                }}
-                animate={t.normalize}
-                initial={{
-                  opacity: 0,
-                  y: 50,
-                }}
-              >
-                <AnimatedButton onClick={() => console.log("Create game")}>
-                  Submit
-                </AnimatedButton>
-              </motion.div>
-            </motion.div>
+            <Games gameText={gameText} setGameText={setGameText} key="games" />
           )}
         </AnimatePresence>
       </motion.div>

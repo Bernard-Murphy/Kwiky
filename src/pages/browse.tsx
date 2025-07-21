@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import AnimatedButton from "../components/animated-button";
-import { transitions as t } from "../lib/utils";
-import { DatePicker } from "../components/date-picker";
+import AnimatedButton from "@/components/animated-button";
+import { transitions as t } from "@/lib/utils";
+import DatePicker from "@/components/datepicker";
 
 export default function BrowsePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,9 +16,12 @@ export default function BrowsePage() {
     games: true,
   });
   const [keywords, setKeywords] = useState("");
-  const [dateRange, setDateRange] = useState({
-    start: "",
-    end: "",
+  const [dateRange, setDateRange] = useState<{
+    start: Date | undefined;
+    end: Date | undefined;
+  }>({
+    start: undefined,
+    end: undefined,
   });
 
   const handleFilterChange = (filter: keyof typeof filters) => {
@@ -139,27 +142,32 @@ export default function BrowsePage() {
                       Date Range
                     </label>
                     <div className="flex space-x-4">
-                      <DatePicker
-                        date={new Date(dateRange.start || new Date())}
-                        setDate={(e) => {
-                          console.log(e);
-                          setDateRange((prev) => ({
-                            ...prev,
-                            start: e?.toISOString() || "",
-                          }));
-                        }}
-                        className="flex-1 px-4 py-3"
-                      />
-                      <DatePicker
-                        date={new Date(dateRange.end || new Date())}
-                        setDate={(e) =>
-                          setDateRange((prev) => ({
-                            ...prev,
-                            end: e?.toISOString() || "",
-                          }))
-                        }
-                        className="flex-1 px-4 py-3"
-                      />
+                      <div className="flex-1">
+                        <DatePicker
+                          buttonClasses="w-full"
+                          className="w-full"
+                          date={dateRange.start}
+                          setDate={(d) =>
+                            setDateRange((prev) => ({
+                              ...prev,
+                              start: d,
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <DatePicker
+                          buttonClasses="w-full"
+                          className="w-full"
+                          date={dateRange.end}
+                          setDate={(d) =>
+                            setDateRange((prev) => ({
+                              ...prev,
+                              end: d,
+                            }))
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
                 </motion.div>

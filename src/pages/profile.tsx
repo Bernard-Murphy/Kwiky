@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useApp } from "../App";
-import { transitions as t } from "../lib/utils";
-import AnimatedButton from "../components/animated-button";
+import { useApp } from "@/App";
+import { transitions as t } from "@/lib/utils";
+import AnimatedButton from "@/components/animated-button";
 import { User, Palette } from "lucide-react";
 
 type ProfileTab = "userInfo" | "myContent";

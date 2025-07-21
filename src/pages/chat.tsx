@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import AnimatedButton from "../components/animated-button";
-import { transitions as t } from "../lib/utils";
+import AnimatedButton from "@/components/animated-button";
+import { transitions as t } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 export default function Chat() {

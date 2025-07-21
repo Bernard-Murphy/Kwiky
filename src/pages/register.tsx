@@ -1,11 +1,11 @@
 import type React from "react";
-import { transitions as t } from "../lib/utils";
+import { transitions as t } from "@/lib/utils";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
-import AnimatedButton from "../components/animated-button";
-import { useApp } from "../App";
+import AnimatedButton from "@/components/animated-button";
+import { useApp } from "@/App";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({

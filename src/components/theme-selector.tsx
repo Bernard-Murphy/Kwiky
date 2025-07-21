@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Palette } from "lucide-react";
-import { useApp } from "../App";
+import { useApp } from "@/App";
 
 const themes = [
   { name: "Light", value: "light" as const, color: "bg-white border-gray-300" },

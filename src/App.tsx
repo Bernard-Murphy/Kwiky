@@ -14,6 +14,9 @@ import ChatPage from "./pages/chat";
 import ProfilePage from "./pages/profile";
 import Test from "./pages/test";
 import { Toaster } from "./components/ui/sonner";
+import { io, Socket } from "socket.io-client";
+
+const socket: Socket = io(process.env.REACT_APP_API);
 
 type Theme = "light" | "dark" | "red" | "blue" | "pink" | "green";
 
@@ -43,13 +46,13 @@ export const useApp = () => {
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>("dark");
-  // const [user, setUser] = useState<User | null>(null);
-  const [user, setUser] = useState<User | null>({
-    username: "",
-    email: "",
-    bio: "",
-    avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
-  });
+  const [user, setUser] = useState<User | null>(null);
+  // const [user, setUser] = useState<User | null>({
+  //   username: "",
+  //   email: "",
+  //   bio: "",
+  //   avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
+  // });
 
   const location = useLocation();
 
@@ -70,7 +73,7 @@ export default function App() {
         <Navbar />
         <AnimatePresence mode="wait">
           <Routes key={location.pathname} location={location}>
-            <Route path="/" element={<CreatePage />} />
+            <Route path="/" element={<CreatePage socket={socket} />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
