@@ -7,9 +7,16 @@ import AnimatedButton from "@/components/animated-button";
 export interface GameProps {
   gameText: string;
   setGameText: (text: string) => void;
+  uncensoredGames: boolean;
+  setUncensoredGames: (option: boolean) => void;
 }
 
-export default function Games({ gameText, setGameText }: GameProps) {
+export default function Games({
+  gameText,
+  setGameText,
+  uncensoredGames,
+  setUncensoredGames,
+}: GameProps) {
   return (
     <motion.div
       transition={t.transition}
@@ -38,8 +45,17 @@ export default function Games({ gameText, setGameText }: GameProps) {
           value={gameText}
           onChange={(e) => setGameText(e.target.value)}
           placeholder="Shooting Game"
-          className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
+          className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none mb-2"
         />
+        <label className="block mb-2">
+          <input
+            type="checkbox"
+            checked={uncensoredGames}
+            onChange={(e) => setUncensoredGames(e.target.checked)}
+            className="mr-2"
+          />
+          Uncensored
+        </label>
       </motion.div>
       <motion.div
         transition={t.transition}

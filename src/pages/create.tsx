@@ -8,6 +8,7 @@ import { transitions as t } from "@/lib/utils";
 import { toast } from "sonner";
 import { Socket } from "socket.io-client";
 import Images from "./create/images";
+import { type ImageStyle } from "./create/images";
 import Games from "./create/games";
 import Music from "./create/music";
 
@@ -18,11 +19,16 @@ export default function CreatePage({ socket }: { socket: Socket }) {
   const [generateLyrics, setGenerateLyrics] = useState<boolean>(true);
   const [generateStyle, setGenerateStyle] = useState<boolean>(true);
   const [uncensoredMusic, setUncensoredMusic] = useState(false);
+  const [uncensoredImages, setUncensoredImages] = useState(false);
+  const [uncensoredGames, setUncensoredGames] = useState(false);
   const [musicWorking, setMusicWorking] = useState(false);
+  const [imageWorking, setImageWorking] = useState(false);
   const [musicLinks, setMusicLinks] = useState<string[]>([]);
   const [customLyrics, setCustomLyrics] = useState<string>("");
   const [lyrics, setLyrics] = useState<string>("");
   const [musicStatus, setMusicStatus] = useState<string>("");
+  const [imageStatus, setImageStatus] = useState<string>("");
+  const [imageStyle, setImageStyle] = useState<ImageStyle>("Digital Art");
 
   const [musicPrompt, setMusicPrompt] = useState("");
   const [musicStyle, setMusicStyle] = useState("");
@@ -31,19 +37,18 @@ export default function CreatePage({ socket }: { socket: Socket }) {
 
   useEffect(() => {
     socket.on("music-lyrics", (lyrics) => {
+      console.log("lyrics", lyrics);
       setMusicStatus(`Generating song`);
       setLyrics(lyrics);
     });
-    socket.on("music-links", (links) => {
-      setMusicLinks(links);
-    });
     socket.on("music-error", (err) => {
       try {
-        console.log(err);
+        console.log("error", err);
         toast.error(
           "An error occurred while generating the song. Check the console for more details.",
           {
-            closeButton: true,
+            position: "bottom-center",
+            duration: 1500,
           }
         );
       } catch (err) {
@@ -64,15 +69,31 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       }
       setMusicWorking(false);
     });
-  });
+  }, []);
 
   useEffect(() => {
     if (uncensoredMusic)
       toast.error("Uncensored music may produce HIGHLY offensive results", {
+        position: "bottom-center",
         duration: 1500,
-        closeButton: true,
       });
   }, [uncensoredMusic]);
+
+  useEffect(() => {
+    if (uncensoredImages)
+      toast.error("Uncensored images may produce HIGHLY offensive results", {
+        position: "bottom-center",
+        duration: 1500,
+      });
+  }, [uncensoredImages]);
+
+  useEffect(() => {
+    if (uncensoredGames)
+      toast.error("Uncensored games may produce HIGHLY offensive results", {
+        position: "bottom-center",
+        duration: 1500,
+      });
+  }, [uncensoredGames]);
 
   const tabs = [
     { id: "music" as Tab, label: "Create Music", icon: MusicIcon },
@@ -95,6 +116,16 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       );
     } catch (err) {
       console.log("musicSubmit error", err);
+    }
+  };
+
+  const imageSubmit = () => {
+    try {
+      setImageWorking(true);
+      setImageStatus(generateLyrics ? `Generating lyrics` : `Generating song`);
+      socket.emit("image-new-image", imageText, uncensoredImages);
+    } catch (err) {
+      console.log("imageSubmit error", err);
     }
   };
 
@@ -178,11 +209,24 @@ export default function CreatePage({ socket }: { socket: Socket }) {
             <Images
               imageText={imageText}
               setImageText={setImageText}
+              uncensoredImages={uncensoredImages}
+              setUncensoredImages={setUncensoredImages}
+              imageStyle={imageStyle}
+              setImageStyle={setImageStyle}
+              imageWorking={imageWorking}
+              imageStatus={imageStatus}
+              imageSubmit={imageSubmit}
               key="images"
             />
           )}
           {activeTab === "games" && (
-            <Games gameText={gameText} setGameText={setGameText} key="games" />
+            <Games
+              gameText={gameText}
+              setGameText={setGameText}
+              key="games"
+              uncensoredGames={uncensoredGames}
+              setUncensoredGames={setUncensoredGames}
+            />
           )}
         </AnimatePresence>
       </motion.div>

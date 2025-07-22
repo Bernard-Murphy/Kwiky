@@ -214,39 +214,27 @@ export default function Music({
         }}
       >
         <AnimatedButton disabled={working} onClick={musicSubmit}>
-          {working ? (
-            <div className="flex items-center">
-              <Spinner size="sm" className="me-2" />
-              Working
-            </div>
-          ) : (
-            "Submit"
-          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              transition={t.transition}
+              exit={t.fade_out_scale_1}
+              animate={t.normalize}
+              initial={t.fade_out}
+              className="flex items-center"
+              key={musicStatus}
+            >
+              {working ? (
+                <>
+                  <Spinner size="sm" className="me-2" />
+                  {musicStatus || "Working"}
+                </>
+              ) : (
+                "Submit"
+              )}
+            </motion.div>
+          </AnimatePresence>
         </AnimatedButton>
       </motion.div>
-      <AnimatePresence mode="wait">
-        {musicStatus ? (
-          <motion.div
-            transition={t.transition}
-            exit={t.fade_out_scale_1}
-            animate={t.normalize}
-            initial={t.fade_out}
-            className="flex items-center justify-center"
-          >
-            <h6 className="scroll-m-20 font-semibold tracking-tight pb-2 mr-2">
-              {musicStatus}
-              {musicStatus !== "Errored" ? "..." : ""}
-            </h6>
-            {musicStatus !== "Errored" ? (
-              <Spinner height="0.75rem" width="0.75rem" hashColor="#4F4F4F" />
-            ) : (
-              ""
-            )}
-          </motion.div>
-        ) : (
-          <></>
-        )}
-      </AnimatePresence>
       <div className="w-full flex pt-2">
         <div className="w-1/3 p-2">
           {lyrics ? (
@@ -255,15 +243,26 @@ export default function Music({
               exit={t.fade_out_scale_1}
               animate={t.normalize}
               initial={t.fade_out}
-              className="border rounded-md p-2"
             >
-              {lyrics.split("\n\n").map((stanza) => (
-                <div className="mb-2">
-                  {stanza.split("\n").map((line) => (
-                    <p>{line}</p>
-                  ))}
-                </div>
-              ))}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="w-full">
+                    <AnimatedButton
+                      variant="custom"
+                      className="w-full border rounded-md p-2 text-left"
+                      onClick={() => copyText(lyrics)}
+                    >
+                      {lyrics.split("\n\n").map((stanza) => (
+                        <div className="mb-2">
+                          {stanza.split("\n").map((line) => (
+                            <p>{line}</p>
+                          ))}
+                        </div>
+                      ))}
+                    </AnimatedButton>
+                  </TooltipTrigger>
+                </Tooltip>
+              </TooltipProvider>
             </motion.div>
           ) : (
             <></>
@@ -273,23 +272,30 @@ export default function Music({
           {musicLinks.length ? (
             musicLinks.map((link) => {
               return (
-                <div>
-                  <audio
-                    className="w-full block mb-2"
-                    controls
-                    src={link}
-                    key={link}
-                  />
+                <motion.div
+                  transition={t.transition}
+                  exit={t.fade_out_scale_1}
+                  animate={t.normalize}
+                  initial={t.fade_out}
+                  key={link}
+                  className="mb-4"
+                >
+                  <audio className="w-full block mb-2" controls src={link} />
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger className="w-full">
-                        <Input
-                          className="cursor-pointer"
-                          value={link}
-                          readOnly
-                          type="text"
+                        <AnimatedButton
+                          variant="custom"
+                          className="w-full px-0 py-0"
                           onClick={() => copyText(link)}
-                        />
+                        >
+                          <Input
+                            className="cursor-pointer"
+                            value={link}
+                            readOnly
+                            type="text"
+                          />
+                        </AnimatedButton>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>Click to Copy</p>
@@ -297,7 +303,7 @@ export default function Music({
                     </Tooltip>
                   </TooltipProvider>
                   <hr className="my-2" />
-                </div>
+                </motion.div>
               );
             })
           ) : (

@@ -11,7 +11,7 @@ import https from "https";
 import path from "path";
 
 const __dirname = new URL(".", import.meta.url).pathname;
-dotenv.config({ path: __dirname + "/.env" });
+dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 const promptPath = path.join(__dirname, "..", "..", "prompt.json");
 
 let musicSettings = {
@@ -22,8 +22,6 @@ let musicSettings = {
 if (fs.existsSync(promptPath))
   musicSettings = JSON.parse(fs.readFileSync(promptPath).toString());
 
-const normal = String(process.env.NORMAL) === "true";
-
 const s3 = new S3Client({
   endpoint: process.env.STORJ_ENDPOINT,
   credentials: {
@@ -32,6 +30,7 @@ const s3 = new S3Client({
   },
   region: process.env.REGION,
 });
+
 const randomElements = (arr) => {
   let numerator = 2;
   let denominator = 3;
@@ -57,12 +56,6 @@ const randomElements = (arr) => {
 
 const uploadToS3 = async (audioFile, lyrics) => {
   try {
-    console.log(audioFile);
-    console.log(
-      `${__dirname.includes("C:/") ? "." : __dirname}/temp/${
-        audioFile.split("/")[audioFile.split("/").length - 1]
-      }`
-    );
     const audio = fs.readFileSync(
       `${__dirname.includes("C:/") ? "." : __dirname}/temp/${
         audioFile.split("/")[audioFile.split("/").length - 1]
@@ -96,15 +89,11 @@ const fetchAndWriteFile = (url) =>
           const filename = `${
             __dirname.includes("C:/") ? "." : __dirname
           }/temp/${url.split("/")[url.split("/").length - 1]}`;
-          console.log("res", res.statusCode, filename);
+
           if (res.statusCode !== 200) {
             return reject(res);
           }
-          console.log(
-            `${__dirname.includes("C:/") ? "." : __dirname}/temp/${
-              url.split("/")[url.split("/").length - 1]
-            }`
-          );
+
           const fileWriter = fs
             .createWriteStream(
               `${__dirname.includes("C:/") ? "." : __dirname}/temp/${
@@ -128,7 +117,6 @@ const fetchAndWriteFile = (url) =>
 const getMurekaJob = (trace_id) =>
   new Promise((resolve, reject) => {
     try {
-      console.log("https://api.mureka.ai/v1/song/query/" + trace_id);
       setTimeout(
         () =>
           axios
@@ -192,7 +180,6 @@ const murekaQuery = (lyrics, musicStyle) =>
         .post("https://api.mureka.ai/v1/song/generate", body, options)
         .then(async (res) => {
           try {
-            console.log("res", res.data);
             const job = await getMurekaJob(res.data.id);
             resolve(job);
           } catch (err) {
@@ -204,7 +191,6 @@ const murekaQuery = (lyrics, musicStyle) =>
           console.log("murekaQuery error", err?.response?.data || err);
           reject(err);
         });
-      console.log("body", body);
     } catch (err) {
       console.log(err?.response?.data || err, "murekaQuery error");
       reject(err);
@@ -220,9 +206,7 @@ export default async function music(io, socket) {
           let lyrics = customLyrics;
           if (!lyrics) {
             const venicePrompt = `
-          Write a funny${
-            normal ? "" : ", racist, obscene, and offensive"
-          } poem that incorporates the following:
+          Write a funny poem that incorporates the following:
           ${musicPrompt}
   
           Make it 4 or more stanzas long. Respond with only the poem itself - do not include the title, author, description, commentary, or any other information.
@@ -244,7 +228,7 @@ export default async function music(io, socket) {
               content: venicePrompt,
             });
             chatCompletion = await veniceClient.chat.completions.create({
-              model: "dolphin-2.9.2-qwen2-72b",
+              model: "venice-uncensored",
               messages,
               venice_parameters: {
                 include_venice_system_prompt: false,
@@ -255,7 +239,6 @@ export default async function music(io, socket) {
             lyrics = chatCompletion.choices[0].message.content;
           }
 
-          console.log(lyrics);
           socket.emit("music-lyrics", lyrics);
 
           const originalLyrics = lyrics;
@@ -269,20 +252,16 @@ export default async function music(io, socket) {
                 ))
             );
           }
-          console.log("after", lyrics);
 
           const songData = await murekaQuery(lyrics, musicStyle);
 
           const links = [];
           for (let c = 0; c < songData.choices.length; c++) {
             const song = songData.choices[c];
-            console.log("song", song);
             try {
               const audioFile = await fetchAndWriteFile(song.url);
-              console.log("audio", audioFile);
 
               const feednanaLink = await uploadToS3(audioFile, originalLyrics);
-              console.log(feednanaLink);
               links.push(feednanaLink);
             } catch (err) {
               console.log("song error", err);

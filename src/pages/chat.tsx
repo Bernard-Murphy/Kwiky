@@ -13,8 +13,8 @@ export default function Chat() {
   useEffect(() => {
     if (uncensoredChat)
       toast.error("Uncensored chat may produce HIGHLY offensive results", {
+        position: "bottom-center",
         duration: 1500,
-        closeButton: true,
       });
   }, [uncensoredChat]);
 

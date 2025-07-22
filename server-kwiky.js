@@ -70,7 +70,8 @@ io.on("connection", (socket) => socketHandler(io, socket));
 server.listen(port, () => {
   try {
     if (!fs.existsSync("dist/games")) fs.mkdirSync("dist/games");
-    if (!fs.existsSync("temp")) fs.mkdirSync("temp");
+    if (!fs.existsSync("utils/sockets/temp"))
+      fs.mkdirSync("utils/sockets/temp");
     console.log("Kwiky running on port", port);
   } catch (err) {
     console.log("Main error", err);

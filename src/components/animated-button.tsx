@@ -55,15 +55,19 @@ export default function AnimatedButton({
   };
 
   const baseClasses =
-    "relative overflow-hidden rounded-lg px-6 py-3 font-medium transition-all duration-200 cursor-pointer";
+    "relative overflow-hidden font-medium transition-all duration-200 cursor-pointer";
   const variantClasses = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400",
+    primary:
+      "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400 px-6 py-3 rounded-lg",
     secondary:
-      "bg-gray-200 text-gray-900 hover:bg-gray-300 disabled:bg-gray-100",
-    destructive: "bg-red-200 text-white hover:bg-red-300 disabled:bg-gray-500",
-    outline: "bg-gray-700 text-white hover:bg-gray-700 disabled:bg-gray-500",
-    ghost: "text-white hover:bg-gray-700 disabled:bg-gray-500",
-    link: "text-white hover:bg-gray-700 disabled:bg-gray-500",
+      "bg-gray-200 text-gray-900 hover:bg-gray-300 disabled:bg-gray-100 px-6 py-3 rounded-lg",
+    destructive:
+      "bg-red-200 text-white hover:bg-red-300 disabled:bg-red-100 px-6 py-3 rounded-lg",
+    outline:
+      "bg-gray-700 text-white hover:bg-gray-700 disabled:bg-gray-500 px-6 py-3 rounded-lg",
+    ghost:
+      "text-white hover:bg-gray-700 disabled:bg-gray-500 px-6 py-3 rounded-lg",
+    link: "text-white hover:bg-gray-700 disabled:bg-gray-500 px-6 py-3 rounded-lg",
     custom: "",
   };
 
