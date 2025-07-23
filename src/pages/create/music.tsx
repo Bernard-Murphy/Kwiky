@@ -31,6 +31,8 @@ export interface MusicProps {
   setCustomLyrics: (text: string) => void;
   musicStatus: string;
   lyrics: string;
+  musicTitle: string;
+  setMusicTitle: (text: string) => void;
 }
 
 export default function Music({
@@ -51,6 +53,8 @@ export default function Music({
   setCustomLyrics,
   musicStatus,
   lyrics,
+  musicTitle,
+  setMusicTitle,
 }: MusicProps) {
   const copyText = (string: string) => {
     let textarea = document.createElement("textarea");
@@ -159,11 +163,15 @@ export default function Music({
           y: 50,
         }}
       >
-        <label className="block text-sm font-medium mb-2">
-          {generateLyrics
-            ? "Make a Song About..."
-            : "Make a Song With These Lyrics..."}
-        </label>
+        <label className="block text-sm font-medium mb-2">Title</label>
+        <input
+          type="text"
+          value={musicTitle}
+          onChange={(e) => setMusicTitle(e.target.value)}
+          placeholder="Enter Title"
+          className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none mb-2"
+        />
+
         <textarea
           value={generateLyrics ? musicPrompt : customLyrics}
           onChange={(e) =>
@@ -234,8 +242,26 @@ export default function Music({
             </motion.div>
           </AnimatePresence>
         </AnimatedButton>
+        {musicStatus === "Errored" && (
+          <div className="text-center text-red-400">
+            An error occurred. Please try again later.
+          </div>
+        )}
       </motion.div>
-      <div className="w-full flex pt-2">
+
+      <motion.div
+        transition={t.transition}
+        exit={{
+          opacity: 0,
+          y: 70,
+        }}
+        animate={t.normalize}
+        initial={{
+          opacity: 0,
+          y: 70,
+        }}
+        className="w-full flex pt-2"
+      >
         <div className="w-1/3 p-2">
           {lyrics ? (
             <motion.div
@@ -250,8 +276,13 @@ export default function Music({
                     <AnimatedButton
                       variant="custom"
                       className="w-full border rounded-md p-2 text-left"
-                      onClick={() => copyText(lyrics)}
+                      onClick={() =>
+                        copyText((musicTitle || "Untitled") + "\n" + lyrics)
+                      }
                     >
+                      <h5 className="text-center mb-2">
+                        {musicTitle || "Untitled"}
+                      </h5>
                       {lyrics.split("\n\n").map((stanza) => (
                         <div className="mb-2">
                           {stanza.split("\n").map((line) => (
@@ -310,7 +341,7 @@ export default function Music({
             <></>
           )}
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

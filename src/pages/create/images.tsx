@@ -1,86 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { transitions as t } from "@/lib/utils";
 import AnimatedButton from "@/components/animated-button";
-
-export type ImageStyle =
-  | "3D Model"
-  | "Analog Film"
-  | "Anime"
-  | "Cinematic"
-  | "Comic Book"
-  | "Craft Clay"
-  | "Digital Art"
-  | "Enhance"
-  | "Fantasy Art"
-  | "Isometric Style"
-  | "Line Art"
-  | "Lowpoly"
-  | "Neon Punk"
-  | "Origami"
-  | "Photographic"
-  | "Pixel Art"
-  | "Texture"
-  | "Advertising"
-  | "Food Photography"
-  | "Real Estate"
-  | "Abstract"
-  | "Cubist"
-  | "Graffiti"
-  | "Hyperrealism"
-  | "Impressionist"
-  | "Pointillism"
-  | "Pop Art"
-  | "Psychedelic"
-  | "Renaissance"
-  | "Steampunk"
-  | "Surrealist"
-  | "Typography"
-  | "Watercolor"
-  | "Fighting Game"
-  | "GTA"
-  | "Super Mario"
-  | "Minecraft"
-  | "Pokemon"
-  | "Retro Arcade"
-  | "Retro Game"
-  | "RPG Fantasy Game"
-  | "Strategy Game"
-  | "Street Fighter"
-  | "Legend of Zelda"
-  | "Architectural"
-  | "Disco"
-  | "Dreamscape"
-  | "Dystopian"
-  | "Fairy Tale"
-  | "Gothic"
-  | "Grunge"
-  | "Horror"
-  | "Minimalist"
-  | "Monochrome"
-  | "Nautical"
-  | "Space"
-  | "Stained Glass"
-  | "Techwear Fashion"
-  | "Tribal"
-  | "Zentangle"
-  | "Collage"
-  | "Flat Papercut"
-  | "Kirigami"
-  | "Paper Mache"
-  | "Paper Quilling"
-  | "Papercut Collage"
-  | "Papercut Shadow Box"
-  | "Stacked Papercut"
-  | "Thick Layered Papercut"
-  | "Alien"
-  | "Film Noir"
-  | "HDR"
-  | "Long Exposure"
-  | "Neon Noir"
-  | "Silhouette"
-  | "Tilt-Shift";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { type ImageStyle } from "@/lib/imageStyles";
+import { imageStyles } from "@/lib/imageStyles";
+import Spinner from "@/components/ui/spinner";
 
 export interface ImageProps {
   imageText: string;
@@ -92,6 +25,7 @@ export interface ImageProps {
   imageSubmit: () => void;
   imageWorking: boolean;
   imageStatus: string;
+  imageLink?: string;
 }
 
 export default function Images({
@@ -101,8 +35,10 @@ export default function Images({
   setUncensoredImages,
   imageStyle,
   setImageStyle,
+  imageSubmit,
   imageWorking,
   imageStatus,
+  imageLink,
 }: ImageProps) {
   return (
     <motion.div
@@ -143,8 +79,24 @@ export default function Images({
           />
           Uncensored
         </label>
+        <Select value={imageStyle} onValueChange={setImageStyle}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Music Style" className="text-white" />
+          </SelectTrigger>
+          <SelectContent className="bg-gray-900 text-white">
+            <SelectGroup>
+              {imageStyles.map((style) => (
+                <SelectItem key={style} value={style}>
+                  {style}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <div className="text-center text-red-400">
-          You may not use this service to generate porn
+          {imageStatus === "Errored"
+            ? "An error occurred. Please try again later."
+            : "You may not use this service to generate porn"}
         </div>
       </motion.div>
       <motion.div
@@ -159,9 +111,44 @@ export default function Images({
           y: 50,
         }}
       >
-        <AnimatedButton onClick={() => console.log("Create image")}>
-          Submit
+        <AnimatedButton disabled={imageWorking} onClick={imageSubmit}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              transition={t.transition}
+              exit={t.fade_out_scale_1}
+              animate={t.normalize}
+              initial={t.fade_out}
+              className="flex items-center"
+              key={imageStatus}
+            >
+              {imageWorking ? (
+                <>
+                  <Spinner size="sm" className="me-2" />
+                  {imageStatus || "Working"}
+                </>
+              ) : (
+                "Submit"
+              )}
+            </motion.div>
+          </AnimatePresence>
         </AnimatedButton>
+        {imageLink && (
+          <motion.img
+            transition={t.transition}
+            exit={{
+              opacity: 0,
+              y: 70,
+            }}
+            animate={t.normalize}
+            initial={{
+              opacity: 0,
+              y: 70,
+            }}
+            src={imageLink}
+            alt="Generated Image"
+            className="mt-4 d-block mx-auto max-w-full"
+          />
+        )}
       </motion.div>
     </motion.div>
   );

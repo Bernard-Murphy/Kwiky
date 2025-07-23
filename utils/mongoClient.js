@@ -1,4 +1,10 @@
 import { MongoClient } from "mongodb";
+import dotenv from "dotenv";
+import { URL } from "node:url";
+import path from "path";
+
+const __dirname = new URL(".", import.meta.url).pathname;
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const mongoUrl =
   process.env.MONGO_URL ||

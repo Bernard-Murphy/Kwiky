@@ -4,6 +4,7 @@ import images from "./sockets/images.js";
 
 export default async function socketHandler(io, socket) {
   try {
+    console.log("connection");
     music(io, socket);
     games(io, socket);
     images(io, socket);

@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import crypto from "crypto";
 import https from "https";
 import path from "path";
+import mongoClient from "../mongoClient.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
@@ -54,16 +55,14 @@ const randomElements = (arr) => {
   return elements;
 };
 
-const uploadToS3 = async (audioFile, lyrics) => {
+const uploadToS3 = async (audioFile) => {
   try {
     const audio = fs.readFileSync(
       `${__dirname.includes("C:/") ? "." : __dirname}/temp/${
         audioFile.split("/")[audioFile.split("/").length - 1]
       }`
     );
-    const md5_audio =
-      crypto.createHash("md5").update(audioFile).digest("hex") +
-      crypto.randomBytes(4).toString("hex");
+    const md5_audio = crypto.createHash("md5").update(audioFile).digest("hex");
     await s3.send(
       new PutObjectCommand({
         Body: audio,
@@ -199,10 +198,12 @@ const murekaQuery = (lyrics, musicStyle) =>
 
 export default async function music(io, socket) {
   try {
+    const user = socket.request.session?.user;
     socket.on(
       "music-new-song",
-      async (musicPrompt, customLyrics, musicStyle, uncensoredMusic) => {
+      async (musicPrompt, customLyrics, musicStyle, title, uncensoredMusic) => {
         try {
+          if (!title) title = "Untitled";
           let lyrics = customLyrics;
           if (!lyrics) {
             const venicePrompt = `
@@ -261,8 +262,26 @@ export default async function music(io, socket) {
             try {
               const audioFile = await fetchAndWriteFile(song.url);
 
-              const feednanaLink = await uploadToS3(audioFile, originalLyrics);
-              links.push(feednanaLink);
+              const link = await uploadToS3(audioFile, originalLyrics);
+              links.push(link);
+              await mongoClient
+                .db("kwiky")
+                .collection("posts")
+                .insertOne({
+                  _id: crypto.randomUUID(),
+                  type: "music",
+                  userID: user?._id,
+                  link: link,
+                  timestamp: new Date(),
+                  userID: user?._id,
+                  prompt: musicPrompt,
+                  metadata: {
+                    title,
+                    lyrics: originalLyrics,
+                    style: musicStyle,
+                    uncensored: uncensoredMusic,
+                  },
+                });
             } catch (err) {
               console.log("song error", err);
             }
