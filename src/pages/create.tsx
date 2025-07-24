@@ -66,7 +66,10 @@ export default function CreatePage({ socket }: { socket: Socket }) {
     });
 
     socket.on("images-error", () => {
-      console.log("image error");
+      toast.error("An error occurred while generating the image.", {
+        position: "bottom-center",
+        duration: 2000,
+      });
       setImageWorking(false);
       setImageStatus("Errored");
     });

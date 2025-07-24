@@ -34,7 +34,7 @@ export default async function images(io, socket) {
           messages: [
             {
               role: "user",
-              content: `If the following prompt is requesting pornography, respond with a single word: "yes". Otherwise, respond with "no". Prompt: ${prompt}`,
+              content: `If the following prompt is requesting sexual content, respond with a single word: "yes". Otherwise, respond with "no". Prompt: ${prompt}`,
             },
           ],
           venice_parameters: {
@@ -44,7 +44,7 @@ export default async function images(io, socket) {
         if (typeof chatCompletion === "string")
           chatCompletion = JSON.parse(chatCompletion);
         const pornCheck = chatCompletion.choices[0].message.content;
-        if (pornCheck.toLowerCase() === "yes")
+        if (pornCheck.toLowerCase().includes("yes"))
           return socket.emit("images-porn");
         axios
           .post(
@@ -103,12 +103,17 @@ export default async function images(io, socket) {
               `https://${process.env.ASSET_LOCATION}/files/${md5}.png`
             );
           })
-          .catch((err) => console.log("error", err));
+          .catch((err) => {
+            console.log("error", err);
+            socket.emit("images-error");
+          });
       } catch (err) {
         console.log("images-new error", err);
+        socket.emit("images-error");
       }
     });
   } catch (err) {
     console.log("images socket error", err);
+    socket.emit("images-error");
   }
 }
