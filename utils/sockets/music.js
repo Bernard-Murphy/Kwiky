@@ -57,11 +57,10 @@ const randomElements = (arr) => {
 
 const uploadToS3 = async (audioFile) => {
   try {
-    const audio = fs.readFileSync(
-      `${__dirname.includes("C:/") ? "." : __dirname}/temp/${
-        audioFile.split("/")[audioFile.split("/").length - 1]
-      }`
-    );
+    const filePath = `${__dirname.includes("C:/") ? "." : __dirname}/temp/${
+      audioFile.split("/")[audioFile.split("/").length - 1]
+    }`;
+    const audio = fs.readFileSync(filePath);
     const md5_audio = crypto.createHash("md5").update(audioFile).digest("hex");
     await s3.send(
       new PutObjectCommand({
@@ -72,7 +71,7 @@ const uploadToS3 = async (audioFile) => {
         ContentType: "audio/mp3",
       })
     );
-
+    fs.unlinkSync(filePath);
     return `https://${process.env.ASSET_LOCATION}/files/${md5_audio}.mp3`;
   } catch (err) {
     console.log("upload to feed nana error", err);
@@ -264,9 +263,18 @@ export default async function music(io, socket) {
 
               const link = await uploadToS3(audioFile, originalLyrics);
               links.push(link);
+              const hrIDs = await db.collection("hrIDs").findOneAndUpdate(
+                {},
+                {
+                  $inc: {
+                    post: 1,
+                  },
+                }
+              );
               await db.collection("posts").insertOne({
                 _id: crypto.randomUUID(),
                 type: "music",
+                hrID: hrIDs.post,
                 userID: user?._id,
                 link: link,
                 timestamp: new Date(),

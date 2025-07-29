@@ -82,9 +82,18 @@ export default async function images(io, socket) {
                 ContentType: "image/png",
               })
             );
+            const hrIDs = await db.collection("hrIDs").findOneAndUpdate(
+              {},
+              {
+                $inc: {
+                  post: 1,
+                },
+              }
+            );
             await db.collection("posts").insertOne({
               _id: crypto.randomUUID(),
               type: "image",
+              hrID: hrIDs.post,
               userID: user?._id,
               link: `https://${process.env.ASSET_LOCATION}/files/${md5}.png`,
               timestamp: new Date(),

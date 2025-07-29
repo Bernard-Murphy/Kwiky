@@ -57,8 +57,17 @@ export default async function games(io, socket) {
             })
           );
         }
+        const hrIDs = await db.collection("hrIDs").findOneAndUpdate(
+          {},
+          {
+            $inc: {
+              post: 1,
+            },
+          }
+        );
         await db.collection("posts").insertOne({
           _id: gameID,
+          hrID: hrIDs.post,
           type: "game",
           userID: user?._id,
           timestamp: new Date(),
