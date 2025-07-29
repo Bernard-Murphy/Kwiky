@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 import crypto from "crypto";
 import https from "https";
 import path from "path";
-import mongoClient from "../mongoClient.js";
+import db from "../db.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
@@ -264,24 +264,21 @@ export default async function music(io, socket) {
 
               const link = await uploadToS3(audioFile, originalLyrics);
               links.push(link);
-              await mongoClient
-                .db("kwiky")
-                .collection("posts")
-                .insertOne({
-                  _id: crypto.randomUUID(),
-                  type: "music",
-                  userID: user?._id,
-                  link: link,
-                  timestamp: new Date(),
-                  userID: user?._id,
-                  prompt: musicPrompt,
-                  metadata: {
-                    title,
-                    lyrics: originalLyrics,
-                    style: musicStyle,
-                    uncensored: uncensoredMusic,
-                  },
-                });
+              await db.collection("posts").insertOne({
+                _id: crypto.randomUUID(),
+                type: "music",
+                userID: user?._id,
+                link: link,
+                timestamp: new Date(),
+                userID: user?._id,
+                prompt: musicPrompt,
+                metadata: {
+                  title,
+                  lyrics: originalLyrics,
+                  style: musicStyle,
+                  uncensored: uncensoredMusic,
+                },
+              });
             } catch (err) {
               console.log("song error", err);
             }
@@ -289,10 +286,12 @@ export default async function music(io, socket) {
           socket.emit("music-links", links);
         } catch (err) {
           console.log("music-new-song error", err);
+          socket.emit("music-error");
         }
       }
     );
   } catch (err) {
     console.log("music socket error", err);
+    socket.emit("music-error");
   }
 }

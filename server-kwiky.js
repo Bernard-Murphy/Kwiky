@@ -10,7 +10,7 @@ import fs from "fs";
 import { Server as ioServer } from "socket.io";
 import socketHandler from "./utils/socketHandler.js";
 import { createAdapter } from "@socket.io/mongo-adapter";
-import mongoClient from "./utils/mongoClient.js";
+import db from "./utils/db.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
@@ -59,7 +59,7 @@ const io = new ioServer(server, {
   cors: true,
 });
 
-const socketCollection = mongoClient.db("sessionServer").collection("sockets");
+const socketCollection = db.collection("sockets");
 
 io.adapter(createAdapter(socketCollection));
 const wrapSocketMiddleware = (middleware) => (socket, next) =>

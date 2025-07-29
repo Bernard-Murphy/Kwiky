@@ -15,6 +15,11 @@ import { type ImageStyle } from "@/lib/imageStyles";
 import { imageStyles } from "@/lib/imageStyles";
 import Spinner from "@/components/ui/spinner";
 
+export interface ImageDimensions {
+  height: number;
+  width: number;
+}
+
 export interface ImageProps {
   imageText: string;
   setImageText: (text: string) => void;
@@ -26,6 +31,8 @@ export interface ImageProps {
   imageWorking: boolean;
   imageStatus: string;
   imageLink?: string;
+  imageDimensions: ImageDimensions;
+  setImageDimensions: (dimensions: ImageDimensions) => void;
 }
 
 export default function Images({
@@ -39,6 +46,8 @@ export default function Images({
   imageWorking,
   imageStatus,
   imageLink,
+  imageDimensions,
+  setImageDimensions,
 }: ImageProps) {
   return (
     <motion.div
@@ -79,6 +88,39 @@ export default function Images({
           />
           Uncensored
         </label>
+        <div className="my-4 flex align-center">
+          <div className="mr-2">
+            <label>Width</label>
+            <br />
+            <input
+              type="number"
+              value={imageDimensions.width}
+              onChange={(e) =>
+                setImageDimensions({
+                  ...imageDimensions,
+                  width: Number(e.target.value),
+                })
+              }
+              className="px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label>Height</label>
+            <br />
+            <input
+              type="number"
+              value={imageDimensions.height}
+              onChange={(e) =>
+                setImageDimensions({
+                  ...imageDimensions,
+                  height: Number(e.target.value),
+                })
+              }
+              className="px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+            />
+          </div>
+        </div>
+
         <Select value={imageStyle} onValueChange={setImageStyle}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Music Style" className="text-white" />

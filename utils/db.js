@@ -18,4 +18,4 @@ const mongoUrl =
 
 const client = new MongoClient(mongoUrl);
 
-export default client;
+export default client.db("kwiky");

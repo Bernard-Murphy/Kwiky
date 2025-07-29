@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { URL } from "node:url";
 import path from "path";
 import crypto from "crypto";
-import mongoClient from "../mongoClient.js";
+import db from "../db.js";
 import { OpenAI } from "openai";
 
 const __dirname = new URL(".", import.meta.url).pathname;
@@ -27,7 +27,7 @@ const veniceClient = new OpenAI({
 export default async function images(io, socket) {
   try {
     const user = socket.request.session?.user;
-    socket.on("images-new", async (prompt, style, uncensored) => {
+    socket.on("images-new", async (prompt, style, uncensored, dimensions) => {
       try {
         let chatCompletion = await veniceClient.chat.completions.create({
           model: "venice-uncensored",
@@ -55,8 +55,8 @@ export default async function images(io, socket) {
               cfg_scale: 19,
               embed_exif_metadata: false,
               format: "png",
-              height: 1024,
-              width: 1024,
+              height: dimensions.height,
+              width: dimensions.width,
               hide_watermark: true,
               safe_mode: !uncensored,
               style_preset: style,
@@ -82,22 +82,19 @@ export default async function images(io, socket) {
                 ContentType: "image/png",
               })
             );
-            await mongoClient
-              .db("kwiky")
-              .collection("posts")
-              .insertOne({
-                _id: crypto.randomUUID(),
-                type: "image",
-                userID: user?._id,
-                link: `https://${process.env.ASSET_LOCATION}/files/${md5}.png`,
-                timestamp: new Date(),
-                userID: user?._id,
-                prompt,
-                metadata: {
-                  style,
-                  uncensored,
-                },
-              });
+            await db.collection("posts").insertOne({
+              _id: crypto.randomUUID(),
+              type: "image",
+              userID: user?._id,
+              link: `https://${process.env.ASSET_LOCATION}/files/${md5}.png`,
+              timestamp: new Date(),
+              userID: user?._id,
+              prompt,
+              metadata: {
+                style,
+                uncensored,
+              },
+            });
             socket.emit(
               "images-link",
               `https://${process.env.ASSET_LOCATION}/files/${md5}.png`

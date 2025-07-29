@@ -11,6 +11,7 @@ import Images from "./create/images";
 import { type ImageStyle } from "@/lib/imageStyles";
 import Games from "./create/games";
 import Music from "./create/music";
+import { type ImageDimensions } from "./create/images";
 
 type Tab = "music" | "images" | "games" | "chat";
 
@@ -18,16 +19,17 @@ export default function CreatePage({ socket }: { socket: Socket }) {
   const [activeTab, setActiveTab] = useState<Tab>("music");
   const [generateLyrics, setGenerateLyrics] = useState<boolean>(true);
   const [generateStyle, setGenerateStyle] = useState<boolean>(true);
-  const [uncensoredMusic, setUncensoredMusic] = useState(false);
-  const [uncensoredImages, setUncensoredImages] = useState(false);
-  const [uncensoredGames, setUncensoredGames] = useState(false);
-  const [musicWorking, setMusicWorking] = useState(false);
-  const [imageWorking, setImageWorking] = useState(false);
+  const [uncensoredMusic, setUncensoredMusic] = useState<boolean>(false);
+  const [uncensoredImages, setUncensoredImages] = useState<boolean>(false);
+  const [musicWorking, setMusicWorking] = useState<boolean>(false);
+  const [imageWorking, setImageWorking] = useState<boolean>(false);
+  const [gameWorking, setGameWorking] = useState<boolean>(false);
   const [musicLinks, setMusicLinks] = useState<string[]>([]);
   const [customLyrics, setCustomLyrics] = useState<string>("");
   const [lyrics, setLyrics] = useState<string>("");
   const [musicStatus, setMusicStatus] = useState<string>("");
   const [imageStatus, setImageStatus] = useState<string>("");
+  const [gameStatus, setGameStatus] = useState<string>("");
   const [imageStyle, setImageStyle] = useState<ImageStyle>("Digital Art");
   const [imageLink, setImageLink] = useState<string>("");
 
@@ -35,7 +37,12 @@ export default function CreatePage({ socket }: { socket: Socket }) {
   const [musicStyle, setMusicStyle] = useState<string>("");
   const [musicTitle, setMusicTitle] = useState<string>("");
   const [imageText, setImageText] = useState<string>("");
+  const [imageDimensions, setImageDimensions] = useState<ImageDimensions>({
+    height: 1024,
+    width: 1024,
+  });
   const [gameText, setGameText] = useState<string>("");
+  const [gameTitle, setGameTitle] = useState<string>("");
 
   useEffect(() => {
     socket.on("music-lyrics", (lyrics) => {
@@ -78,12 +85,27 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       setImageWorking(false);
       setImageStatus("Errored");
       toast.warning(
-        "Pornographic request detected. Change your prompt and try again",
+        "Sexual content detected. Change your prompt and try again",
         {
           position: "bottom-center",
           duration: 2000,
         }
       );
+    });
+
+    socket.on("games-data", (data) => {
+      console.log("game data", data);
+      setGameWorking(false);
+      setGameStatus("");
+    });
+
+    socket.on("games-error", () => {
+      toast.error("An error occurred while generating the game.", {
+        position: "bottom-center",
+        duration: 2000,
+      });
+      setGameWorking(false);
+      setGameStatus("Errored");
     });
   }, []);
 
@@ -102,14 +124,6 @@ export default function CreatePage({ socket }: { socket: Socket }) {
         duration: 2000,
       });
   }, [uncensoredImages]);
-
-  useEffect(() => {
-    if (uncensoredGames)
-      toast.error("Uncensored games may produce HIGHLY offensive results", {
-        position: "bottom-center",
-        duration: 2000,
-      });
-  }, [uncensoredGames]);
 
   const tabs = [
     { id: "music" as Tab, label: "Create Music", icon: MusicIcon },
@@ -145,9 +159,25 @@ export default function CreatePage({ socket }: { socket: Socket }) {
     try {
       setImageWorking(true);
       setImageStatus("Generating Image");
-      socket.emit("images-new", imageText, imageStyle, uncensoredImages);
+      socket.emit(
+        "images-new",
+        imageText,
+        imageStyle,
+        uncensoredImages,
+        imageDimensions
+      );
     } catch (err) {
       console.log("imageSubmit error", err);
+    }
+  };
+
+  const gameSubmit = () => {
+    try {
+      setGameWorking(true);
+      setGameStatus("Creating Game");
+      socket.emit("create-game", gameText, gameTitle);
+    } catch (err) {
+      console.log("gameSubmit error", err);
     }
   };
 
@@ -241,6 +271,8 @@ export default function CreatePage({ socket }: { socket: Socket }) {
               imageStatus={imageStatus}
               imageSubmit={imageSubmit}
               imageLink={imageLink}
+              imageDimensions={imageDimensions}
+              setImageDimensions={setImageDimensions}
               key="images"
             />
           )}
@@ -249,8 +281,11 @@ export default function CreatePage({ socket }: { socket: Socket }) {
               gameText={gameText}
               setGameText={setGameText}
               key="games"
-              uncensoredGames={uncensoredGames}
-              setUncensoredGames={setUncensoredGames}
+              gameTitle={gameTitle}
+              setGameTitle={setGameTitle}
+              gameWorking={gameWorking}
+              gameSubmit={gameSubmit}
+              gameStatus={gameStatus}
             />
           )}
         </AnimatePresence>
