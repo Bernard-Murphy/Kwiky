@@ -118,3 +118,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .tab-create {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 525px) {
+  .tab-icon {
+    display: none;
+  }
+}

@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Music as MusicIcon, ImageIcon, Gamepad2 } from "lucide-react";
+import {
+  Music as MusicIcon,
+  ImageIcon,
+  Gamepad2,
+  CircleUserRound,
+} from "lucide-react";
 import AnimatedButton from "@/components/animated-button";
 import { transitions as t } from "@/lib/utils";
 import { toast } from "sonner";
@@ -12,8 +17,9 @@ import { type ImageStyle } from "@/lib/imageStyles";
 import Games from "./create/games";
 import Music from "./create/music";
 import { type ImageDimensions } from "./create/images";
+import Deepfake from "./create/deepfake";
 
-type Tab = "music" | "images" | "games" | "chat";
+type Tab = "music" | "images" | "games" | "deepfake";
 
 export default function CreatePage({ socket }: { socket: Socket }) {
   const [activeTab, setActiveTab] = useState<Tab>("music");
@@ -43,6 +49,22 @@ export default function CreatePage({ socket }: { socket: Socket }) {
   });
   const [gameText, setGameText] = useState<string>("");
   const [gameTitle, setGameTitle] = useState<string>("");
+
+  const [deepfakeMessage, setDeepfakeMessage] = useState<string>("");
+  const [deepfakeAudio, setDeepfakeAudio] = useState<File | undefined>();
+  const [deepfakeImage, setDeepfakeImage] = useState<File | undefined>();
+  const [deepfakeWorking, setDeepfakeWorking] = useState<boolean>(false);
+  const [deepfakeStatus, setDeepfakeStatus] = useState<string>("");
+
+  // message: string;
+  // audioFile: File;
+  // imageFile: File;
+  // setMessage: (text: string) => void;
+  // setAudioFile: (file: File) => void;
+  // setImagefile: (file: File) => void;
+  // working: boolean;
+  // submit: () => void;
+  // deepfakeStatus: string;
 
   useEffect(() => {
     socket.on("music-lyrics", (lyrics) => {
@@ -126,9 +148,10 @@ export default function CreatePage({ socket }: { socket: Socket }) {
   }, [uncensoredImages]);
 
   const tabs = [
-    { id: "music" as Tab, label: "Create Music", icon: MusicIcon },
-    { id: "images" as Tab, label: "Create Images", icon: ImageIcon },
-    { id: "games" as Tab, label: "Create Games", icon: Gamepad2 },
+    { id: "music" as Tab, label: "Music", icon: MusicIcon },
+    { id: "images" as Tab, label: "Images", icon: ImageIcon },
+    { id: "games" as Tab, label: "Games", icon: Gamepad2 },
+    { id: "deepfake" as Tab, label: "Deepfake", icon: CircleUserRound },
   ];
 
   const musicSubmit = () => {
@@ -152,6 +175,8 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       );
     } catch (err) {
       console.log("musicSubmit error", err);
+      setMusicWorking(false);
+      setMusicStatus("");
     }
   };
 
@@ -168,6 +193,8 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       );
     } catch (err) {
       console.log("imageSubmit error", err);
+      setImageWorking(false);
+      setImageStatus("");
     }
   };
 
@@ -178,6 +205,19 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       socket.emit("create-game", gameText, gameTitle);
     } catch (err) {
       console.log("gameSubmit error", err);
+      setGameWorking(false);
+      setGameStatus("");
+    }
+  };
+
+  const deepfakeSubmit = () => {
+    try {
+      setDeepfakeWorking(true);
+      setDeepfakeStatus("Generating deepfake");
+    } catch (err) {
+      console.log("Deepfake error", err);
+      setDeepfakeWorking(false);
+      setDeepfakeStatus("");
     }
   };
 
@@ -214,8 +254,11 @@ export default function CreatePage({ socket }: { socket: Socket }) {
                 : "text-gray-300 hover:text-white hover:bg-white/10"
             }`}
           >
-            <tab.icon className="w-5 h-5 mr-2" />
-            <span>{tab.label}</span>
+            <tab.icon className="w-5 h-5 mr-2 tab-icon" />
+            <span>
+              <span className="tab-create">Create </span>
+              {tab.label}
+            </span>
           </AnimatedButton>
         ))}
       </motion.div>
@@ -286,6 +329,19 @@ export default function CreatePage({ socket }: { socket: Socket }) {
               gameWorking={gameWorking}
               gameSubmit={gameSubmit}
               gameStatus={gameStatus}
+            />
+          )}
+          {activeTab === "deepfake" && (
+            <Deepfake
+              message={deepfakeMessage}
+              audioFile={deepfakeAudio}
+              imageFile={deepfakeImage}
+              setMessage={setDeepfakeMessage}
+              setAudioFile={setDeepfakeAudio}
+              setImagefile={setDeepfakeImage}
+              working={deepfakeWorking}
+              submit={deepfakeSubmit}
+              deepfakeStatus={deepfakeStatus}
             />
           )}
         </AnimatePresence>
