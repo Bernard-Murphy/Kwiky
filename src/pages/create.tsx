@@ -55,6 +55,15 @@ export default function CreatePage({ socket }: { socket: Socket }) {
   const [deepfakeImage, setDeepfakeImage] = useState<File | undefined>();
   const [deepfakeWorking, setDeepfakeWorking] = useState<boolean>(false);
   const [deepfakeStatus, setDeepfakeStatus] = useState<string>("");
+  const [deepfakeImagePreview, setDeepfakeImagePreview] = useState<
+    string | null
+  >(null);
+  const [deepfakeAudioPreview, setDeepfakeAudioPreview] = useState<
+    string | null
+  >(null);
+  const [deepfakeVideoLink, setDeepFakeVideoLink] = useState<string | null>(
+    null
+  );
 
   // message: string;
   // audioFile: File;
@@ -128,6 +137,11 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       });
       setGameWorking(false);
       setGameStatus("Errored");
+    });
+
+    socket.on("deepfake-status", (status: string) => {
+      setDeepfakeStatus(status);
+      if (status === "Errored") setDeepfakeWorking(false);
     });
   }, []);
 
@@ -341,7 +355,12 @@ export default function CreatePage({ socket }: { socket: Socket }) {
               setImagefile={setDeepfakeImage}
               working={deepfakeWorking}
               submit={deepfakeSubmit}
-              deepfakeStatus={deepfakeStatus}
+              status={deepfakeStatus}
+              imagePreview={deepfakeImagePreview}
+              setImagePreview={setDeepfakeImagePreview}
+              audioPreview={deepfakeAudioPreview}
+              setAudioPreview={setDeepfakeAudioPreview}
+              videoLink={deepfakeVideoLink}
             />
           )}
         </AnimatePresence>
