@@ -11,7 +11,7 @@ import { Server as ioServer } from "socket.io";
 import socketHandler from "./utils/socketHandler.js";
 import { createAdapter } from "@socket.io/mongo-adapter";
 import db from "./utils/db.js";
-import routes from "./utils/routes";
+import routes from "./utils/routes/index.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
@@ -68,7 +68,11 @@ const wrapSocketMiddleware = (middleware) => (socket, next) =>
 io.use(wrapSocketMiddleware(sessionObj));
 io.on("connection", (socket) => socketHandler(io, socket));
 
-server.use("/", routes(io));
+app.use((req, res, next) => {
+  console.log(req.url);
+  next();
+});
+app.use("/", routes(io));
 
 server.listen(port, () => {
   try {

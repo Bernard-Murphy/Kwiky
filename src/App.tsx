@@ -59,10 +59,10 @@ export default function App() {
   const themeClasses = {
     light: "bg-white text-gray-900",
     dark: "bg-gray-900 text-white",
-    red: "bg-red-900 text-red-50",
-    blue: "bg-blue-900 text-blue-50",
-    pink: "bg-pink-900 text-pink-50",
-    green: "bg-green-900 text-green-50",
+    red: "bg-red-500 text-red-50",
+    blue: "bg-blue-500 text-blue-50",
+    pink: "bg-pink-500 text-pink-50",
+    green: "bg-green-500 text-green-50",
   };
 
   return (

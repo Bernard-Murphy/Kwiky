@@ -4,8 +4,10 @@ import mime from "mime-types";
 import crypto from "crypto";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import db from "../db.js";
+import { URL } from "node:url";
 
-dotenv.config();
+const __dirname = new URL(".", import.meta.url).pathname;
+dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 
 const groqClient = new Groq({
   apiKey: process.env.GROQ_API_KEY,

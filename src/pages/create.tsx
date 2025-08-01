@@ -18,8 +18,11 @@ import Games from "./create/games";
 import Music from "./create/music";
 import { type ImageDimensions } from "./create/images";
 import Deepfake from "./create/deepfake";
+import axios from "axios";
 
 type Tab = "music" | "images" | "games" | "deepfake";
+
+const api = process.env.REACT_APP_API;
 
 export default function CreatePage({ socket }: { socket: Socket }) {
   const [activeTab, setActiveTab] = useState<Tab>("music");
@@ -224,10 +227,20 @@ export default function CreatePage({ socket }: { socket: Socket }) {
     }
   };
 
-  const deepfakeSubmit = () => {
+  const deepfakeSubmit = async () => {
     try {
+      if (!deepfakeAudio || !deepfakeImage || !deepfakeMessage) return;
+
       setDeepfakeWorking(true);
-      setDeepfakeStatus("Generating deepfake");
+      const fd = new FormData();
+      fd.append("socketID", socket.id || "");
+      fd.append("message", deepfakeMessage);
+      fd.append("audio", deepfakeAudio, deepfakeAudio.name);
+      fd.append("image", deepfakeImage, deepfakeImage.name);
+
+      setDeepfakeStatus("Uploading");
+
+      await axios.post(api + "/deepfake", fd);
     } catch (err) {
       console.log("Deepfake error", err);
       setDeepfakeWorking(false);

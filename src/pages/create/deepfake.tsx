@@ -80,7 +80,7 @@ export default function Deepfake({
           }}
           className="w-1/2 p-2"
         >
-          <div className="relative inline-block w-full h-48">
+          <div className="relative inline-block w-full h-64">
             <input
               type="file"
               accept="image/*"
@@ -92,7 +92,9 @@ export default function Deepfake({
             <AnimatedButton
               variant="custom"
               type="button"
-              className="block w-full h-full mx-auto cursor-pointer hover:bg-gray-800 duration-200 overflow-hidden rounded-4"
+              className={`block w-full h-full mx-auto cursor-pointer hover:bg-gray-700 duration-200 overflow-hidden rounded-md pt-4 px-4 pb-2 ${
+                imagePreview ? "bg-gray-800" : ""
+              }`}
             >
               <label
                 className="cursor-pointer h-full w-full block"
@@ -140,7 +142,7 @@ export default function Deepfake({
           }}
           className="w-1/2 p-2"
         >
-          <div className="relative inline-block w-full h-48">
+          <div className="relative inline-block w-full h-64">
             <input
               type="file"
               accept="audio/*"
@@ -151,7 +153,9 @@ export default function Deepfake({
             <AnimatedButton
               variant="custom"
               type="button"
-              className="block w-full h-full mx-auto cursor-pointer hover:bg-gray-800 duration-200 overflow-hidden rounded-4"
+              className={`block w-full h-full mx-auto cursor-pointer hover:bg-gray-700 duration-200 overflow-hidden rounded-md pt-4 px-4 pb-2  ${
+                audioPreview ? "bg-gray-800" : ""
+              }`}
             >
               <label
                 className="cursor-pointer h-full w-full block"
