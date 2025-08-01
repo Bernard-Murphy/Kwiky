@@ -12,6 +12,7 @@ import socketHandler from "./utils/socketHandler.js";
 import { createAdapter } from "@socket.io/mongo-adapter";
 import db from "./utils/db.js";
 import routes from "./utils/routes/index.js";
+import crypto from "crypto";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
@@ -53,6 +54,11 @@ app.use(sessionObj);
 app.use(express.json());
 app.use(cors());
 app.use(fileUpload());
+app.use((req, res, next) => {
+  if (req.session && !req?.session.chatId)
+    req.session.chatId = crypto.randomUUID();
+  next();
+});
 app.use(express.static(__dirname + "/dist"));
 
 const server = http.createServer(app);
@@ -68,17 +74,21 @@ const wrapSocketMiddleware = (middleware) => (socket, next) =>
 io.use(wrapSocketMiddleware(sessionObj));
 io.on("connection", (socket) => socketHandler(io, socket));
 
-app.use((req, res, next) => {
-  console.log(req.url);
-  next();
-});
 app.use("/", routes(io));
 
-server.listen(port, () => {
+server.listen(port, async () => {
   try {
     if (!fs.existsSync("dist/games")) fs.mkdirSync("dist/games");
     if (!fs.existsSync("utils/sockets/temp"))
       fs.mkdirSync("utils/sockets/temp");
+    if (!fs.existsSync("utils/routes/temp")) fs.mkdirSync("utils/routes/temp");
+    const hrIDs = await db.collection("hrIDs").findOne({});
+    if (!hrIDs)
+      await db.collection("hrIDs").insertOne({
+        _id: crypto.randomBytes(8).toString("hex"),
+        user: 1,
+        post: 1,
+      });
     console.log("Kwiky running on port", port);
   } catch (err) {
     console.log("Main error", err);

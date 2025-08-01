@@ -37,6 +37,7 @@ export default function Deepfake({
   setImagePreview,
   audioPreview,
   setAudioPreview,
+  videoLink,
 }: DeepfakeProps) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -236,6 +237,25 @@ export default function Deepfake({
           <div className="text-center text-red-400">
             An error occurred. Please try again later.
           </div>
+        )}
+        {videoLink?.length ? (
+          <motion.video
+            transition={t.transition}
+            exit={{
+              opacity: 0,
+              y: 50,
+            }}
+            animate={t.normalize}
+            initial={{
+              opacity: 0,
+              y: 50,
+            }}
+            controls
+            src={videoLink}
+            className="mt-2 block w-full"
+          />
+        ) : (
+          <></>
         )}
       </motion.div>
     </motion.div>

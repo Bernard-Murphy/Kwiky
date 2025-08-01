@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import db from "../db.js";
 import { URL } from "node:url";
+import path from "path";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
@@ -53,7 +54,7 @@ export default async function games(io, socket) {
             new PutObjectCommand({
               Body: file.content,
               Bucket: process.env.STORJ_BUCKET,
-              Key: gameID + "/" + file.path,
+              Key: "files/" + gameID + "/" + file.path,
               ACL: "public-read",
               ContentType: mime.lookup(file.path),
             })
@@ -70,6 +71,7 @@ export default async function games(io, socket) {
         await db.collection("posts").insertOne({
           _id: gameID,
           hrID: hrIDs.post,
+          link: `https://${process.env.ASSET_LOCATION}/files/${gameID}/index.html`,
           type: "game",
           userID: user?._id,
           timestamp: new Date(),

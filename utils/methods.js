@@ -5,6 +5,7 @@ import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 import { Readable } from "stream";
 import fs from "fs";
 import axios from "axios";
+import https from "https";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
@@ -113,7 +114,7 @@ m.dupdubCheckStatus = (projectID) =>
         dupdubOptions
       );
       console.log("status", status);
-      if (false)
+      if (!status.data?.data?.videoUrl)
         setTimeout(async () => {
           try {
             const status = await m.dupdubCheckStatus(projectID);
@@ -123,7 +124,7 @@ m.dupdubCheckStatus = (projectID) =>
             reject(err);
           }
         }, 2000);
-      else resolve(status);
+      else resolve(status.data?.data?.videoUrl);
     } catch (err) {
       console.log("dupdubCheckStatus error", err);
       reject(err);
@@ -144,19 +145,51 @@ m.dupdubGenerateVideo = (photoUrl, audioUrl, box) =>
         watermark: 0,
         useSr: false,
       };
-
       const avatar = await axios.post(
         "https://moyin-gateway.dupdub.com/tts/v1/photoProject/createMulti",
         avatarBody,
         dupdubOptions
       );
-      const projectID = avatar.data.id;
-      const status = await m.dupdubCheckStatus(projectID);
-      console.log("status", status);
-      return resolve(status.data);
+      const projectID = avatar.data.data.id;
+      const videoUrl = await m.dupdubCheckStatus(projectID);
+      return resolve(videoUrl);
     } catch (err) {
       console.log("dupdubGenerateVideo error", err);
       return reject(err);
     }
   });
+
+m.fetchAndWriteFile = (url) =>
+  new Promise((resolve, reject) => {
+    try {
+      https.get(url, (res) => {
+        try {
+          const filename = `${
+            __dirname.includes("C:/") ? "." : __dirname
+          }/routes/temp/${url.split("/")[url.split("/").length - 1]}`;
+
+          if (res.statusCode !== 200) {
+            return reject(res);
+          }
+
+          const fileWriter = fs
+            .createWriteStream(
+              `${__dirname.includes("C:/") ? "." : __dirname}/routes/temp/${
+                url.split("/")[url.split("/").length - 1]
+              }`
+            )
+            .on("finish", () => resolve(filename))
+            .on("error", reject);
+          res.pipe(fileWriter);
+        } catch (err) {
+          console.log("fetchAndWriteFile error", err);
+          reject(err);
+        }
+      });
+    } catch (err) {
+      console.log("fetchAndWriteFile error", err);
+      reject(err);
+    }
+  });
+
 export default m;

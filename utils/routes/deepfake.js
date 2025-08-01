@@ -9,13 +9,13 @@ const router = Router();
 const handler = (io) => {
   router.post("/", async (req, res) => {
     try {
-      console.log(req.files);
-      console.log(req.body);
+      const user = req.session?.user;
       if (!req.body.message || !req.files.audio || !req.files.image)
         return res.sendStatus(400);
       const socketID = req.body.socketID;
 
       io.to(socketID).emit("deepfake-status", "Processing Media");
+      res.sendStatus(200);
 
       res.on("finish", async () => {
         try {
@@ -30,9 +30,6 @@ const handler = (io) => {
            * Write dupdub to s3
            */
           const imageKey = await m.writeToStorj(req.files.image);
-          const audioKey = await m.writeToStorj(req.files.audio);
-          console.log("imageKey", imageKey);
-          console.log("audioKey", audioKey);
 
           io.to(socketID).emit("deepfake-status", "Generating Audio");
           const voiceId = await m.createElevenlabsVoice(req.files.audio);
@@ -57,12 +54,48 @@ const handler = (io) => {
           const facebox = await m.dupdubDetectFace(
             `https://${process.env.ASSET_LOCATION}/${imageKey}`
           );
-          const videoData = await m.dupdubGenerateVideo(
+          const videoUrl = await m.dupdubGenerateVideo(
             `https://${process.env.ASSET_LOCATION}/${imageKey}`,
             `https://${process.env.ASSET_LOCATION}/${speechKey}`,
             facebox
           );
-          io.to(socketID).emit("video-data", videoData);
+          const videoFile = await m.fetchAndWriteFile(videoUrl);
+          const md5 = crypto
+            .createHash("md5")
+            .update(Buffer.from(videoUrl))
+            .digest("hex");
+          const videoData = {
+            data: fs.readFileSync(videoFile),
+            md5,
+            name: md5 + ".mp4",
+            mimetype: "video/mp4",
+          };
+
+          const link = await m.writeToStorj(videoData);
+          const hrIDs = await db.collection("hrIDs").findOneAndUpdate(
+            {},
+            {
+              $inc: {
+                post: 1,
+              },
+            }
+          );
+          await db.collection("posts").insertOne({
+            _id: crypto.randomUUID(),
+            type: "deepfake",
+            hrID: hrIDs.post,
+            userID: user?._id,
+            link,
+            timestamp: new Date(),
+            userID: user?._id,
+            prompt: req.body.message,
+            metadata: {},
+          });
+          fs.unlinkSync(videoFile);
+          io.to(socketID).emit(
+            "deepfake-video-link",
+            "https://" + process.env.ASSET_LOCATION + "/" + link
+          );
         } catch (err) {
           console.log("An error occurred", err);
           io.to(socketID).emit("deepfake-status", "Errored");
@@ -70,6 +103,7 @@ const handler = (io) => {
       });
     } catch (err) {
       console.log("new deepfake error", err);
+      io.to(socketID).emit("deepfake-status", "Errored");
       res.sendStatus(500);
     }
   });
@@ -77,4 +111,4 @@ const handler = (io) => {
   return router;
 };
 
-export default (io) => handler(io);
+export default handler;

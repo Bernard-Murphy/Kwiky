@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../App";
-import { Dot } from "lucide-react";
+// import { Dot } from "lucide-react";
 import AnimatedButton from "./animated-button";
 
 export default function Navbar() {
@@ -114,27 +114,28 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           ) : (
-            <div className="space-x-1">
-              <Link
-                to="/login"
-                className={`text-lg font-medium hover:text-blue-400 transition-colors ${
-                  location.pathname === "/login" ? "text-blue-400" : ""
-                }`}
-              >
-                Login
-              </Link>
-              <span>
-                <Dot className="inline" />
-              </span>
-              <Link
-                className={`text-lg font-medium hover:text-blue-400 transition-colors ${
-                  location.pathname === "/register" ? "text-blue-400" : ""
-                }`}
-                to="/register"
-              >
-                Register
-              </Link>
-            </div>
+            // <div className="space-x-1">
+            //   <Link
+            //     to="/login"
+            //     className={`text-lg font-medium hover:text-blue-400 transition-colors ${
+            //       location.pathname === "/login" ? "text-blue-400" : ""
+            //     }`}
+            //   >
+            //     Login
+            //   </Link>
+            //   <span>
+            //     <Dot className="inline" />
+            //   </span>
+            //   <Link
+            //     className={`text-lg font-medium hover:text-blue-400 transition-colors ${
+            //       location.pathname === "/register" ? "text-blue-400" : ""
+            //     }`}
+            //     to="/register"
+            //   >
+            //     Register
+            //   </Link>
+            // </div>
+            <div className="text-lg font-medium">Work in Progress</div>
           )}
         </div>
       </div>

@@ -64,9 +64,7 @@ export default function CreatePage({ socket }: { socket: Socket }) {
   const [deepfakeAudioPreview, setDeepfakeAudioPreview] = useState<
     string | null
   >(null);
-  const [deepfakeVideoLink, setDeepFakeVideoLink] = useState<string | null>(
-    null
-  );
+  const [deepfakeVideoLink, setDeepFakeVideoLink] = useState<any>(null);
 
   // message: string;
   // audioFile: File;
@@ -80,7 +78,6 @@ export default function CreatePage({ socket }: { socket: Socket }) {
 
   useEffect(() => {
     socket.on("music-lyrics", (lyrics) => {
-      console.log("lyrics", lyrics);
       setMusicStatus(`Generating song`);
       setLyrics(lyrics);
     });
@@ -93,14 +90,12 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       setMusicWorking(false);
     });
     socket.on("music-links", (links) => {
-      console.log("music links", links);
       setMusicLinks(links);
       setMusicStatus("");
       setMusicWorking(false);
     });
 
     socket.on("images-link", (link) => {
-      console.log("image link", link);
       setImageLink(link);
       setImageWorking(false);
       setImageStatus("");
@@ -128,7 +123,6 @@ export default function CreatePage({ socket }: { socket: Socket }) {
     });
 
     socket.on("games-data", (data) => {
-      console.log("game data", data);
       setGameWorking(false);
       setGameStatus("");
     });
@@ -145,6 +139,10 @@ export default function CreatePage({ socket }: { socket: Socket }) {
     socket.on("deepfake-status", (status: string) => {
       setDeepfakeStatus(status);
       if (status === "Errored") setDeepfakeWorking(false);
+    });
+
+    socket.on("deepfake-video-link", (videoLink) => {
+      setDeepFakeVideoLink(videoLink);
     });
   }, []);
 

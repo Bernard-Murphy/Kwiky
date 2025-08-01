@@ -3,12 +3,15 @@ import { toast } from "sonner";
 import AnimatedButton from "@/components/animated-button";
 import { transitions as t } from "@/lib/utils";
 import { motion } from "framer-motion";
+import axios from "axios";
+
+const api = process.env.REACT_APP_API;
 
 export default function Chat() {
   const [uncensoredChat, setUncensoredChat] = useState(false);
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState<
-    Array<{ text: string; isUser: boolean }>
+    Array<{ text: string; isUser: boolean; timestamp: Date }>
   >([]);
   useEffect(() => {
     if (uncensoredChat)
@@ -18,17 +21,41 @@ export default function Chat() {
       });
   }, [uncensoredChat]);
 
+  useEffect(() => {
+    const container = document.getElementById("chat-container");
+    if (container) container.scrollTop = container.scrollHeight;
+  }, [chatMessages.length]);
+
   const handleChatSubmit = () => {
     if (chatInput.trim()) {
-      setChatMessages((prev) => [...prev, { text: chatInput, isUser: true }]);
+      setChatMessages((prev) => [
+        ...prev,
+        { text: chatInput, isUser: true, timestamp: new Date() },
+      ]);
       setChatInput("");
       // Simulate AI response
-      setTimeout(() => {
-        setChatMessages((prev) => [
-          ...prev,
-          { text: "This is a simulated AI response.", isUser: false },
-        ]);
-      }, 1000);
+      axios
+        .post(api + "/chat/ask", {
+          message: chatInput,
+          uncensored: uncensoredChat,
+        })
+        .then((res) => {
+          setChatMessages((prev) => [
+            ...prev,
+            {
+              text: res.data.text,
+              isUser: false,
+              timestamp: new Date(),
+            },
+          ]);
+        })
+        .catch((err) => {
+          console.log("error", err);
+          toast.error("An error occurred. Please try again later.", {
+            position: "bottom-center",
+            duration: 1500,
+          });
+        });
     }
   };
 
@@ -53,6 +80,10 @@ export default function Chat() {
           y: -50,
         }}
         className="flex-1 bg-black/20 rounded-lg p-4 mb-4 overflow-y-auto"
+        id="chat-container"
+        style={{
+          scrollBehavior: "smooth",
+        }}
       >
         {chatMessages.length === 0 ? (
           <div className="text-gray-400 text-center mt-8">
@@ -61,7 +92,11 @@ export default function Chat() {
         ) : (
           <div className="space-y-4">
             {chatMessages.map((message, index) => (
-              <div
+              <motion.div
+                transition={t.transition}
+                exit={t.fade_out_scale_1}
+                animate={t.normalize}
+                initial={t.fade_out}
                 key={index}
                 className={`flex ${
                   message.isUser ? "justify-end" : "justify-start"
@@ -76,7 +111,7 @@ export default function Chat() {
                 >
                   {message.text}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
@@ -108,7 +143,9 @@ export default function Chat() {
               rows={2}
             />
             <div className="absolute right-3 top-3">
-              <AnimatedButton onClick={handleChatSubmit}>Send</AnimatedButton>
+              <AnimatedButton variant="outline" onClick={handleChatSubmit}>
+                Send
+              </AnimatedButton>
             </div>
           </div>
         </div>
