@@ -122,7 +122,7 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       );
     });
 
-    socket.on("games-data", (data) => {
+    socket.on("games-data", () => {
       setGameWorking(false);
       setGameStatus("");
     });

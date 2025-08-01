@@ -47,9 +47,6 @@ export const useApp = () => {
 export default function App() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [user, setUser] = useState<User | null>(null);
-  const [chatMessages, setChatMessages] = useState<
-    Array<{ text: string; isUser: boolean; timestamp: Date }>
-  >([]);
   // const [user, setUser] = useState<User | null>({
   //   username: "",
   //   email: "",
