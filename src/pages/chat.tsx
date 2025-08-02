@@ -118,38 +118,44 @@ export default function Chat({
       >
         <div className="absolute left-5">
           <div className="relative">
-            <AnimatedButton
-              variant="ghost"
-              onClick={() => setClearAllOpen((curr) => !curr)}
-              className="flex items-center"
-            >
-              <Eraser className="me-2" />
-              Clear All
-            </AnimatedButton>
-            <AnimatePresence>
-              {clearAllOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
+            {chatMessages.length === 0 ? (
+              <></>
+            ) : (
+              <>
+                <AnimatedButton
+                  variant="ghost"
+                  onClick={() => setClearAllOpen((curr) => !curr)}
+                  className="flex items-center"
                 >
-                  <h5 className="px-4">Are you sure?</h5>
-                  <button
-                    onClick={clearAll}
-                    className="w-full text-left px-4 py-2 hover:bg-red-200 text-red-400 transition-colors cursor-pointer"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    onClick={() => setClearAllOpen(false)}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
-                  >
-                    No
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <Eraser className="me-2" />
+                  Clear All
+                </AnimatedButton>
+                <AnimatePresence>
+                  {clearAllOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
+                    >
+                      <h5 className="px-4">Are you sure?</h5>
+                      <button
+                        onClick={clearAll}
+                        className="w-full text-left px-4 py-2 hover:bg-red-200 text-red-400 transition-colors cursor-pointer"
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={() => setClearAllOpen(false)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
+                      >
+                        No
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
           </div>
         </div>
         {chatMessages.length === 0 ? (
