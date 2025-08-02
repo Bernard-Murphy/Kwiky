@@ -72,7 +72,7 @@ const uploadToS3 = async (audioFile) => {
       })
     );
     fs.unlinkSync(filePath);
-    return `https://${process.env.ASSET_LOCATION}/files/${md5_audio}.mp3`;
+    return `/files/${md5_audio}.mp3`;
   } catch (err) {
     console.log("upload to feed nana error", err);
     return "";

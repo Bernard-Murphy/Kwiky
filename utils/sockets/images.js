@@ -95,7 +95,7 @@ export default async function images(io, socket) {
               type: "image",
               hrID: hrIDs.post,
               userID: user?._id,
-              link: `https://${process.env.ASSET_LOCATION}/files/${md5}.png`,
+              link: `/files/${md5}.png`,
               timestamp: new Date(),
               userID: user?._id,
               prompt,
@@ -104,10 +104,7 @@ export default async function images(io, socket) {
                 uncensored,
               },
             });
-            socket.emit(
-              "images-link",
-              `https://${process.env.ASSET_LOCATION}/files/${md5}.png`
-            );
+            socket.emit("images-link", `/files/${md5}.png`);
           })
           .catch((err) => {
             console.log("error", err);

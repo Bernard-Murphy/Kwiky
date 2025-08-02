@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Palette } from "lucide-react";
-import { useApp } from "@/App";
+import { useApp, type CreateTab } from "@/App";
+import { useLocation } from "react-router-dom";
 
 const themes = [
   { name: "Light", value: "light" as const, color: "bg-white border-gray-300" },
@@ -28,20 +29,33 @@ const themes = [
   },
 ];
 
-export default function ThemeSelector() {
+export interface ThemeSelectorProps {
+  createTab: CreateTab;
+}
+
+export default function ThemeSelector({ createTab }: ThemeSelectorProps) {
   const { theme, setTheme } = useApp();
   const [isOpen, setIsOpen] = useState(false);
+
+  const location = useLocation();
 
   const handleThemeSelect = (newTheme: typeof theme) => {
     setTheme(newTheme);
     setIsOpen(false);
   };
 
+  const moveToRight =
+    location.pathname === "/" &&
+    ["music", "images", "games", "deepfake"].includes(createTab);
+
   return (
     <div
-      className="fixed bottom-4 left-4 z-50"
+      className={`fixed bottom-4 ${moveToRight ? "right-4" : "left-4"} z-50`}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
+      style={{
+        transition: moveToRight ? "right 1s linear" : "left 1s linear",
+      }}
     >
       <motion.div
         className="bg-black/20 backdrop-blur-sm rounded-full p-3 cursor-pointer hover:bg-black/30 transition-colors"
@@ -57,7 +71,9 @@ export default function ThemeSelector() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-full mb-2 bg-black/80 backdrop-blur-sm rounded-lg p-2 space-y-1"
+            className={`absolute bottom-full mb-2 bg-black/80 backdrop-blur-sm rounded-lg p-2 space-y-1 ${
+              moveToRight ? "right-0" : ""
+            }`}
           >
             {themes.map((themeOption) => (
               <motion.button

@@ -28,7 +28,6 @@ export default async function games(io, socket) {
     const user = socket.request.session?.user;
     socket.on("create-game", async (prompt, title) => {
       try {
-        console.log("create-game", title, prompt);
         let chatCompletion = await groqClient.chat.completions.create({
           messages: [
             {
@@ -37,7 +36,7 @@ export default async function games(io, socket) {
               
               ${prompt}
               
-              Return ONLY an array of JSON objects. Do not return anything else. The first key in each object, called "path", will be the path to the file, and the second key, called "content", will be the content of the file. If any graphics or sprites are required that cannot be represented using simple colors and shapes, use svg images.`,
+              Return ONLY an array of JSON objects. Do not return anything else. Do not show your work or explain your line of thinking. The first key in each object, called "path", will be the path to the file, and the second key, called "content", will be the content of the file. If any graphics or sprites are required that cannot be represented using simple colors and shapes, use svg images.`,
             },
           ],
           model: "qwen/qwen3-32b",
@@ -45,8 +44,7 @@ export default async function games(io, socket) {
         if (typeof chatCompletion === "string")
           chatCompletion = JSON.parse(chatCompletion);
         let data = chatCompletion.choices[0].message.content;
-
-        const json = JSON.parse(data.split("</think>")[1]);
+        const json = JSON.parse(data.split("</think>")[1].trim());
         const gameID = crypto.randomUUID();
         for (let i = 0; i < json.length; i++) {
           const file = json[i];
@@ -71,7 +69,7 @@ export default async function games(io, socket) {
         await db.collection("posts").insertOne({
           _id: gameID,
           hrID: hrIDs.post,
-          link: `https://${process.env.ASSET_LOCATION}/files/${gameID}/index.html`,
+          link: `files/${gameID}/index.html`,
           type: "game",
           userID: user?._id,
           timestamp: new Date(),
@@ -80,7 +78,7 @@ export default async function games(io, socket) {
             title,
           },
         });
-        socket.emit("games-data", gameID);
+        socket.emit("games-link", `files/${gameID}/index.html`);
       } catch (err) {
         console.log("create-game error", err);
         socket.emit("games-error");

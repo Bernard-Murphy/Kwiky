@@ -113,7 +113,6 @@ m.dupdubCheckStatus = (projectID) =>
         "https://moyin-gateway.dupdub.com/tts/v1/photoProject/" + projectID,
         dupdubOptions
       );
-      console.log("status", status);
       if (!status.data?.data?.videoUrl)
         setTimeout(async () => {
           try {

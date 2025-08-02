@@ -92,10 +92,7 @@ const handler = (io) => {
             metadata: {},
           });
           fs.unlinkSync(videoFile);
-          io.to(socketID).emit(
-            "deepfake-video-link",
-            "https://" + process.env.ASSET_LOCATION + "/" + link
-          );
+          io.to(socketID).emit("deepfake-video-link", "/" + link);
         } catch (err) {
           console.log("An error occurred", err);
           io.to(socketID).emit("deepfake-status", "Errored");

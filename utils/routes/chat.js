@@ -22,6 +22,29 @@ if (fs.existsSync(promptPath))
 const router = Router();
 
 const handler = (io) => {
+  router.get("/clear", async (req, res) => {
+    try {
+      await db.collection("virgilChad").deleteMany({
+        $and: [
+          {
+            $or: [
+              {
+                from: req.session.chatId,
+              },
+              {
+                to: req.session.chatId,
+              },
+            ],
+          },
+        ],
+      });
+      res.sendStatus(200);
+    } catch (err) {
+      console.log("/clear error", err);
+      res.sendStatus(500);
+    }
+  });
+
   router.post("/ask", async (req, res) => {
     try {
       const message = req.body.message;

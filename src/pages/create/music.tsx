@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import { copyText } from "@/lib/methods";
 
 export interface MusicProps {
   generateLyrics: boolean;
@@ -56,69 +56,24 @@ export default function Music({
   musicTitle,
   setMusicTitle,
 }: MusicProps) {
-  const copyText = (string: string) => {
-    let textarea = document.createElement("textarea");
-    let result;
-
-    try {
-      textarea.setAttribute("readonly", "true");
-      textarea.setAttribute("contenteditable", "true");
-      textarea.style.position = "fixed";
-      textarea.value = string;
-
-      document.body.appendChild(textarea);
-
-      textarea.focus();
-      textarea.select();
-
-      const range = document.createRange();
-      range.selectNodeContents(textarea);
-
-      const sel = window.getSelection();
-      if (sel) {
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-
-      textarea.setSelectionRange(0, textarea.value.length);
-      result = document.execCommand("copy");
-    } catch (err) {
-      console.error(err);
-      result = null;
-    } finally {
-      document.body.removeChild(textarea);
-    }
-
-    if (!result) {
-      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-      const copyHotkey = isMac ? "⌘C" : "CTRL+C";
-      result = prompt(`Press ${copyHotkey}`, string); // eslint-disable-line no-alert
-      if (!result) {
-        return false;
-      }
-    }
-
-    toast.success("Copied to clipboard");
-  };
-
   return (
     <motion.div
       transition={t.transition}
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
-      className="space-y-6 pt-8"
+      className="space-y-6 pt-8 w-full h-full"
     >
       <motion.div
         transition={t.transition}
         exit={{
           opacity: 0,
-          x: -50,
+          y: -50,
         }}
         animate={t.normalize}
         initial={{
           opacity: 0,
-          x: -50,
+          y: -50,
         }}
         className="space-y-4"
       >
@@ -155,12 +110,12 @@ export default function Music({
         transition={t.transition}
         exit={{
           opacity: 0,
-          y: 50,
+          x: 50,
         }}
         animate={t.normalize}
         initial={{
           opacity: 0,
-          y: 50,
+          x: 50,
         }}
       >
         <label className="block text-sm font-medium mb-2">Title</label>
@@ -221,7 +176,11 @@ export default function Music({
           y: 50,
         }}
       >
-        <AnimatedButton disabled={working} onClick={musicSubmit}>
+        <AnimatedButton
+          className="submit-button"
+          disabled={working}
+          onClick={musicSubmit}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               transition={t.transition}
@@ -283,6 +242,7 @@ export default function Music({
                       <h5 className="text-center mb-2">
                         {musicTitle || "Untitled"}
                       </h5>
+                      <hr className="mb-2" />
                       {lyrics.split("\n\n").map((stanza) => (
                         <div className="mb-2">
                           {stanza.split("\n").map((line) => (
@@ -302,27 +262,33 @@ export default function Music({
         <div className="w-2/3 p-2">
           {musicLinks.length ? (
             musicLinks.map((link) => {
+              const fullLink =
+                "https://" + process.env.REACT_APP_ASSET_LOCATION + link;
               return (
                 <motion.div
                   transition={t.transition}
                   exit={t.fade_out_scale_1}
                   animate={t.normalize}
                   initial={t.fade_out}
-                  key={link}
+                  key={fullLink}
                   className="mb-4"
                 >
-                  <audio className="w-full block mb-2" controls src={link} />
+                  <audio
+                    className="w-full block mb-2"
+                    controls
+                    src={fullLink}
+                  />
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger className="w-full">
+                      <TooltipTrigger className="w-full my-1">
                         <AnimatedButton
                           variant="custom"
                           className="w-full px-0 py-0"
-                          onClick={() => copyText(link)}
+                          onClick={() => copyText(fullLink)}
                         >
                           <Input
                             className="cursor-pointer"
-                            value={link}
+                            value={fullLink}
                             readOnly
                             type="text"
                           />

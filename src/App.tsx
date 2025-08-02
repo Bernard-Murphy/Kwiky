@@ -15,10 +15,13 @@ import ProfilePage from "./pages/profile";
 import Test from "./pages/test";
 import { Toaster } from "./components/ui/sonner";
 import { io, Socket } from "socket.io-client";
+import { type ChatMessage } from "./pages/chat";
 
 const socket: Socket = io(process.env.REACT_APP_API);
 
 type Theme = "light" | "dark" | "red" | "blue" | "pink" | "green";
+
+export type CreateTab = "music" | "images" | "games" | "deepfake";
 
 interface User {
   username: string;
@@ -46,7 +49,11 @@ export const useApp = () => {
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>("dark");
+  const [createTab, setCreateTab] = useState<CreateTab>("music");
   const [user, setUser] = useState<User | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [awaitingChatResponse, setAwaitingChatResponse] =
+    useState<boolean>(false);
   // const [user, setUser] = useState<User | null>({
   //   username: "",
   //   email: "",
@@ -73,18 +80,37 @@ export default function App() {
         <Navbar />
         <AnimatePresence mode="wait">
           <Routes key={location.pathname} location={location}>
-            <Route path="/" element={<CreatePage socket={socket} />} />
+            <Route
+              path="/"
+              element={
+                <CreatePage
+                  socket={socket}
+                  activeTab={createTab}
+                  setActiveTab={setCreateTab}
+                />
+              }
+            />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/browse" element={<BrowsePage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/chat" element={<ChatPage />} />
+            <Route
+              path="/chat"
+              element={
+                <ChatPage
+                  chatMessages={chatMessages}
+                  setChatMessages={setChatMessages}
+                  awaitingChatResponse={awaitingChatResponse}
+                  setAwaitingChatResponse={setAwaitingChatResponse}
+                />
+              }
+            />
             <Route path="/test" element={<Test />} />
             <Route path="*" element={<Navigate replace to="/" />} />
           </Routes>
         </AnimatePresence>
-        <ThemeSelector />
+        <ThemeSelector createTab={createTab} />
         <div
           className={`fixed bottom-4 ${
             location.pathname !== "/register"

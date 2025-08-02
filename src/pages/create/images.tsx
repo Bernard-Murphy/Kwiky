@@ -55,7 +55,7 @@ export default function Images({
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
-      className="space-y-6 pt-8"
+      className="space-y-6 pt-8 w-full h-full"
       key="images"
     >
       <motion.div
@@ -135,7 +135,7 @@ export default function Images({
             </SelectGroup>
           </SelectContent>
         </Select>
-        <div className="text-center text-red-400">
+        <div className="text-center text-red-400 mt-2">
           {imageStatus === "Errored"
             ? "An error occurred. Please try again later."
             : "You may not use this service to generate porn"}
@@ -186,7 +186,7 @@ export default function Images({
               opacity: 0,
               y: 70,
             }}
-            src={imageLink}
+            src={"https://" + process.env.REACT_APP_ASSET_LOCATION + imageLink}
             alt="Generated Image"
             className="mt-4 d-block mx-auto max-w-full"
           />

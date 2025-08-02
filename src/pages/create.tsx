@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { type CreateTab } from "@/App";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Music as MusicIcon,
@@ -19,39 +20,49 @@ import Music from "./create/music";
 import { type ImageDimensions } from "./create/images";
 import Deepfake from "./create/deepfake";
 import axios from "axios";
+import AnimatedPage from "@/components/ui/animatedpage";
 
-type Tab = "music" | "images" | "games" | "deepfake";
+export interface CreatePageProps {
+  socket: Socket;
+  activeTab: CreateTab;
+  setActiveTab: (option: CreateTab) => void;
+}
 
 const api = process.env.REACT_APP_API;
 
-export default function CreatePage({ socket }: { socket: Socket }) {
-  const [activeTab, setActiveTab] = useState<Tab>("music");
-  const [generateLyrics, setGenerateLyrics] = useState<boolean>(true);
-  const [generateStyle, setGenerateStyle] = useState<boolean>(true);
-  const [uncensoredMusic, setUncensoredMusic] = useState<boolean>(false);
-  const [uncensoredImages, setUncensoredImages] = useState<boolean>(false);
-  const [musicWorking, setMusicWorking] = useState<boolean>(false);
-  const [imageWorking, setImageWorking] = useState<boolean>(false);
-  const [gameWorking, setGameWorking] = useState<boolean>(false);
-  const [musicLinks, setMusicLinks] = useState<string[]>([]);
+export default function CreatePage({
+  socket,
+  activeTab,
+  setActiveTab,
+}: CreatePageProps) {
   const [customLyrics, setCustomLyrics] = useState<string>("");
   const [lyrics, setLyrics] = useState<string>("");
   const [musicStatus, setMusicStatus] = useState<string>("");
-  const [imageStatus, setImageStatus] = useState<string>("");
-  const [gameStatus, setGameStatus] = useState<string>("");
-  const [imageStyle, setImageStyle] = useState<ImageStyle>("Digital Art");
-  const [imageLink, setImageLink] = useState<string>("");
-
+  const [musicWorking, setMusicWorking] = useState<boolean>(false);
+  const [generateLyrics, setGenerateLyrics] = useState<boolean>(true);
+  const [generateStyle, setGenerateStyle] = useState<boolean>(true);
+  const [uncensoredMusic, setUncensoredMusic] = useState<boolean>(false);
   const [musicPrompt, setMusicPrompt] = useState<string>("");
   const [musicStyle, setMusicStyle] = useState<string>("");
   const [musicTitle, setMusicTitle] = useState<string>("");
+  const [musicLinks, setMusicLinks] = useState<string[]>([]);
+
   const [imageText, setImageText] = useState<string>("");
   const [imageDimensions, setImageDimensions] = useState<ImageDimensions>({
     height: 1024,
     width: 1024,
   });
+  const [imageWorking, setImageWorking] = useState<boolean>(false);
+  const [imageStatus, setImageStatus] = useState<string>("");
+  const [uncensoredImages, setUncensoredImages] = useState<boolean>(false);
+  const [imageStyle, setImageStyle] = useState<ImageStyle>("Digital Art");
+  const [imageLink, setImageLink] = useState<string>("");
+
+  const [gameWorking, setGameWorking] = useState<boolean>(false);
+  const [gameStatus, setGameStatus] = useState<string>("");
   const [gameText, setGameText] = useState<string>("");
   const [gameTitle, setGameTitle] = useState<string>("");
+  const [gameLink, setGameLink] = useState<string>("");
 
   const [deepfakeMessage, setDeepfakeMessage] = useState<string>("");
   const [deepfakeAudio, setDeepfakeAudio] = useState<File | undefined>();
@@ -65,16 +76,6 @@ export default function CreatePage({ socket }: { socket: Socket }) {
     string | null
   >(null);
   const [deepfakeVideoLink, setDeepFakeVideoLink] = useState<any>(null);
-
-  // message: string;
-  // audioFile: File;
-  // imageFile: File;
-  // setMessage: (text: string) => void;
-  // setAudioFile: (file: File) => void;
-  // setImagefile: (file: File) => void;
-  // working: boolean;
-  // submit: () => void;
-  // deepfakeStatus: string;
 
   useEffect(() => {
     socket.on("music-lyrics", (lyrics) => {
@@ -122,7 +123,12 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       );
     });
 
-    socket.on("games-data", () => {
+    socket.on("games-status", setGameStatus);
+
+    socket.on("games-link", (link: string) => {
+      setGameLink(
+        "https://" + process.env.REACT_APP_ASSET_LOCATION + "/" + link
+      );
       setGameWorking(false);
       setGameStatus("");
     });
@@ -143,6 +149,8 @@ export default function CreatePage({ socket }: { socket: Socket }) {
 
     socket.on("deepfake-video-link", (videoLink) => {
       setDeepFakeVideoLink(videoLink);
+      setDeepfakeStatus("");
+      setDeepfakeWorking(false);
     });
   }, []);
 
@@ -163,10 +171,10 @@ export default function CreatePage({ socket }: { socket: Socket }) {
   }, [uncensoredImages]);
 
   const tabs = [
-    { id: "music" as Tab, label: "Music", icon: MusicIcon },
-    { id: "images" as Tab, label: "Images", icon: ImageIcon },
-    { id: "games" as Tab, label: "Games", icon: Gamepad2 },
-    { id: "deepfake" as Tab, label: "Deepfake", icon: CircleUserRound },
+    { id: "music" as CreateTab, label: "Music", icon: MusicIcon },
+    { id: "images" as CreateTab, label: "Images", icon: ImageIcon },
+    { id: "games" as CreateTab, label: "Games", icon: Gamepad2 },
+    { id: "deepfake" as CreateTab, label: "Deepfake", icon: CircleUserRound },
   ];
 
   const musicSubmit = () => {
@@ -304,75 +312,81 @@ export default function CreatePage({ socket }: { socket: Socket }) {
       >
         <AnimatePresence mode="wait">
           {activeTab === "music" && (
-            <Music
-              generateLyrics={generateLyrics}
-              setGenerateLyrics={setGenerateLyrics}
-              generateStyle={generateStyle}
-              setGenerateStyle={setGenerateStyle}
-              uncensoredMusic={uncensoredMusic}
-              setUncensoredMusic={setUncensoredMusic}
-              musicPrompt={musicPrompt}
-              setMusicPrompt={setMusicPrompt}
-              musicStyle={musicStyle}
-              setMusicStyle={setMusicStyle}
-              working={musicWorking}
-              musicSubmit={musicSubmit}
-              musicLinks={musicLinks}
-              customLyrics={customLyrics}
-              setCustomLyrics={setCustomLyrics}
-              musicStatus={musicStatus}
-              lyrics={lyrics}
-              musicTitle={musicTitle}
-              setMusicTitle={setMusicTitle}
-              key="music"
-            />
+            <AnimatedPage key="music">
+              <Music
+                generateLyrics={generateLyrics}
+                setGenerateLyrics={setGenerateLyrics}
+                generateStyle={generateStyle}
+                setGenerateStyle={setGenerateStyle}
+                uncensoredMusic={uncensoredMusic}
+                setUncensoredMusic={setUncensoredMusic}
+                musicPrompt={musicPrompt}
+                setMusicPrompt={setMusicPrompt}
+                musicStyle={musicStyle}
+                setMusicStyle={setMusicStyle}
+                working={musicWorking}
+                musicSubmit={musicSubmit}
+                musicLinks={musicLinks}
+                customLyrics={customLyrics}
+                setCustomLyrics={setCustomLyrics}
+                musicStatus={musicStatus}
+                lyrics={lyrics}
+                musicTitle={musicTitle}
+                setMusicTitle={setMusicTitle}
+              />
+            </AnimatedPage>
           )}
           {activeTab === "images" && (
-            <Images
-              imageText={imageText}
-              setImageText={setImageText}
-              uncensoredImages={uncensoredImages}
-              setUncensoredImages={setUncensoredImages}
-              imageStyle={imageStyle}
-              setImageStyle={setImageStyle}
-              imageWorking={imageWorking}
-              imageStatus={imageStatus}
-              imageSubmit={imageSubmit}
-              imageLink={imageLink}
-              imageDimensions={imageDimensions}
-              setImageDimensions={setImageDimensions}
-              key="images"
-            />
+            <AnimatedPage key="images">
+              <Images
+                imageText={imageText}
+                setImageText={setImageText}
+                uncensoredImages={uncensoredImages}
+                setUncensoredImages={setUncensoredImages}
+                imageStyle={imageStyle}
+                setImageStyle={setImageStyle}
+                imageWorking={imageWorking}
+                imageStatus={imageStatus}
+                imageSubmit={imageSubmit}
+                imageLink={imageLink}
+                imageDimensions={imageDimensions}
+                setImageDimensions={setImageDimensions}
+              />
+            </AnimatedPage>
           )}
           {activeTab === "games" && (
-            <Games
-              gameText={gameText}
-              setGameText={setGameText}
-              key="games"
-              gameTitle={gameTitle}
-              setGameTitle={setGameTitle}
-              gameWorking={gameWorking}
-              gameSubmit={gameSubmit}
-              gameStatus={gameStatus}
-            />
+            <AnimatedPage key="games">
+              <Games
+                gameText={gameText}
+                setGameText={setGameText}
+                gameTitle={gameTitle}
+                setGameTitle={setGameTitle}
+                gameWorking={gameWorking}
+                gameSubmit={gameSubmit}
+                gameStatus={gameStatus}
+                gameLink={gameLink}
+              />
+            </AnimatedPage>
           )}
           {activeTab === "deepfake" && (
-            <Deepfake
-              message={deepfakeMessage}
-              audioFile={deepfakeAudio}
-              imageFile={deepfakeImage}
-              setMessage={setDeepfakeMessage}
-              setAudioFile={setDeepfakeAudio}
-              setImagefile={setDeepfakeImage}
-              working={deepfakeWorking}
-              submit={deepfakeSubmit}
-              status={deepfakeStatus}
-              imagePreview={deepfakeImagePreview}
-              setImagePreview={setDeepfakeImagePreview}
-              audioPreview={deepfakeAudioPreview}
-              setAudioPreview={setDeepfakeAudioPreview}
-              videoLink={deepfakeVideoLink}
-            />
+            <AnimatedPage key="deepfake">
+              <Deepfake
+                message={deepfakeMessage}
+                audioFile={deepfakeAudio}
+                imageFile={deepfakeImage}
+                setMessage={setDeepfakeMessage}
+                setAudioFile={setDeepfakeAudio}
+                setImagefile={setDeepfakeImage}
+                working={deepfakeWorking}
+                submit={deepfakeSubmit}
+                status={deepfakeStatus}
+                imagePreview={deepfakeImagePreview}
+                setImagePreview={setDeepfakeImagePreview}
+                audioPreview={deepfakeAudioPreview}
+                setAudioPreview={setDeepfakeAudioPreview}
+                videoLink={deepfakeVideoLink}
+              />
+            </AnimatedPage>
           )}
         </AnimatePresence>
       </motion.div>

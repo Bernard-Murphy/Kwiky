@@ -4,7 +4,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../App";
-// import { Dot } from "lucide-react";
 import AnimatedButton from "./animated-button";
 
 export default function Navbar() {

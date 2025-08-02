@@ -1,18 +1,37 @@
-import { useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
 import AnimatedButton from "@/components/animated-button";
 import { transitions as t } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import TypingIndicator from "@/components/ui/typing-indicator";
+import { MessageCircleMore, Eraser } from "lucide-react";
 
 const api = process.env.REACT_APP_API;
 
-export default function Chat() {
+export interface ChatMessage {
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+}
+
+export interface ChatProps {
+  chatMessages: ChatMessage[];
+  setChatMessages: Dispatch<SetStateAction<ChatMessage[]>>;
+  awaitingChatResponse: boolean;
+  setAwaitingChatResponse: (option: boolean) => void;
+}
+
+export default function Chat({
+  chatMessages,
+  setChatMessages,
+  awaitingChatResponse,
+  setAwaitingChatResponse,
+}: ChatProps) {
   const [uncensoredChat, setUncensoredChat] = useState(false);
   const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState<
-    Array<{ text: string; isUser: boolean; timestamp: Date }>
-  >([]);
+  const [clearAllOpen, setClearAllOpen] = useState<boolean>(false);
+
   useEffect(() => {
     if (uncensoredChat)
       toast.error("Uncensored chat may produce HIGHLY offensive results", {
@@ -26,6 +45,16 @@ export default function Chat() {
     if (container) container.scrollTop = container.scrollHeight;
   }, [chatMessages.length]);
 
+  const clearAll = () => {
+    setChatMessages([]);
+    setClearAllOpen(false);
+    axios
+      .get(api + "/chat/clear")
+      .catch(() =>
+        console.log("an error occurred while clearing the messages")
+      );
+  };
+
   const handleChatSubmit = () => {
     if (chatInput.trim()) {
       setChatMessages((prev) => [
@@ -33,6 +62,7 @@ export default function Chat() {
         { text: chatInput, isUser: true, timestamp: new Date() },
       ]);
       setChatInput("");
+      setAwaitingChatResponse(true);
       // Simulate AI response
       axios
         .post(api + "/chat/ask", {
@@ -55,7 +85,8 @@ export default function Chat() {
             position: "bottom-center",
             duration: 1500,
           });
-        });
+        })
+        .finally(() => setAwaitingChatResponse(false));
     }
   };
 
@@ -79,18 +110,55 @@ export default function Chat() {
           opacity: 0,
           y: -50,
         }}
-        className="flex-1 bg-black/20 rounded-lg p-4 mb-4 overflow-y-auto"
+        className="flex-1 bg-black/20 rounded-lg p-4 mb-4 overflow-y-auto relative"
         id="chat-container"
         style={{
           scrollBehavior: "smooth",
         }}
       >
-        {chatMessages.length === 0 ? (
-          <div className="text-gray-400 text-center mt-8">
-            Start a conversation...
+        <div className="absolute left-5">
+          <div className="relative">
+            <AnimatedButton
+              variant="ghost"
+              onClick={() => setClearAllOpen((curr) => !curr)}
+              className="flex items-center"
+            >
+              <Eraser className="me-2" />
+              Clear All
+            </AnimatedButton>
+            <AnimatePresence>
+              {clearAllOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
+                >
+                  <h5 className="px-4">Are you sure?</h5>
+                  <button
+                    onClick={clearAll}
+                    className="w-full text-left px-4 py-2 hover:bg-red-200 text-red-400 transition-colors cursor-pointer"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={() => setClearAllOpen(false)}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
+                  >
+                    No
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+        </div>
+        {chatMessages.length === 0 ? (
+          <MessageCircleMore
+            className="text-gray-400 block mx-auto mt-8"
+            size={100}
+          />
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 ">
             {chatMessages.map((message, index) => (
               <motion.div
                 transition={t.transition}
@@ -113,6 +181,7 @@ export default function Chat() {
                 </div>
               </motion.div>
             ))}
+            {awaitingChatResponse && <TypingIndicator />}
           </div>
         )}
       </motion.div>

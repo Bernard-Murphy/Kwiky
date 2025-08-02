@@ -64,7 +64,7 @@ export default function Deepfake({
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
-      className="space-y-6 pt-8"
+      className="space-y-6 pt-8 h-full"
       key="deepfake"
     >
       <div className="flex mb-4">
@@ -251,7 +251,7 @@ export default function Deepfake({
               y: 50,
             }}
             controls
-            src={videoLink}
+            src={"https://" + process.env.REACT_APP_ASSET_LOCATION + videoLink}
             className="mt-2 block w-full"
           />
         ) : (
