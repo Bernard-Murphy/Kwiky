@@ -2,26 +2,40 @@
 
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import Navbar from "./components/navbar";
 import ThemeSelector from "./components/theme-selector";
 import CreatePage from "./pages/create";
 import RegisterPage from "./pages/register";
 import LoginPage from "./pages/login";
 import ForgotPasswordPage from "./pages/forgot-password";
-import BrowsePage from "./pages/browse";
+import BrowsePage, {
+  type Post,
+  type BrowseStatus,
+  type BrowseConstraints,
+} from "./pages/browse";
 import ChatPage from "./pages/chat";
 import ProfilePage from "./pages/profile";
 import Test from "./pages/test";
 import { Toaster } from "./components/ui/sonner";
 import { io, Socket } from "socket.io-client";
 import { type ChatMessage } from "./pages/chat";
+import axios from "axios";
 
 const socket: Socket = io(process.env.REACT_APP_API);
 
 type Theme = "light" | "dark" | "red" | "blue" | "pink" | "green";
 
 export type CreateTab = "music" | "images" | "games" | "deepfake";
+
+export const themeClasses = {
+  light: "bg-white text-gray-900",
+  dark: "bg-gray-900 text-white",
+  red: "bg-red-900 text-red-50",
+  blue: "bg-blue-900 text-blue-50",
+  pink: "bg-pink-900 text-pink-50",
+  green: "bg-green-900 text-green-50",
+};
 
 interface User {
   username: string;
@@ -51,9 +65,15 @@ export default function App() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [createTab, setCreateTab] = useState<CreateTab>("music");
   const [user, setUser] = useState<User | null>(null);
+
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInitialized, setChatInitialized] = useState<boolean>(false);
   const [awaitingChatResponse, setAwaitingChatResponse] =
     useState<boolean>(false);
+
+  const [browseItems, setBrowseItems] = useState<Post[]>([]);
+  const [browseStatus, setBrowseStatus] = useState<BrowseStatus>("working");
+
   // const [user, setUser] = useState<User | null>({
   //   username: "",
   //   email: "",
@@ -61,16 +81,35 @@ export default function App() {
   //   avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
   // });
 
-  const location = useLocation();
+  const chatInit = () =>
+    axios
+      .get(process.env.REACT_APP_API + "/chat/init")
+      .then((res) => {
+        setChatMessages(res.data);
+      })
+      .catch((err) => {
+        console.log("error getting initial chats", err);
+      })
+      .finally(() => setChatInitialized(true));
 
-  const themeClasses = {
-    light: "bg-white text-gray-900",
-    dark: "bg-gray-900 text-white",
-    red: "bg-red-500 text-red-50",
-    blue: "bg-blue-500 text-blue-50",
-    pink: "bg-pink-500 text-pink-50",
-    green: "bg-green-500 text-green-50",
-  };
+  const browseQuery = (constraints?: BrowseConstraints) =>
+    axios
+      .post(process.env.REACT_APP_API + "/browse/fetch", constraints || {})
+      .then((res) => {
+        setBrowseItems(res.data);
+        setBrowseStatus("complete");
+      })
+      .catch((err) => {
+        console.log("error getting initial browse items", err);
+        setBrowseStatus("errored");
+      });
+
+  useEffect(() => {
+    chatInit();
+    browseQuery();
+  }, []);
+
+  const location = useLocation();
 
   return (
     <AppContext.Provider value={{ theme, setTheme, user, setUser }}>
@@ -93,7 +132,17 @@ export default function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/browse" element={<BrowsePage />} />
+            <Route
+              path="/browse"
+              element={
+                <BrowsePage
+                  browseItems={browseItems}
+                  browseStatus={browseStatus}
+                  setBrowseStatus={setBrowseStatus}
+                  browseQuery={browseQuery}
+                />
+              }
+            />
             <Route path="/profile" element={<ProfilePage />} />
             <Route
               path="/chat"
@@ -103,6 +152,7 @@ export default function App() {
                   setChatMessages={setChatMessages}
                   awaitingChatResponse={awaitingChatResponse}
                   setAwaitingChatResponse={setAwaitingChatResponse}
+                  chatInitialized={chatInitialized}
                 />
               }
             />

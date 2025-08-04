@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { type CreateTab } from "@/App";
+import { type CreateTab, useApp } from "@/App";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Music as MusicIcon,
@@ -156,18 +156,24 @@ export default function CreatePage({
 
   useEffect(() => {
     if (uncensoredMusic)
-      toast.error("Uncensored music may produce HIGHLY offensive results", {
-        position: "bottom-center",
-        duration: 2000,
-      });
+      toast.error(
+        "Uncensored music is a WIP and currently returns HIGHLY offensive results",
+        {
+          position: "bottom-center",
+          duration: 2000,
+        }
+      );
   }, [uncensoredMusic]);
 
   useEffect(() => {
     if (uncensoredImages)
-      toast.error("Uncensored images may produce HIGHLY offensive results", {
-        position: "bottom-center",
-        duration: 2000,
-      });
+      toast.error(
+        "Uncensored images is a WIP and currently returns HIGHLY offensive results",
+        {
+          position: "bottom-center",
+          duration: 2000,
+        }
+      );
   }, [uncensoredImages]);
 
   const tabs = [
@@ -254,6 +260,8 @@ export default function CreatePage({
     }
   };
 
+  const { theme } = useApp();
+
   return (
     <motion.div
       transition={t.transition}
@@ -284,7 +292,11 @@ export default function CreatePage({
             className={`flex items-center px-4 py-3 rounded-md transition-all cursor-pointer ${
               activeTab === tab.id
                 ? "bg-blue-600 text-white"
-                : "text-gray-300 hover:text-white hover:bg-white/10"
+                : ` hover:text-white hover:bg-white/10 ${
+                    ["light"].includes(theme)
+                      ? "text-gray-700"
+                      : "text-gray-300"
+                  }`
             }`}
           >
             <tab.icon className="w-5 h-5 mr-2 tab-icon" />

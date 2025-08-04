@@ -55,6 +55,7 @@ app.use(express.json());
 app.use(cors());
 app.use(fileUpload());
 app.use((req, res, next) => {
+  console.log(req.url);
   if (req.session && !req?.session.chatId)
     req.session.chatId = crypto.randomUUID();
   next();

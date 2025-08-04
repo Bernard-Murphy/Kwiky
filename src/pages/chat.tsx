@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import TypingIndicator from "@/components/ui/typing-indicator";
 import { MessageCircleMore, Eraser } from "lucide-react";
+import Spinner from "@/components/ui/spinner";
 
 const api = process.env.REACT_APP_API;
 
@@ -20,6 +21,7 @@ export interface ChatProps {
   setChatMessages: Dispatch<SetStateAction<ChatMessage[]>>;
   awaitingChatResponse: boolean;
   setAwaitingChatResponse: (option: boolean) => void;
+  chatInitialized: boolean;
 }
 
 export default function Chat({
@@ -27,6 +29,7 @@ export default function Chat({
   setChatMessages,
   awaitingChatResponse,
   setAwaitingChatResponse,
+  chatInitialized,
 }: ChatProps) {
   const [uncensoredChat, setUncensoredChat] = useState(false);
   const [chatInput, setChatInput] = useState("");
@@ -34,10 +37,13 @@ export default function Chat({
 
   useEffect(() => {
     if (uncensoredChat)
-      toast.error("Uncensored chat may produce HIGHLY offensive results", {
-        position: "bottom-center",
-        duration: 1500,
-      });
+      toast.error(
+        "Uncensored chat is a WIP and currently produces HIGHLY offensive results",
+        {
+          position: "bottom-center",
+          duration: 1500,
+        }
+      );
   }, [uncensoredChat]);
 
   useEffect(() => {
@@ -89,6 +95,26 @@ export default function Chat({
         .finally(() => setAwaitingChatResponse(false));
     }
   };
+
+  if (!chatInitialized)
+    return (
+      <motion.div
+        transition={t.transition}
+        exit={{
+          opacity: 0,
+          y: -50,
+        }}
+        animate={t.normalize}
+        initial={{
+          opacity: 0,
+          y: -50,
+        }}
+        className="flex justify-center w-full mt-5"
+        key="chat-loader"
+      >
+        <Spinner />
+      </motion.div>
+    );
 
   return (
     <motion.div

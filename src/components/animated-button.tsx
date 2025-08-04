@@ -1,6 +1,8 @@
 import type React from "react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useApp } from "@/App";
+import buttonThemeClasses from "@/lib/buttonThemeClasses";
 
 interface AnimatedButtonProps {
   children: React.ReactNode;
@@ -54,22 +56,11 @@ export default function AnimatedButton({
     onClick?.();
   };
 
+  const { theme } = useApp();
+
   const baseClasses =
     "relative overflow-hidden font-medium transition-all duration-200 cursor-pointer";
-  const variantClasses = {
-    primary:
-      "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400 px-6 py-3 rounded-lg",
-    secondary:
-      "bg-gray-200 text-gray-900 hover:bg-gray-300 disabled:bg-gray-100 px-6 py-3 rounded-lg",
-    destructive:
-      "bg-red-200 text-white hover:bg-red-300 disabled:bg-red-100 px-6 py-3 rounded-lg",
-    outline:
-      "bg-gray-700 text-white hover:bg-gray-700 disabled:bg-gray-500 px-6 py-3 rounded-lg",
-    ghost:
-      "text-white hover:bg-gray-700 disabled:bg-gray-500 px-6 py-3 rounded-lg",
-    link: "text-white hover:bg-gray-700 disabled:bg-gray-500 px-6 py-3 rounded-lg",
-    custom: "",
-  };
+  const variantClasses = buttonThemeClasses[theme];
 
   return (
     <button

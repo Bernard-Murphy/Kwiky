@@ -78,6 +78,15 @@ export default async function games(io, socket) {
             title,
           },
         });
+        await db.collection("searchBlobs").insertOne({
+          type: "game",
+          hrID: hrIDs.post,
+          link: `files/${gameID}/index.html`,
+          username: user?.username || "Anonymous",
+          timestamp: new Date().toISOString(),
+          prompt: String(prompt || ""),
+          metadata: String(title || ""),
+        });
         socket.emit("games-link", `files/${gameID}/index.html`);
       } catch (err) {
         console.log("create-game error", err);

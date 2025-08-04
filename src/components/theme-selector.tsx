@@ -87,7 +87,7 @@ export default function ThemeSelector({ createTab }: ThemeSelectorProps) {
                 <div
                   className={`w-4 h-4 rounded-full border-2 ${themeOption.color}`}
                 />
-                <span className="text-sm">{themeOption.name}</span>
+                <span className="text-sm text-white">{themeOption.name}</span>
               </motion.button>
             ))}
           </motion.div>

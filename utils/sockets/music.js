@@ -276,9 +276,8 @@ export default async function music(io, socket) {
                 type: "music",
                 hrID: hrIDs.post,
                 userID: user?._id,
-                link: link,
+                link,
                 timestamp: new Date(),
-                userID: user?._id,
                 prompt: musicPrompt,
                 metadata: {
                   title,
@@ -286,6 +285,22 @@ export default async function music(io, socket) {
                   style: musicStyle,
                   uncensored: uncensoredMusic,
                 },
+              });
+              await db.collection("searchBlobs").insertOne({
+                type: "music",
+                hrID: String(hrIDs.post),
+                link: link || "",
+                username: user?.username || "Anonymous",
+                timestamp: new Date().toISOString(),
+                prompt: musicPrompt || "",
+                metadata:
+                  String(title || "") +
+                  " " +
+                  String(originalLyrics || "") +
+                  " " +
+                  String(musicStyle || "") +
+                  " " +
+                  String(uncensoredMusic === true || "false"),
               });
             } catch (err) {
               console.log("song error", err);

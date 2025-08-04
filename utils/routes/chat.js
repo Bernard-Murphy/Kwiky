@@ -24,15 +24,16 @@ const router = Router();
 const handler = (io) => {
   router.get("/clear", async (req, res) => {
     try {
+      const chatId = req.session.user?._id || req.session.chatId;
       await db.collection("virgilChad").deleteMany({
         $and: [
           {
             $or: [
               {
-                from: req.session.chatId,
+                from: chatId,
               },
               {
-                to: req.session.chatId,
+                to: chatId,
               },
             ],
           },
@@ -45,8 +46,37 @@ const handler = (io) => {
     }
   });
 
+  router.get("/init", async (req, res) => {
+    try {
+      console.log(req.session.chatId);
+      const chatId = req.session.user?._id || req.session.chatId;
+      const messages = await db
+        .collection("virgilChad")
+        .find({
+          $and: [
+            {
+              $or: [
+                {
+                  from: chatId,
+                },
+                {
+                  to: chatId,
+                },
+              ],
+            },
+          ],
+        })
+        .toArray();
+      res.status(200).json(messages);
+    } catch (err) {
+      console.log("/chat/init error", err);
+      res.sendStatus(500);
+    }
+  });
+
   router.post("/ask", async (req, res) => {
     try {
+      const chatId = req.session.user?._id || req.session.chatId;
       const message = req.body.message;
 
       const userMessage = {
@@ -55,7 +85,7 @@ const handler = (io) => {
         to: "ai",
         removed: false,
         message: message,
-        from: req.session.chatId,
+        from: chatId,
         decrypted: true,
       };
 
@@ -66,10 +96,10 @@ const handler = (io) => {
             {
               $or: [
                 {
-                  from: req.session.chatId,
+                  from: chatId,
                 },
                 {
-                  to: req.session.chatId,
+                  to: chatId,
                 },
               ],
             },
@@ -119,20 +149,14 @@ const handler = (io) => {
       const aiMessage = {
         _id: crypto.randomBytes(8).toString("hex"),
         timestamp: new Date(),
-        to: req.session.chatId,
-        id: crypto.randomUUID(),
+        to: chatId,
         removed: false,
         message: chatCompletion.choices[0].message.content,
         from: "ai",
         decrypted: true,
       };
 
-      await db
-        .collection("virgilChad")
-        .insertMany([
-          userMessage,
-          { ...aiMessage, message: aiMessage.message },
-        ]);
+      await db.collection("virgilChad").insertMany([userMessage, aiMessage]);
       res.status(200).json({
         text: aiMessage.message,
         isUser: false,

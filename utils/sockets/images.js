@@ -94,7 +94,6 @@ export default async function images(io, socket) {
               _id: crypto.randomUUID(),
               type: "image",
               hrID: hrIDs.post,
-              userID: user?._id,
               link: `/files/${md5}.png`,
               timestamp: new Date(),
               userID: user?._id,
@@ -103,6 +102,15 @@ export default async function images(io, socket) {
                 style,
                 uncensored,
               },
+            });
+            await db.collection("searchBlobs").insertOne({
+              type: "image",
+              hrID: String(hrIDs.post),
+              link: `/files/${md5}.png`,
+              username: user?.username || "Anonymous",
+              timestamp: new Date().toISOString(),
+              prompt: String(prompt || ""),
+              metadata: String(style || "") + " " + String(uncensored || ""),
             });
             socket.emit("images-link", `/files/${md5}.png`);
           })

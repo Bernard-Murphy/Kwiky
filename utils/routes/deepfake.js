@@ -87,11 +87,28 @@ const handler = (io) => {
             userID: user?._id,
             link,
             timestamp: new Date(),
-            userID: user?._id,
             prompt: req.body.message,
             metadata: {},
           });
-          fs.unlinkSync(videoFile);
+          await db.collection("searchBlobs").insertOne({
+            type: "deepfake",
+            hrID: String(hrIDs.post),
+            link: String(link || ""),
+            username: user?.username || "Anonymous",
+            timestamp: new Date().toISOString(),
+            prompt: req.body.message || "",
+            metadata: "",
+          });
+          try {
+            fs.unlinkSync(audioPath);
+          } catch (err) {
+            console.log("error deleting temp audio file", audioPath, err);
+          }
+          try {
+            fs.unlinkSync(videoFile);
+          } catch (err) {
+            console.log("error deleting temp video file", videoFile, err);
+          }
           io.to(socketID).emit("deepfake-video-link", "/" + link);
         } catch (err) {
           console.log("An error occurred", err);
