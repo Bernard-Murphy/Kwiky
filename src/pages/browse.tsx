@@ -122,8 +122,10 @@ export default function BrowsePage({
               className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
             />
             <AnimatedButton onClick={triggerQuery}>
-              <Search className="me-2" />
-              Submit
+              <div className="flex items-center justify-center">
+                <Search className="me-2" />
+                Submit
+              </div>
             </AnimatedButton>
           </div>
           <AnimatedButton
