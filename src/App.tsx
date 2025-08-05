@@ -49,6 +49,7 @@ interface AppContextType {
   setTheme: (theme: Theme) => void;
   user: User | null;
   setUser: (user: User | null) => void;
+  authWorking: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -64,6 +65,8 @@ export const useApp = () => {
 export default function App() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [createTab, setCreateTab] = useState<CreateTab>("music");
+
+  const [authWorking, setAuthWorking] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -75,10 +78,10 @@ export default function App() {
   const [browseStatus, setBrowseStatus] = useState<BrowseStatus>("working");
 
   // const [user, setUser] = useState<User | null>({
-  //   username: "",
-  //   email: "",
-  //   bio: "",
-  //   avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
+  // username: "",
+  // email: "",
+  // bio: "",
+  // avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
   // });
 
   const chatInit = () =>
@@ -104,7 +107,28 @@ export default function App() {
         setBrowseStatus("errored");
       });
 
+  const authInit = () => {
+    axios
+      .get(process.env.REACT_APP_API + "/auth/init")
+      .then((res) => {
+        if (res.data.user) {
+          if (res.data.user.avatar)
+            res.data.user.avatar =
+              "https://" +
+              process.env.REACT_APP_ASSET_LOCATION +
+              "/" +
+              res.data.user.avatar;
+          setUser(res.data.user);
+        }
+      })
+      .catch((err) => {
+        console.log("authInit error", err);
+      })
+      .finally(() => setAuthWorking(false));
+  };
+
   useEffect(() => {
+    authInit();
     chatInit();
     browseQuery();
   }, []);
@@ -112,7 +136,9 @@ export default function App() {
   const location = useLocation();
 
   return (
-    <AppContext.Provider value={{ theme, setTheme, user, setUser }}>
+    <AppContext.Provider
+      value={{ theme, setTheme, user, setUser, authWorking }}
+    >
       <div
         className={`min-h-screen transition-colors duration-300 ${themeClasses[theme]}`}
       >

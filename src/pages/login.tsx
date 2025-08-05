@@ -3,16 +3,21 @@
 import type React from "react";
 import { transitions as t } from "@/lib/utils";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import AnimatedButton from "@/components/animated-button";
 import { useApp } from "@/App";
+import axios from "axios";
+import Spinner from "@/components/ui/spinner";
+
+const api = process.env.REACT_APP_API;
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     usernameOrEmail: "",
     password: "",
   });
+  const [working, setWorking] = useState<boolean>(false);
   const { setUser } = useApp();
   const navigate = useNavigate();
 
@@ -25,14 +30,33 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate login
-    setUser({
-      username: formData.usernameOrEmail,
-      email: formData.usernameOrEmail.includes("@")
-        ? formData.usernameOrEmail
-        : "user@example.com",
-    });
-    navigate("/");
+    setWorking(true);
+    axios
+      .post(api + "/auth/login", {
+        username: formData.usernameOrEmail,
+        password: formData.password,
+      })
+      .then((res) => {
+        if (res.data.user) {
+          if (res.data.user.avatar)
+            res.data.user.avatar =
+              "https://" +
+              process.env.REACT_APP_ASSET_LOCATION +
+              "/" +
+              res.data.user.avatar;
+          setUser(res.data.user);
+          navigate("/profile");
+        }
+      })
+      .catch((err) => {
+        console.log("err", err);
+        if (err?.response?.status === 404) return alert("User/Email not found");
+        if (err?.response?.status === 401)
+          return alert("Invalid user/email/password");
+
+        alert("An error occurred. Please try again later.");
+      })
+      .finally(() => setWorking(false));
   };
 
   return (
@@ -120,7 +144,40 @@ export default function LoginPage() {
           }}
         >
           <AnimatedButton type="submit" className="w-full">
-            Login
+            <AnimatePresence mode="wait">
+              {working ? (
+                <motion.div
+                  transition={t.transition}
+                  exit={{
+                    opacity: 0,
+                  }}
+                  animate={t.normalize}
+                  initial={{
+                    opacity: 0,
+                  }}
+                  className="flex items-center justify-center"
+                  key="working"
+                >
+                  <Spinner className="me-2" size="sm" />
+                  Working
+                </motion.div>
+              ) : (
+                <motion.div
+                  transition={t.transition}
+                  exit={{
+                    opacity: 0,
+                  }}
+                  animate={t.normalize}
+                  initial={{
+                    opacity: 0,
+                  }}
+                  className="flex items-center justify-center"
+                  key="login"
+                >
+                  Login
+                </motion.div>
+              )}
+            </AnimatePresence>
           </AnimatedButton>
         </motion.div>
 

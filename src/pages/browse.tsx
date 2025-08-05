@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, RotateCcw } from "lucide-react";
+import { ChevronDown, RotateCcw, Search } from "lucide-react";
 import AnimatedButton from "@/components/animated-button";
 import { transitions as t } from "@/lib/utils";
 import DatePicker from "@/components/datepicker";
@@ -21,7 +21,7 @@ import { useApp, themeClasses } from "@/App";
 export interface Post {
   _id: string;
   type: string;
-  hrID: string;
+  hrID: number;
   link: string;
   timestamp: Date | string;
   userID?: string | undefined;
@@ -57,7 +57,7 @@ export interface BrowseProps {
 }
 
 export default function BrowsePage({
-  browseItems,
+  // browseItems,
   browseStatus,
   setBrowseStatus,
   browseQuery,
@@ -97,9 +97,6 @@ export default function BrowsePage({
     browseQuery(constraints);
   };
 
-  console.log(browseItems);
-  console.log(browseStatus);
-
   return (
     <div className="container mx-auto px-6 py-8">
       <motion.div
@@ -124,7 +121,10 @@ export default function BrowsePage({
               placeholder="Search for content..."
               className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
             />
-            <AnimatedButton onClick={triggerQuery}>Submit</AnimatedButton>
+            <AnimatedButton onClick={triggerQuery}>
+              <Search className="me-2" />
+              Submit
+            </AnimatedButton>
           </div>
           <AnimatedButton
             onClick={() => setShowSearchOptions(!showSearchOptions)}

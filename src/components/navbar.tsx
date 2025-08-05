@@ -4,11 +4,13 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../App";
+import { Dot } from "lucide-react";
 import AnimatedButton from "./animated-button";
+import Spinner from "./ui/spinner";
 
 export default function Navbar() {
   const location = useLocation();
-  const { user, setUser } = useApp();
+  const { user, setUser, authWorking } = useApp();
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
@@ -69,73 +71,110 @@ export default function Navbar() {
         </div>
 
         <div className="relative">
-          {user ? (
-            <div>
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="w-10 h-10 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all cursor-pointer"
+          <AnimatePresence mode="wait">
+            {authWorking ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                key="spinner"
+                className="flex items-center justify-center"
               >
-                {user.avatar ? (
-                  <img
-                    src={user.avatar || "/placeholder.svg"}
-                    alt="Avatar"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
-                    {user.username.charAt(0).toUpperCase()}
-                  </div>
-                )}
-              </button>
-
-              <AnimatePresence>
-                {showDropdown && (
+                <Spinner size="sm" />
+              </motion.div>
+            ) : (
+              <>
+                {user ? (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    key="user"
                   >
                     <button
-                      onClick={handleProfileClick}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
+                      onClick={() => setShowDropdown(!showDropdown)}
+                      className="w-10 h-10 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all cursor-pointer"
                     >
-                      Profile
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar || "/blank-avatar.png"}
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                          {user.username.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                     </button>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors text-red-400 cursor-pointer"
+
+                    <AnimatePresence mode="wait">
+                      {showDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
+                        >
+                          <button
+                            onClick={handleProfileClick}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
+                          >
+                            Profile
+                          </button>
+                          <button
+                            onClick={handleLogout}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors text-red-400 cursor-pointer"
+                          >
+                            Logout
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    key="options"
+                    className="space-x-1"
+                  >
+                    <Link
+                      to="/login"
+                      className={`text-lg font-medium hover:text-blue-400 transition-colors ${
+                        location.pathname === "/login" ? "text-blue-400" : ""
+                      }`}
                     >
-                      Logout
-                    </button>
+                      <AnimatedButton
+                        className="text-left px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-700 disabled:bg-gray-500 hover:text-blue-400"
+                        variant="custom"
+                      >
+                        Login
+                      </AnimatedButton>
+                    </Link>
+
+                    <span>
+                      <Dot className="inline" />
+                    </span>
+                    <Link
+                      className={`text-lg font-medium hover:text-blue-400 transition-colors ${
+                        location.pathname === "/register" ? "text-blue-400" : ""
+                      }`}
+                      to="/register"
+                    >
+                      <AnimatedButton
+                        className="text-left px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-700 disabled:bg-gray-500 hover:text-blue-400"
+                        variant="custom"
+                      >
+                        Register
+                      </AnimatedButton>
+                    </Link>
                   </motion.div>
                 )}
-              </AnimatePresence>
-            </div>
-          ) : (
-            // <div className="space-x-1">
-            //   <Link
-            //     to="/login"
-            //     className={`text-lg font-medium hover:text-blue-400 transition-colors ${
-            //       location.pathname === "/login" ? "text-blue-400" : ""
-            //     }`}
-            //   >
-            //     Login
-            //   </Link>
-            //   <span>
-            //     <Dot className="inline" />
-            //   </span>
-            //   <Link
-            //     className={`text-lg font-medium hover:text-blue-400 transition-colors ${
-            //       location.pathname === "/register" ? "text-blue-400" : ""
-            //     }`}
-            //     to="/register"
-            //   >
-            //     Register
-            //   </Link>
-            // </div>
-            <div className="text-lg font-medium">Work in Progress</div>
-          )}
+              </>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </nav>

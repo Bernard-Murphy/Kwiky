@@ -1,7 +1,8 @@
 WIP
 
 npm install
-npm run dev
+npm run build
+node server-kwiky.js
 
 https://app.dupdub.com/apiDocs?wn=bGlsbWlsa0BnbWFpbC5jb20%3D
 

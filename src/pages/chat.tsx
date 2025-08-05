@@ -253,9 +253,11 @@ export default function Chat({
         <label className="flex justify-end mt-2 ml-auto">
           <input
             type="checkbox"
-            checked={uncensoredChat}
+            // checked={uncensoredChat}
+            checked={false}
             onChange={(e) => setUncensoredChat(e.target.checked)}
             className="mr-2"
+            disabled
           />
           Uncensored
         </label>

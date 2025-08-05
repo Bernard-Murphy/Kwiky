@@ -4,6 +4,7 @@ import { useApp } from "@/App";
 import { transitions as t } from "@/lib/utils";
 import AnimatedButton from "@/components/animated-button";
 import { User, Palette } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type ProfileTab = "userInfo" | "myContent";
 
@@ -11,16 +12,14 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<ProfileTab>("userInfo");
   const { user } = useApp();
 
+  const navigate = useNavigate();
+
   if (!user) {
+    navigate("/login");
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="container mx-auto px-6 py-8 text-center"
-      >
+      <div className="container mx-auto px-6 py-8 text-center">
         <p>Please log in to view your profile.</p>
-      </motion.div>
+      </div>
     );
   }
 

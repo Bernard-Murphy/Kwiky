@@ -1,11 +1,15 @@
 import type React from "react";
 import { transitions as t } from "@/lib/utils";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
 import AnimatedButton from "@/components/animated-button";
 import { useApp } from "@/App";
+import axios from "axios";
+import Spinner from "@/components/ui/spinner";
+
+const api = process.env.REACT_APP_API;
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -17,6 +21,7 @@ export default function RegisterPage() {
     avatar: null as File | null,
   });
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [working, setWorking] = useState<boolean>(false);
   const { setUser } = useApp();
   const navigate = useNavigate();
 
@@ -45,15 +50,36 @@ export default function RegisterPage() {
       alert("Passwords do not match");
       return;
     }
+    setWorking(true);
 
-    // Simulate registration
-    setUser({
-      username: formData.username,
-      email: formData.email,
-      bio: formData.bio,
-      avatar: avatarPreview || undefined,
-    });
-    navigate("/");
+    const fd = new FormData();
+    fd.append("username", formData.username.trim());
+    fd.append("email", formData.email.trim());
+    fd.append("bio", formData.bio.trim());
+    fd.append("password1", formData.password.trim());
+    fd.append("password2", formData.confirmPassword.trim());
+    if (formData.avatar)
+      fd.append("avatar", formData.avatar, formData.avatar.name);
+
+    axios
+      .post(api + "/auth/register", fd)
+      .then((res) => {
+        if (res.data.avatar)
+          res.data.avatar =
+            "https://" +
+            process.env.REACT_APP_ASSET_LOCATION +
+            "/" +
+            res.data.avatar;
+        setUser(res.data);
+        navigate("/profile");
+      })
+      .catch((err) => {
+        console.log("error", err);
+        if (err?.response?.status === 409)
+          return alert("Username or Email already in use");
+        alert("An error occurred. Please try again later");
+      })
+      .finally(() => setWorking(false));
   };
 
   return (
@@ -62,18 +88,18 @@ export default function RegisterPage() {
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
-      className="container mx-auto px-6 py-8 max-w-md"
+      className="container mx-auto px-6 py-8 max-w-md h-full overflow-y-hidden"
     >
       <motion.div
         transition={t.transition}
         exit={{
           opacity: 0,
-          y: -40,
+          y: 40,
         }}
         animate={t.normalize}
         initial={{
           opacity: 0,
-          y: -40,
+          y: 40,
         }}
         className="text-center mb-6"
       >
@@ -90,16 +116,19 @@ export default function RegisterPage() {
           transition={t.transition}
           exit={{
             opacity: 0,
-            y: -25,
+            y: 45,
           }}
           animate={t.normalize}
           initial={{
             opacity: 0,
-            y: -25,
+            y: 45,
           }}
           className="text-center"
         >
-          <div className="relative inline-block">
+          <AnimatedButton
+            variant="custom"
+            className="relative inline-block rounded-full"
+          >
             <input
               type="file"
               accept="image/*"
@@ -123,20 +152,22 @@ export default function RegisterPage() {
                 </div>
               )}
             </label>
-          </div>
-          <p className="text-sm text-gray-400 mt-2">Click to upload avatar</p>
+          </AnimatedButton>
+          <p className="text-sm text-gray-400 mt-2">
+            {formData.avatar ? formData.avatar.name : "Avatar"}
+          </p>
         </motion.div>
 
         <motion.div
           transition={t.transition}
           exit={{
             opacity: 0,
-            x: 70,
+            y: 50,
           }}
           animate={t.normalize}
           initial={{
             opacity: 0,
-            x: 70,
+            y: 50,
           }}
         >
           <label className="block text-sm font-medium mb-2">Username *</label>
@@ -154,12 +185,12 @@ export default function RegisterPage() {
           transition={t.transition}
           exit={{
             opacity: 0,
-            x: -70,
+            y: 55,
           }}
           animate={t.normalize}
           initial={{
             opacity: 0,
-            x: -70,
+            y: 55,
           }}
         >
           <label className="block text-sm font-medium mb-2">Password *</label>
@@ -177,12 +208,12 @@ export default function RegisterPage() {
           transition={t.transition}
           exit={{
             opacity: 0,
-            x: 70,
+            y: 60,
           }}
           animate={t.normalize}
           initial={{
             opacity: 0,
-            x: 70,
+            y: 60,
           }}
         >
           <label className="block text-sm font-medium mb-2">
@@ -202,12 +233,12 @@ export default function RegisterPage() {
           transition={t.transition}
           exit={{
             opacity: 0,
-            x: -70,
+            y: 65,
           }}
           animate={t.normalize}
           initial={{
             opacity: 0,
-            x: -70,
+            y: 65,
           }}
         >
           <label className="block text-sm font-medium mb-2">
@@ -227,12 +258,12 @@ export default function RegisterPage() {
           transition={t.transition}
           exit={{
             opacity: 0,
-            x: 70,
+            y: 70,
           }}
           animate={t.normalize}
           initial={{
             opacity: 0,
-            x: 70,
+            y: 70,
           }}
         >
           <label className="block text-sm font-medium mb-2">Bio</label>
@@ -249,16 +280,49 @@ export default function RegisterPage() {
           transition={t.transition}
           exit={{
             opacity: 0,
-            x: -70,
+            y: 75,
           }}
           animate={t.normalize}
           initial={{
             opacity: 0,
-            x: -70,
+            y: 75,
           }}
         >
-          <AnimatedButton type="submit" className="w-full">
-            Register
+          <AnimatedButton type="submit" className="w-full" disabled={working}>
+            <AnimatePresence mode="wait">
+              {working ? (
+                <motion.div
+                  transition={t.transition}
+                  exit={{
+                    opacity: 0,
+                  }}
+                  animate={t.normalize}
+                  initial={{
+                    opacity: 0,
+                  }}
+                  className="flex items-center justify-center"
+                  key="working"
+                >
+                  <Spinner className="me-2" size="sm" />
+                  Working
+                </motion.div>
+              ) : (
+                <motion.div
+                  transition={t.transition}
+                  exit={{
+                    opacity: 0,
+                  }}
+                  animate={t.normalize}
+                  initial={{
+                    opacity: 0,
+                  }}
+                  className="flex items-center justify-center"
+                  key="not-working"
+                >
+                  Register
+                </motion.div>
+              )}
+            </AnimatePresence>
           </AnimatedButton>
         </motion.div>
       </form>
