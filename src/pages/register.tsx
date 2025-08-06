@@ -1,6 +1,6 @@
 import type React from "react";
 import { transitions as t } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
@@ -22,8 +22,12 @@ export default function RegisterPage() {
   });
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [working, setWorking] = useState<boolean>(false);
-  const { setUser } = useApp();
+  const { setUser, user } = useApp();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) navigate("/profile");
+  }, [user?.username]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -71,7 +75,6 @@ export default function RegisterPage() {
             "/" +
             res.data.avatar;
         setUser(res.data);
-        navigate("/profile");
       })
       .catch((err) => {
         console.log("error", err);

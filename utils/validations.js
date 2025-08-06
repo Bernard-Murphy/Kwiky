@@ -11,6 +11,18 @@ export const register_schema = y.object().shape({
   bio: y.string(),
 });
 
+export const login_schema = y.object().shape({
+  username: y.string().required(),
+  password: y.string().required(),
+});
+
+export const forgot_password_schema = y.object().shape({
+  username: y.string().required(),
+  email: y.string().required(),
+});
+
 export default {
   register_schema,
+  login_schema,
+  forgot_password_schema,
 };

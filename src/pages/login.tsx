@@ -2,24 +2,36 @@
 
 import type React from "react";
 import { transitions as t } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import AnimatedButton from "@/components/animated-button";
 import { useApp } from "@/App";
 import axios from "axios";
 import Spinner from "@/components/ui/spinner";
+import { ChevronRight, UserRoundPlus } from "lucide-react";
 
 const api = process.env.REACT_APP_API;
 
 export default function LoginPage() {
+  const { user } = useApp();
+  const navigate = useNavigate();
+  const params = useSearchParams();
+  const altEntranceAnimation = String(params[0].get("fromPassword")) === "true";
   const [formData, setFormData] = useState({
     usernameOrEmail: "",
     password: "",
   });
+  const [altExit, setAltExit] = useState<boolean>(false);
   const [working, setWorking] = useState<boolean>(false);
+  useEffect(() => {
+    if (user) navigate("/profile");
+  }, [user?.username]);
+
+  useEffect(() => {
+    if (altExit) navigate("/forgot-password?fromLogin=true");
+  }, [altExit]);
   const { setUser } = useApp();
-  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -45,7 +57,6 @@ export default function LoginPage() {
               "/" +
               res.data.user.avatar;
           setUser(res.data.user);
-          navigate("/profile");
         }
       })
       .catch((err) => {
@@ -62,22 +73,50 @@ export default function LoginPage() {
   return (
     <motion.div
       transition={t.transition}
-      exit={t.fade_out_scale_1}
+      exit={
+        altExit
+          ? {
+              opacity: 0,
+              x: -75,
+            }
+          : t.fade_out_scale_1
+      }
       animate={t.normalize}
-      initial={t.fade_out}
+      initial={
+        altEntranceAnimation
+          ? {
+              opacity: 0,
+              x: -75,
+            }
+          : t.fade_out
+      }
       className="container mx-auto px-6 py-8 max-w-md"
     >
       <motion.h1
         transition={t.transition}
-        exit={{
-          opacity: 0,
-          y: 40,
-        }}
+        exit={
+          altExit
+            ? {
+                opacity: 0,
+                x: -75,
+              }
+            : {
+                opacity: 0,
+                y: 40,
+              }
+        }
         animate={t.normalize}
-        initial={{
-          opacity: 0,
-          y: 40,
-        }}
+        initial={
+          altEntranceAnimation
+            ? {
+                opacity: 0,
+                x: -75,
+              }
+            : {
+                opacity: 0,
+                y: 40,
+              }
+        }
         className="text-2xl font-bold text-center mb-8"
       >
         Login
@@ -86,15 +125,26 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <motion.div
           transition={t.transition}
-          exit={{
-            opacity: 0,
-            y: 55,
-          }}
+          exit={
+            altExit
+              ? {
+                  opacity: 0,
+                  x: -75,
+                }
+              : {
+                  opacity: 0,
+                  y: 55,
+                }
+          }
           animate={t.normalize}
-          initial={{
-            opacity: 0,
-            y: 55,
-          }}
+          initial={
+            altEntranceAnimation
+              ? { opacity: 0, x: -75 }
+              : {
+                  opacity: 0,
+                  y: 55,
+                }
+          }
         >
           <label className="block text-sm font-medium mb-2">
             Username or Email Address
@@ -111,15 +161,26 @@ export default function LoginPage() {
 
         <motion.div
           transition={t.transition}
-          exit={{
-            opacity: 0,
-            y: 70,
-          }}
+          exit={
+            altExit
+              ? {
+                  opacity: 0,
+                  x: -75,
+                }
+              : {
+                  opacity: 0,
+                  y: 70,
+                }
+          }
           animate={t.normalize}
-          initial={{
-            opacity: 0,
-            y: 70,
-          }}
+          initial={
+            altEntranceAnimation
+              ? { opacity: 0, x: -75 }
+              : {
+                  opacity: 0,
+                  y: 70,
+                }
+          }
         >
           <label className="block text-sm font-medium mb-2">Password</label>
           <input
@@ -133,17 +194,28 @@ export default function LoginPage() {
         </motion.div>
         <motion.div
           transition={t.transition}
-          exit={{
-            opacity: 0,
-            y: 85,
-          }}
+          exit={
+            altExit
+              ? {
+                  opacity: 0,
+                  x: -75,
+                }
+              : {
+                  opacity: 0,
+                  y: 85,
+                }
+          }
           animate={t.normalize}
-          initial={{
-            opacity: 0,
-            y: 85,
-          }}
+          initial={
+            altEntranceAnimation
+              ? { opacity: 0, x: -75 }
+              : {
+                  opacity: 0,
+                  y: 85,
+                }
+          }
         >
-          <AnimatedButton type="submit" className="w-full">
+          <AnimatedButton disabled={working} type="submit" className="w-full">
             <AnimatePresence mode="wait">
               {working ? (
                 <motion.div
@@ -183,20 +255,44 @@ export default function LoginPage() {
 
         <motion.div
           transition={t.transition}
-          exit={{
-            opacity: 0,
-            y: 100,
-          }}
+          exit={
+            altExit
+              ? {
+                  opacity: 0,
+                  x: -75,
+                }
+              : {
+                  opacity: 0,
+                  y: 100,
+                }
+          }
           animate={t.normalize}
-          initial={{
-            opacity: 0,
-            y: 100,
-          }}
-          className="text-center"
+          initial={
+            altEntranceAnimation
+              ? { opacity: 0, x: -75 }
+              : {
+                  opacity: 0,
+                  y: 100,
+                }
+          }
         >
-          <Link to="/forgot-password">
-            <AnimatedButton variant="outline" className="w-full">
-              Forgot Password
+          <AnimatedButton
+            type="button"
+            variant="outline"
+            className="w-full flex items-center justify-center"
+            onClick={() => setAltExit(true)}
+          >
+            Forgot Password
+            <ChevronRight className="ml-2" />
+          </AnimatedButton>
+          <Link to="/register">
+            <AnimatedButton
+              type="button"
+              variant="ghost"
+              className="mt-4 mx-auto  flex items-center justify-center"
+            >
+              <UserRoundPlus className="mr-2" />
+              Create Account
             </AnimatedButton>
           </Link>
         </motion.div>

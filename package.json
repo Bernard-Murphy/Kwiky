@@ -38,6 +38,8 @@
     "mime-types": "^3.0.1",
     "mongodb": "^6.17.0",
     "next-themes": "^0.4.6",
+    "nodemailer": "^7.0.5",
+    "nodemailer-mailgun-transport": "^2.1.5",
     "openai": "^5.10.1",
     "react": "^19.1.0",
     "react-day-picker": "^9.8.0",

@@ -55,7 +55,7 @@ app.use(express.json());
 app.use(cors());
 app.use(fileUpload());
 app.use((req, res, next) => {
-  console.log(req.url);
+  // console.log(req.url);
   if (req.session && !req?.session.chatId)
     req.session.chatId = crypto.randomUUID();
   next();
@@ -76,6 +76,16 @@ io.use(wrapSocketMiddleware(sessionObj));
 io.on("connection", (socket) => socketHandler(io, socket));
 
 app.use("/", routes(io));
+
+app.get(/^(.*)$/, (req, res) => {
+  try {
+    if (req.url.includes(".")) return res.sendStatus(404);
+    res.status(200).sendFile(__dirname + "/dist/index.html");
+  } catch (err) {
+    console.log("error", err, req.url);
+    res.sendStatus(500);
+  }
+});
 
 server.listen(port, async () => {
   try {

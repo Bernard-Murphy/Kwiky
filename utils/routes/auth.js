@@ -1,15 +1,31 @@
 import { Router } from "express";
 import db from "../db.js";
-import { register_schema } from "../validations.js";
+import {
+  register_schema,
+  login_schema,
+  forgot_password_schema,
+} from "../validations.js";
 import m from "../methods.js";
 import bcrypt from "bcrypt";
+import mg from "nodemailer-mailgun-transport";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
+
+const transporter = nodemailer.createTransport(
+  mg({
+    auth: {
+      api_key: process.env.MAILGUN_KEY,
+      domain: process.env.MAILGUN_DOMAIN,
+    },
+  })
+);
 
 const router = Router();
 
 const handler = (io) => {
   router.post("/login", async (req, res) => {
     try {
-      console.log(req.body);
+      login_schema.validateSync(req.body);
       const user = await db.collection("users").findOne({
         $or: [
           {
@@ -59,7 +75,7 @@ const handler = (io) => {
       const passHash = await bcrypt.hash(req.body.password1, 8);
       let avatar;
       if (
-        req.files.avatar &&
+        req.files?.avatar &&
         req.files.avatar.mimetype.split("/")[0] === "image"
       ) {
         avatar = await m.writeToStorj(req.files.avatar);
@@ -107,12 +123,66 @@ const handler = (io) => {
 
   router.get("/init", (req, res) => {
     try {
-      console.log("auth init");
       res.status(200).json({
         user: req.session.user,
       });
     } catch (err) {
       console.log("/auth/init error", err);
+      res.sendStatus(500);
+    }
+  });
+
+  router.post("/forgot-password", async (req, res) => {
+    try {
+      /**
+       * Find user with supplied username and email
+       * Validate the email
+       */
+      forgot_password_schema.validateSync(req.body);
+      const user = await db.collection("users").findOne({
+        username: new RegExp(`^${req.body.username}$`, "i"),
+        email: new RegExp(`^${req.body.email}$`, "i"),
+      });
+      // const captchaCheck = await h.verifyCaptcha(
+      //   req.body.captchaKey,
+      //   req.socket.remoteAddress
+      // );
+      if (user) {
+        const id = crypto.randomUUID();
+        const resetID = crypto.randomUUID();
+        /**
+         * If email is valid, send an email with a link to reset their password
+         * Invalidate any other valid password reset requests
+         * Create a new password reset request object and add it to the PasswordResets collection
+         */
+        await transporter.sendMail({
+          from: `"Accounts - Feed Nana" ${process.env.ACCOUNT_EMAIL}`,
+          to: req.body.email,
+          subject: "Reset your password",
+          html: `
+                        <p>Dear ${user.username},</p>
+                        <p>You are receiving this email because we received a request to reset your password. Your reset link can be found here:</p>
+                        <a href="${process.env.ROOT}/set-password/${resetID}">${process.env.ROOT}/set-password/${resetID}</a>
+                        <p>If you did not make this request or wish to cancel, <a href="${process.env.ROOT}/cancel/${resetID}">click here</a></p>
+                    `,
+        });
+        await db
+          .collection("passwordResets")
+          .updateMany({ userID: user._id }, { $set: { valid: false } });
+        await db.collection("passwordResets").insertOne({
+          _id: id,
+          timestamp: new Date(),
+          uuid: resetID,
+          userID: user._id,
+          valid: true,
+          email: user.email,
+        });
+        res.status(200).json({
+          success: true,
+        });
+      } else res.sendStatus(404);
+    } catch (err) {
+      console.log(err);
       res.sendStatus(500);
     }
   });
