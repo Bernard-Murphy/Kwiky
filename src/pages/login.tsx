@@ -102,7 +102,7 @@ export default function LoginPage() {
               }
             : {
                 opacity: 0,
-                y: 40,
+                y: -40,
               }
         }
         animate={t.normalize}
@@ -114,7 +114,7 @@ export default function LoginPage() {
               }
             : {
                 opacity: 0,
-                y: 40,
+                y: -40,
               }
         }
         className="text-2xl font-bold text-center mb-8"
@@ -133,7 +133,7 @@ export default function LoginPage() {
                 }
               : {
                   opacity: 0,
-                  y: 55,
+                  y: -55,
                 }
           }
           animate={t.normalize}
@@ -142,7 +142,7 @@ export default function LoginPage() {
               ? { opacity: 0, x: -75 }
               : {
                   opacity: 0,
-                  y: 55,
+                  y: -55,
                 }
           }
         >
@@ -169,7 +169,7 @@ export default function LoginPage() {
                 }
               : {
                   opacity: 0,
-                  y: 70,
+                  y: -70,
                 }
           }
           animate={t.normalize}
@@ -178,7 +178,7 @@ export default function LoginPage() {
               ? { opacity: 0, x: -75 }
               : {
                   opacity: 0,
-                  y: 70,
+                  y: -70,
                 }
           }
         >
@@ -202,7 +202,7 @@ export default function LoginPage() {
                 }
               : {
                   opacity: 0,
-                  y: 85,
+                  y: -85,
                 }
           }
           animate={t.normalize}
@@ -211,7 +211,7 @@ export default function LoginPage() {
               ? { opacity: 0, x: -75 }
               : {
                   opacity: 0,
-                  y: 85,
+                  y: -85,
                 }
           }
         >
@@ -263,7 +263,7 @@ export default function LoginPage() {
                 }
               : {
                   opacity: 0,
-                  y: 100,
+                  y: -100,
                 }
           }
           animate={t.normalize}
@@ -272,7 +272,7 @@ export default function LoginPage() {
               ? { opacity: 0, x: -75 }
               : {
                   opacity: 0,
-                  y: 100,
+                  y: -100,
                 }
           }
         >

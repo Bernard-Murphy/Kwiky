@@ -79,7 +79,10 @@ export default function ProfilePage() {
 
               {/* Main Content */}
               <motion.div
-                transition={t.transition}
+                transition={{
+                  x: { duration: 0.2 },
+                  opacity: { duration: 0.14 },
+                }}
                 exit={{
                   opacity: 0,
                   x: 100,

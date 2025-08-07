@@ -38,7 +38,7 @@ export interface ImageProps {
 export default function Images({
   imageText,
   setImageText,
-  // uncensoredImages,
+  uncensoredImages,
   setUncensoredImages,
   imageStyle,
   setImageStyle,
@@ -82,9 +82,7 @@ export default function Images({
         <label className="block mb-2 flex-1">
           <input
             type="checkbox"
-            // checked={uncensoredImages}
-            checked={false}
-            disabled
+            checked={uncensoredImages}
             onChange={(e) => setUncensoredImages(e.target.checked)}
             className="mr-2"
           />

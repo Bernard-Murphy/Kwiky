@@ -9,6 +9,8 @@ import CreatePage from "./pages/create";
 import RegisterPage from "./pages/register";
 import LoginPage from "./pages/login";
 import ForgotPasswordPage from "./pages/forgot-password";
+import ResetPasswordPage from "./pages/reset-password";
+import CancelPage from "./pages/cancel";
 import BrowsePage, {
   type Post,
   type BrowseStatus,
@@ -169,6 +171,11 @@ export default function App() {
                 />
               }
             />
+            <Route
+              path="/set-password/:resetId"
+              element={<ResetPasswordPage />}
+            />
+            <Route path="/cancel/:resetId" element={<CancelPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route
               path="/chat"
@@ -192,7 +199,7 @@ export default function App() {
             location.pathname !== "/register"
               ? "left-0 text-center right-0"
               : "right-5"
-          }  text-xs opacity-75`}
+          } text-xs opacity-75`}
         >
           Created by Bernard Murphy
         </div>

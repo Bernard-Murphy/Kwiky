@@ -40,7 +40,7 @@ export default function Music({
   setGenerateLyrics,
   generateStyle,
   setGenerateStyle,
-  // uncensoredMusic,
+  uncensoredMusic,
   setUncensoredMusic,
   musicPrompt,
   setMusicPrompt,
@@ -98,9 +98,7 @@ export default function Music({
         <label className="block">
           <input
             type="checkbox"
-            // checked={uncensoredMusic}
-            checked={false}
-            disabled
+            checked={uncensoredMusic}
             onChange={(e) => setUncensoredMusic(e.target.checked)}
             className="mr-2"
           />

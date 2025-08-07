@@ -39,6 +39,8 @@ export default function ForgotPasswordPage() {
       setWorking(true);
 
       await axios.post(api + "/auth/forgot-password", formData);
+      setComplete(true);
+      setWorking(false);
     } catch (err) {
       setWorking(false);
       console.log("handleSubmit error", err);
@@ -53,7 +55,7 @@ export default function ForgotPasswordPage() {
         altExit
           ? {
               opacity: 0,
-              x: 75,
+              x: 150,
             }
           : t.fade_out_scale_1
       }
@@ -72,9 +74,15 @@ export default function ForgotPasswordPage() {
         {complete ? (
           <motion.div
             transition={t.transition}
-            exit={t.fade_out_scale_1}
+            exit={{
+              opacity: 0,
+              y: 40,
+            }}
             animate={t.normalize}
-            initial={t.fade_out}
+            initial={{
+              opacity: 0,
+              y: 40,
+            }}
             key="complete"
           >
             <h2 className="text-center">

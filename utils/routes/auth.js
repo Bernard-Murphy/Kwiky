@@ -4,6 +4,7 @@ import {
   register_schema,
   login_schema,
   forgot_password_schema,
+  set_password_schema,
 } from "../validations.js";
 import m from "../methods.js";
 import bcrypt from "bcrypt";
@@ -138,11 +139,13 @@ const handler = (io) => {
        * Find user with supplied username and email
        * Validate the email
        */
+      console.log("forgot password", req.body);
       forgot_password_schema.validateSync(req.body);
       const user = await db.collection("users").findOne({
         username: new RegExp(`^${req.body.username}$`, "i"),
         email: new RegExp(`^${req.body.email}$`, "i"),
       });
+      console.log("user", user);
       // const captchaCheck = await h.verifyCaptcha(
       //   req.body.captchaKey,
       //   req.socket.remoteAddress
@@ -156,7 +159,7 @@ const handler = (io) => {
          * Create a new password reset request object and add it to the PasswordResets collection
          */
         await transporter.sendMail({
-          from: `"Accounts - Feed Nana" ${process.env.ACCOUNT_EMAIL}`,
+          from: `"Accounts - Kwiky" ${process.env.ACCOUNT_EMAIL}`,
           to: req.body.email,
           subject: "Reset your password",
           html: `
@@ -177,12 +180,73 @@ const handler = (io) => {
           valid: true,
           email: user.email,
         });
-        res.status(200).json({
-          success: true,
-        });
+        res.sendStatus(200);
       } else res.sendStatus(404);
     } catch (err) {
       console.log(err);
+      res.sendStatus(500);
+    }
+  });
+
+  router.post("/set-password", async (req, res) => {
+    try {
+      console.log("set password", req.body);
+      set_password_schema.validateSync(req.body);
+
+      const request = await db.collection("passwordResets").findOne({
+        uuid: req.body.resetId,
+      });
+      if (!request) return res.sendStatus(404);
+      const passHash = await bcrypt.hash(req.body.password1, 8);
+      await db.collection("passwordResets").updateOne(
+        {
+          _id: request._id,
+        },
+        {
+          $set: {
+            valid: false,
+          },
+        }
+      );
+      const newUserInfo = await db.collection("users").findOneAndUpdate(
+        { _id: request.userID },
+        {
+          $set: {
+            password: passHash,
+          },
+        }
+      );
+      req.session.user = newUserInfo;
+      res.status(200).json({
+        user: {
+          username: newUserInfo.username,
+          email: newUserInfo.email,
+          bio: newUserInfo.bio,
+          avatar: newUserInfo.avatar,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      res.sendStatus(500);
+    }
+  });
+
+  router.get("/cancel/:resetId", async (req, res) => {
+    try {
+      const response = await db.collection("passwordResets").updateOne(
+        {
+          uuid: req.params.resetId,
+        },
+        {
+          $set: {
+            valid: false,
+          },
+        }
+      );
+      console.log("res", response);
+      res.sendStatus(200);
+    } catch (err) {
+      console.log("cancel error", err);
       res.sendStatus(500);
     }
   });
