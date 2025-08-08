@@ -76,7 +76,7 @@ export default function Images({
         <textarea
           value={imageText}
           onChange={(e) => setImageText(e.target.value)}
-          placeholder="Police bust illegal pepperoni operation"
+          placeholder="Human pig getting arrested while wearing a bath robe"
           className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none mb-2"
         />
         <label className="block mb-2 flex-1">

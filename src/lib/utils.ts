@@ -101,3 +101,24 @@ export const transitions = {
     scale: { duration: 0.18 },
   },
 };
+
+const badWords = [
+  "nigger",
+  "faggot",
+  "fag",
+  "bitch",
+  "kike",
+  "chink",
+  "cunt",
+  "spic",
+  "gook",
+];
+
+export const abbreviatedText = (text: string) => {
+  text = String(text);
+  for (let w = 0; w < badWords.length; w++) {
+    const word = badWords[w];
+    if (text.toLowerCase().includes(word)) return "";
+  }
+  return text.length > 100 ? text.substring(0, 100) + "..." : text;
+};

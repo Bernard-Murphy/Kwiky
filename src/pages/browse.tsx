@@ -6,31 +6,26 @@ import { ChevronDown, RotateCcw, Search } from "lucide-react";
 import AnimatedButton from "@/components/animated-button";
 import { transitions as t } from "@/lib/utils";
 import DatePicker from "@/components/datepicker";
-// import {
-//   Card,
-//   CardAction,
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
 import { useApp, themeClasses } from "@/App";
+import BrowseList from "./browse/browse-list";
 
 export interface Post {
   _id: string;
   type: string;
   hrID: number;
   link: string;
+  links?: string[];
   timestamp: Date | string;
   userID?: string | undefined;
+  username?: string;
   prompt?: string;
   metadata: {
     title?: string;
     uncensored?: boolean;
     style?: string;
     lyrics?: string;
+    thumbnail?: string;
   };
 }
 
@@ -57,7 +52,7 @@ export interface BrowseProps {
 }
 
 export default function BrowsePage({
-  // browseItems,
+  browseItems,
   browseStatus,
   setBrowseStatus,
   browseQuery,
@@ -98,7 +93,7 @@ export default function BrowsePage({
   };
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <div className="px-6 py-8">
       <motion.div
         transition={t.transition}
         exit={{
@@ -110,15 +105,14 @@ export default function BrowsePage({
           opacity: 0,
           y: -25,
         }}
-        className="max-w-2xl mx-auto"
       >
-        <div className="space-y-6 relative w-full">
+        <div className="space-y-6 container max-w-2xl mx-auto relative">
           <div className="flex space-x-4">
             <input
               type="text"
               value={keywords}
               onChange={(e) => setKeywords(e.target.value)}
-              placeholder="Search for content..."
+              placeholder="Search"
               className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
             />
             <AnimatedButton onClick={triggerQuery}>
@@ -235,89 +229,113 @@ export default function BrowsePage({
               )}
             </AnimatePresence>
           </div>
-          <motion.div
-            transition={t.transition}
-            exit={{
-              opacity: 0,
-              y: 50,
-            }}
-            animate={t.normalize}
-            initial={{
-              opacity: 0,
-              y: 50,
-            }}
-            className="w-full flex pt-2"
-          >
-            <AnimatePresence mode="wait">
-              {browseStatus === "working" && (
-                <motion.div
-                  transition={t.transition}
-                  exit={{
-                    opacity: 0,
-                    y: -50,
-                  }}
-                  animate={t.normalize}
-                  initial={{
-                    opacity: 0,
-                    y: -50,
-                  }}
-                  className="flex justify-center w-full mt-5"
-                  key="working"
-                >
-                  <Spinner />
-                </motion.div>
-              )}
-
-              {browseStatus === "errored" && (
-                <motion.div
-                  transition={t.transition}
-                  exit={{
-                    opacity: 0,
-                  }}
-                  animate={t.normalize}
-                  initial={{
-                    opacity: 0,
-                  }}
-                  className="w-full mt-5"
-                  key="errored"
-                >
-                  <h5 className="text-center text-red-400">
-                    An error occurred. Please try again.
-                  </h5>
-                  <AnimatedButton
-                    variant="ghost"
-                    onClick={triggerQuery}
-                    className="flex items-center mx-auto mt-4"
-                  >
-                    <RotateCcw className="me-2" />
-                    Retry
-                  </AnimatedButton>
-                </motion.div>
-              )}
-
-              {browseStatus === "complete" && (
-                <motion.div
-                  transition={t.transition}
-                  exit={{
-                    opacity: 0,
-                    y: 50,
-                  }}
-                  animate={t.normalize}
-                  initial={{
-                    opacity: 0,
-                    y: 50,
-                  }}
-                  className="w-full mt-5"
-                  key="complete"
-                >
-                  <h5 className="text-center">
-                    No results found (Work in progress)
-                  </h5>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
         </div>
+
+        <motion.div
+          transition={t.transition}
+          exit={{
+            opacity: 0,
+            y: 50,
+          }}
+          animate={t.normalize}
+          initial={{
+            opacity: 0,
+            y: 50,
+          }}
+          className="w-full flex pt-2"
+        >
+          <AnimatePresence mode="wait">
+            {browseStatus === "working" && (
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  y: -50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  y: -50,
+                }}
+                className="flex justify-center w-full mt-5"
+                key="working"
+              >
+                <Spinner />
+              </motion.div>
+            )}
+
+            {browseStatus === "errored" && (
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                }}
+                className="w-full mt-5"
+                key="errored"
+              >
+                <h5 className="text-center text-red-400">
+                  An error occurred. Please try again.
+                </h5>
+                <AnimatedButton
+                  variant="ghost"
+                  onClick={triggerQuery}
+                  className="flex items-center mx-auto mt-4"
+                >
+                  <RotateCcw className="me-2" />
+                  Retry
+                </AnimatedButton>
+              </motion.div>
+            )}
+
+            {browseStatus === "complete" && (
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  y: 50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  y: 50,
+                }}
+                className="w-full mt-5"
+                key="complete"
+              >
+                <AnimatePresence mode="wait">
+                  {browseItems.length ? (
+                    <motion.div
+                      transition={t.transition}
+                      exit={t.fade_out_scale_1}
+                      animate={t.normalize}
+                      initial={t.fade_out}
+                      key="found"
+                      className="grid grid-cols-1 md:grid-cols-6 gap-4"
+                    >
+                      <BrowseList posts={browseItems} />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      transition={t.transition}
+                      exit={t.fade_out_scale_1}
+                      animate={t.normalize}
+                      initial={t.fade_out}
+                      key="none-found"
+                    >
+                      <h5 className="text-center">
+                        No results found (Work in progress)
+                      </h5>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </motion.div>
     </div>
   );

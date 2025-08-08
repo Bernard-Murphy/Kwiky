@@ -11,7 +11,6 @@ export interface CreatePageProps {
 
 export default function CreatePage({ children, className }: CreatePageProps) {
   const [isAnimating, setIsAnimating] = useState(false);
-  console.log(isAnimating);
 
   return (
     <motion.div

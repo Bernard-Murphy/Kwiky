@@ -30,10 +30,10 @@ const handler = (io) => {
       const user = await db.collection("users").findOne({
         $or: [
           {
-            email: req.body.username,
+            email: req.body.username.trim(),
           },
           {
-            username: req.body.username,
+            username: req.body.username.trim(),
           },
         ],
       });
@@ -41,6 +41,7 @@ const handler = (io) => {
       const check = await bcrypt.compareSync(req.body.password, user.password);
       if (!check) return res.sendStatus(401);
       const sessionUser = {
+        _id: user._id,
         username: user.username,
         email: user.email,
         bio: user.bio,
@@ -58,16 +59,14 @@ const handler = (io) => {
 
   router.post("/register", async (req, res) => {
     try {
-      console.log("register", req.body);
-      console.log(req.files);
       register_schema.validateSync(req.body);
       const check = await db.collection("users").findOne({
         $or: [
           {
-            email: req.body.email,
+            email: req.body.email.trim(),
           },
           {
-            username: req.body.username,
+            username: req.body.username.trim(),
           },
         ],
       });
@@ -92,9 +91,9 @@ const handler = (io) => {
 
       const newUser = {
         _id: crypto.randomUUID(),
-        username: req.body.username,
+        username: req.body.username.trim(),
         password: passHash,
-        email: req.body.email,
+        email: req.body.email.trim(),
         bio: req.body.bio,
         hrID: hrIDs.user,
         creationDate: new Date(),
@@ -104,15 +103,16 @@ const handler = (io) => {
 
       await db.collection("users").insertOne(newUser);
       req.session.user = {
-        username: newUser.username,
-        email: newUser.email,
+        _id: newUser._id,
+        username: newUser.username.trim(),
+        email: newUser.email.trim(),
         bio: newUser.bio,
         avatar: newUser.avatar,
       };
 
       res.status(200).json({
-        username: newUser.username,
-        email: newUser.email,
+        username: newUser.username.trim(),
+        email: newUser.email.trim(),
         bio: newUser.bio,
         avatar: newUser.avatar,
       });
@@ -142,8 +142,8 @@ const handler = (io) => {
       console.log("forgot password", req.body);
       forgot_password_schema.validateSync(req.body);
       const user = await db.collection("users").findOne({
-        username: new RegExp(`^${req.body.username}$`, "i"),
-        email: new RegExp(`^${req.body.email}$`, "i"),
+        username: new RegExp(`^${req.body.username.trim()}$`, "i"),
+        email: new RegExp(`^${req.body.email.trim()}$`, "i"),
       });
       console.log("user", user);
       // const captchaCheck = await h.verifyCaptcha(
@@ -160,7 +160,7 @@ const handler = (io) => {
          */
         await transporter.sendMail({
           from: `"Accounts - Kwiky" ${process.env.ACCOUNT_EMAIL}`,
-          to: req.body.email,
+          to: req.body.email.trim(),
           subject: "Reset your password",
           html: `
                         <p>Dear ${user.username},</p>
@@ -178,7 +178,7 @@ const handler = (io) => {
           uuid: resetID,
           userID: user._id,
           valid: true,
-          email: user.email,
+          email: user.email.trim(),
         });
         res.sendStatus(200);
       } else res.sendStatus(404);
@@ -219,6 +219,7 @@ const handler = (io) => {
       req.session.user = newUserInfo;
       res.status(200).json({
         user: {
+          _id: newUserInfo._id,
           username: newUserInfo.username,
           email: newUserInfo.email,
           bio: newUserInfo.bio,
@@ -230,9 +231,11 @@ const handler = (io) => {
       res.sendStatus(500);
     }
   });
-
+  // set-password/b52c7c4e-a231-4e45-ac5f-5d43cf2ec567
+  // set-password/b52c7c4e-a231-4e45-ac5f-5d43cf2ec567
   router.get("/cancel/:resetId", async (req, res) => {
     try {
+      console.log("cancel-backl");
       const response = await db.collection("passwordResets").updateOne(
         {
           uuid: req.params.resetId,

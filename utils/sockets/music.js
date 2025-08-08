@@ -15,6 +15,15 @@ const __dirname = new URL(".", import.meta.url).pathname;
 dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 const promptPath = path.join(__dirname, "..", "..", "prompt.json");
 
+const testEnv = String(process.env.LOCAL_TEST) === "true";
+const testUser = {
+  _id: "36bf2765-73fc-40a2-a4e4-ef734359f162",
+  username: "bernard",
+  email: "lilmilk@gmail.com",
+  bio: "",
+  avatar: null,
+};
+
 let musicSettings = {
   prompt: false,
   transforms: [],
@@ -197,7 +206,7 @@ const murekaQuery = (lyrics, musicStyle) =>
 
 export default async function music(io, socket) {
   try {
-    const user = socket.request.session?.user;
+    const user = testEnv ? testUser : socket.request.session?.user;
     socket.on(
       "music-new-song",
       async (musicPrompt, customLyrics, musicStyle, title, uncensoredMusic) => {
@@ -263,49 +272,50 @@ export default async function music(io, socket) {
 
               const link = await uploadToS3(audioFile, originalLyrics);
               links.push(link);
-              const hrIDs = await db.collection("hrIDs").findOneAndUpdate(
-                {},
-                {
-                  $inc: {
-                    post: 1,
-                  },
-                }
-              );
-              await db.collection("posts").insertOne({
-                _id: crypto.randomUUID(),
-                type: "music",
-                hrID: hrIDs.post,
-                userID: user?._id,
-                link,
-                timestamp: new Date(),
-                prompt: musicPrompt,
-                metadata: {
-                  title,
-                  lyrics: originalLyrics,
-                  style: musicStyle,
-                  uncensored: uncensoredMusic,
-                },
-              });
-              await db.collection("searchBlobs").insertOne({
-                type: "music",
-                hrID: String(hrIDs.post),
-                link: link || "",
-                username: user?.username || "Anonymous",
-                timestamp: new Date().toISOString(),
-                prompt: musicPrompt || "",
-                metadata:
-                  String(title || "") +
-                  " " +
-                  String(originalLyrics || "") +
-                  " " +
-                  String(musicStyle || "") +
-                  " " +
-                  String(uncensoredMusic === true || "false"),
-              });
             } catch (err) {
               console.log("song error", err);
             }
           }
+          const hrIDs = await db.collection("hrIDs").findOneAndUpdate(
+            {},
+            {
+              $inc: {
+                post: 1,
+              },
+            }
+          );
+          await db.collection("posts").insertOne({
+            _id: crypto.randomUUID(),
+            type: "music",
+            hrID: hrIDs.post,
+            userID: user?._id,
+            link: "",
+            links,
+            timestamp: new Date(),
+            prompt: musicPrompt,
+            metadata: {
+              title,
+              lyrics: originalLyrics,
+              style: musicStyle,
+              uncensored: uncensoredMusic,
+            },
+          });
+          await db.collection("searchBlobs").insertOne({
+            type: "music",
+            hrID: String(hrIDs.post),
+            link: links.join(", "),
+            username: user?.username || "Anonymous",
+            timestamp: new Date().toISOString(),
+            prompt: musicPrompt || "",
+            metadata:
+              String(title || "") +
+              " " +
+              String(originalLyrics || "") +
+              " " +
+              String(musicStyle || "") +
+              " " +
+              String(uncensoredMusic === true || "false"),
+          });
           socket.emit("music-links", links);
         } catch (err) {
           console.log("music-new-song error", err);

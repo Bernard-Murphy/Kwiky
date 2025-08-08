@@ -10,6 +10,15 @@ import path from "path";
 const __dirname = new URL(".", import.meta.url).pathname;
 dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 
+const testEnv = String(process.env.LOCAL_TEST) === "true";
+const testUser = {
+  _id: "36bf2765-73fc-40a2-a4e4-ef734359f162",
+  username: "bernard",
+  email: "lilmilk@gmail.com",
+  bio: "",
+  avatar: null,
+};
+
 const groqClient = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
@@ -25,7 +34,7 @@ const s3 = new S3Client({
 
 export default async function games(io, socket) {
   try {
-    const user = socket.request.session?.user;
+    const user = testEnv ? testUser : socket.request.session?.user;
     socket.on("create-game", async (prompt, title) => {
       try {
         let chatCompletion = await groqClient.chat.completions.create({

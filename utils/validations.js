@@ -1,13 +1,16 @@
 import * as y from "yup";
 
 export const register_schema = y.object().shape({
-  username: y.string().required(),
+  username: y
+    .string()
+    .matches(/^[a-zA-Z0-9_]+$/, "Username must be alphanumeric")
+    .required(),
   password1: y.string().required(),
   password2: y
     .string()
     .oneOf([y.ref("password1"), null], "Passwords must match")
     .required(),
-  email: y.string().required(),
+  email: y.string().email("Invalid email").required(),
   bio: y.string(),
 });
 

@@ -3,13 +3,29 @@ import db from "../db.js";
 import m from "../methods.js";
 import fs from "fs";
 import crypto from "crypto";
+import { URL } from "node:url";
+import path from "path";
+import dotenv from "dotenv";
+import generateThumbnail from "../generateThumbnail.js";
+
+const __dirname = new URL(".", import.meta.url).pathname;
+dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 
 const router = Router();
+
+const testEnv = String(process.env.LOCAL_TEST) === "true";
+const testUser = {
+  _id: "36bf2765-73fc-40a2-a4e4-ef734359f162",
+  username: "bernard",
+  email: "lilmilk@gmail.com",
+  bio: "",
+  avatar: null,
+};
 
 const handler = (io) => {
   router.post("/", async (req, res) => {
     try {
-      const user = req.session?.user;
+      const user = testEnv ? testUser : socket.request.session?.user;
       if (!req.body.message || !req.files.audio || !req.files.image)
         return res.sendStatus(400);
       const socketID = req.body.socketID;
@@ -30,6 +46,7 @@ const handler = (io) => {
            * Write dupdub to s3
            */
           const imageKey = await m.writeToStorj(req.files.image);
+          const thumbnail = await generateThumbnail(req.files.image);
 
           io.to(socketID).emit("deepfake-status", "Generating Audio");
           const voiceId = await m.createElevenlabsVoice(req.files.audio);
@@ -88,7 +105,9 @@ const handler = (io) => {
             link,
             timestamp: new Date(),
             prompt: req.body.message,
-            metadata: {},
+            metadata: {
+              thumbnail,
+            },
           });
           await db.collection("searchBlobs").insertOne({
             type: "deepfake",
@@ -97,7 +116,7 @@ const handler = (io) => {
             username: user?.username || "Anonymous",
             timestamp: new Date().toISOString(),
             prompt: req.body.message || "",
-            metadata: "",
+            metadata: metadata.thumbnail,
           });
           try {
             fs.unlinkSync(audioPath);

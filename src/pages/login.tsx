@@ -16,16 +16,23 @@ const api = process.env.REACT_APP_API;
 export default function LoginPage() {
   const { user } = useApp();
   const navigate = useNavigate();
-  const params = useSearchParams();
-  const altEntranceAnimation = String(params[0].get("fromPassword")) === "true";
+  const [params, setParams] = useSearchParams();
+  const altEntranceAnimation = String(params.get("fromPassword")) === "true";
   const [formData, setFormData] = useState({
     usernameOrEmail: "",
     password: "",
   });
   const [altExit, setAltExit] = useState<boolean>(false);
   const [working, setWorking] = useState<boolean>(false);
+
   useEffect(() => {
-    if (user) navigate("/profile");
+    if (altEntranceAnimation) {
+      params.delete("fromPassword");
+      setParams(params);
+    }
+  }, [altEntranceAnimation]);
+  useEffect(() => {
+    if (user) navigate("/test"); // navigate("/profile");
   }, [user?.username]);
 
   useEffect(() => {

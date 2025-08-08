@@ -21,7 +21,7 @@ export default function ResetPasswordPage() {
   const [working, setWorking] = useState<boolean>(false);
 
   useEffect(() => {
-    if (user) navigate("/");
+    if (user) navigate("/profile");
   }, [user?.username]);
   const resetId = params.resetId;
 

@@ -20,7 +20,6 @@ import Music from "./create/music";
 import { type ImageDimensions } from "./create/images";
 import Deepfake from "./create/deepfake";
 import axios from "axios";
-import AnimatedPage from "@/components/ui/animatedpage";
 
 export interface CreatePageProps {
   socket: Socket;
@@ -79,7 +78,7 @@ export default function CreatePage({
 
   useEffect(() => {
     socket.on("music-lyrics", (lyrics) => {
-      setMusicStatus(`Generating song`);
+      setMusicStatus(`Generating Audio`);
       setLyrics(lyrics);
     });
     socket.on("music-error", () => {
@@ -324,7 +323,7 @@ export default function CreatePage({
       >
         <AnimatePresence mode="wait">
           {activeTab === "music" && (
-            <AnimatedPage key="music">
+            <div className="space-y-6 pt-8 w-full h-full" key="music">
               <Music
                 generateLyrics={generateLyrics}
                 setGenerateLyrics={setGenerateLyrics}
@@ -346,10 +345,10 @@ export default function CreatePage({
                 musicTitle={musicTitle}
                 setMusicTitle={setMusicTitle}
               />
-            </AnimatedPage>
+            </div>
           )}
           {activeTab === "images" && (
-            <AnimatedPage key="images">
+            <div className="space-y-6 pt-8 w-full h-full" key="images">
               <Images
                 imageText={imageText}
                 setImageText={setImageText}
@@ -364,10 +363,10 @@ export default function CreatePage({
                 imageDimensions={imageDimensions}
                 setImageDimensions={setImageDimensions}
               />
-            </AnimatedPage>
+            </div>
           )}
           {activeTab === "games" && (
-            <AnimatedPage key="games">
+            <div className="space-y-6 pt-8 w-full h-full" key="games">
               <Games
                 gameText={gameText}
                 setGameText={setGameText}
@@ -378,10 +377,10 @@ export default function CreatePage({
                 gameStatus={gameStatus}
                 gameLink={gameLink}
               />
-            </AnimatedPage>
+            </div>
           )}
           {activeTab === "deepfake" && (
-            <AnimatedPage key="deepfake">
+            <div className="space-y-6 pt-8 w-full h-full" key="deepfake">
               <Deepfake
                 message={deepfakeMessage}
                 audioFile={deepfakeAudio}
@@ -398,7 +397,7 @@ export default function CreatePage({
                 setAudioPreview={setDeepfakeAudioPreview}
                 videoLink={deepfakeVideoLink}
               />
-            </AnimatedPage>
+            </div>
           )}
         </AnimatePresence>
       </motion.div>

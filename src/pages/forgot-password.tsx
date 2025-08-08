@@ -11,9 +11,9 @@ import axios from "axios";
 const api = process.env.REACT_APP_API;
 
 export default function ForgotPasswordPage() {
-  const params = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
-  const altEntranceAnimation = String(params[0].get("fromLogin")) === "true";
+  const altEntranceAnimation = String(params.get("fromLogin")) === "true";
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -21,6 +21,13 @@ export default function ForgotPasswordPage() {
   const [altExit, setAltExit] = useState<boolean>(false);
   const [working, setWorking] = useState<boolean>(false);
   const [complete, setComplete] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (altEntranceAnimation) {
+      params.delete("fromLogin");
+      setParams(params);
+    }
+  }, [altEntranceAnimation]);
 
   useEffect(() => {
     if (altExit) navigate("/login?fromPassword=true");

@@ -9,6 +9,11 @@ export default async function socketHandler(io, socket) {
     music(io, socket);
     games(io, socket);
     images(io, socket);
+
+    socket.on("test", () => {
+      console.log(socket.request.session);
+      socket.emit("test");
+    });
   } catch (err) {
     console.log("socket error", err);
   }

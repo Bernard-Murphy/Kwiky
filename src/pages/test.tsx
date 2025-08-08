@@ -1,10 +1,21 @@
 import AnimatedButton from "@/components/animated-button";
+import { Socket } from "socket.io-client";
+import { useEffect } from "react";
 
-export default function Test() {
+interface TestProps {
+  socket: Socket;
+}
+
+export default function Test({ socket }: TestProps) {
+  useEffect(() => {
+    socket.on("test", () => console.log("test"));
+  }, []);
   return (
     <div className="space-y-2 flex flex-col">
       <div>
-        <AnimatedButton variant="primary">primary</AnimatedButton>
+        <AnimatedButton onClick={() => socket.emit("test")} variant="primary">
+          primary
+        </AnimatedButton>
       </div>
       <div>
         <AnimatedButton variant="secondary">secondary</AnimatedButton>

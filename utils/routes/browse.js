@@ -10,11 +10,47 @@ const handler = (io) => {
     try {
       const constraints = req.body;
       console.log("constraints", constraints);
+
       const posts = await db
         .collection("posts")
-        .find({})
-        .sort({ timestamp: -1 })
-        .limit(49)
+        .aggregate([
+          {
+            $lookup: {
+              from: "users",
+              localField: "userID",
+              foreignField: "_id",
+              as: "user",
+            },
+          },
+          {
+            $unwind: {
+              path: "$user",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $sort: {
+              timestamp: -1,
+            },
+          },
+          {
+            $limit: 49,
+          },
+          {
+            $project: {
+              _id: 1,
+              type: 1,
+              hrID: 1,
+              link: 1,
+              links: 1,
+              timestamp: 1,
+              userID: 1,
+              username: "$user.username",
+              prompt: 1,
+              metadata: 1,
+            },
+          },
+        ])
         .toArray();
 
       res.status(200).json(posts);

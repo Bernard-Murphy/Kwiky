@@ -6,9 +6,19 @@ import path from "path";
 import crypto from "crypto";
 import db from "../db.js";
 import { OpenAI } from "openai";
+import generateThumbnail from "../generateThumbnail.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
+
+const testEnv = String(process.env.LOCAL_TEST) === "true";
+const testUser = {
+  _id: "36bf2765-73fc-40a2-a4e4-ef734359f162",
+  username: "bernard",
+  email: "lilmilk@gmail.com",
+  bio: "",
+  avatar: null,
+};
 
 const s3 = new S3Client({
   endpoint: process.env.STORJ_ENDPOINT,
@@ -26,7 +36,7 @@ const veniceClient = new OpenAI({
 
 export default async function images(io, socket) {
   try {
-    const user = socket.request.session?.user;
+    const user = testEnv ? testUser : socket.request.session?.user;
     socket.on("images-new", async (prompt, style, uncensored, dimensions) => {
       try {
         let chatCompletion = await veniceClient.chat.completions.create({
@@ -73,15 +83,22 @@ export default async function images(io, socket) {
               .createHash("md5")
               .update(res.data.images[0])
               .digest("hex");
+            const imageData = Buffer.from(res.data.images[0], "base64");
             await s3.send(
               new PutObjectCommand({
-                Body: Buffer.from(res.data.images[0], "base64"),
+                Body: imageData,
                 Bucket: process.env.STORJ_BUCKET,
                 Key: "files/" + md5 + ".png",
                 ACL: "public-read",
                 ContentType: "image/png",
               })
             );
+            const thumbnail = await generateThumbnail({
+              data: imageData,
+              name: md5 + ".png",
+              md5,
+              mimetype: "image/png",
+            });
             const hrIDs = await db.collection("hrIDs").findOneAndUpdate(
               {},
               {
@@ -101,6 +118,7 @@ export default async function images(io, socket) {
               metadata: {
                 style,
                 uncensored,
+                thumbnail,
               },
             });
             await db.collection("searchBlobs").insertOne({

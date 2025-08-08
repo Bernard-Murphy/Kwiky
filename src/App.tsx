@@ -79,12 +79,10 @@ export default function App() {
   const [browseItems, setBrowseItems] = useState<Post[]>([]);
   const [browseStatus, setBrowseStatus] = useState<BrowseStatus>("working");
 
-  // const [user, setUser] = useState<User | null>({
-  // username: "",
-  // email: "",
-  // bio: "",
-  // avatar: "https://f.feednana.com/files/17876e5242334ad298034dd01dca8276.PNG",
-  // });
+  useEffect(() => {
+    socket.disconnect();
+    socket.connect();
+  }, [user?.username]);
 
   const chatInit = () =>
     axios
@@ -189,7 +187,7 @@ export default function App() {
                 />
               }
             />
-            <Route path="/test" element={<Test />} />
+            <Route path="/test" element={<Test socket={socket} />} />
             <Route path="*" element={<Navigate replace to="/" />} />
           </Routes>
         </AnimatePresence>
