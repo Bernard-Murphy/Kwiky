@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { transitions as t } from "@/lib/utils";
 
@@ -10,7 +10,7 @@ export interface CreatePageProps {
 }
 
 export default function CreatePage({ children, className }: CreatePageProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
+  // const [isAnimating, setIsAnimating] = useState(false);
 
   return (
     <motion.div
@@ -18,8 +18,8 @@ export default function CreatePage({ children, className }: CreatePageProps) {
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
-      onAnimationStart={() => setIsAnimating(true)}
-      onAnimationEnd={() => setIsAnimating(false)}
+      // onAnimationStart={() => setIsAnimating(true)}
+      // onAnimationEnd={() => setIsAnimating(false)}
       className={`space-y-6 pt-8 w-full h-full ${className} ${
         false ? " overflow-x-hidden overflow-y-hidden" : ""
       }`}
