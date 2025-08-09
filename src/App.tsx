@@ -23,6 +23,7 @@ import { Toaster } from "./components/ui/sonner";
 import { io, Socket } from "socket.io-client";
 import { type ChatMessage } from "./pages/chat";
 import axios from "axios";
+import PostPage from "./pages/post";
 
 const socket: Socket = io(process.env.REACT_APP_API);
 
@@ -174,6 +175,7 @@ export default function App() {
               element={<ResetPasswordPage />}
             />
             <Route path="/cancel/:resetId" element={<CancelPage />} />
+            <Route path="/post/:postId" element={<PostPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route
               path="/chat"
@@ -193,10 +195,10 @@ export default function App() {
         </AnimatePresence>
         <ThemeSelector createTab={createTab} />
         <div
-          className={`fixed bottom-4 ${
-            location.pathname !== "/register"
-              ? "left-0 text-center right-0"
-              : "right-5"
+          className={`fixed bottom-2 ${
+            ["/register", "/browse"].includes(location.pathname)
+              ? "right-5"
+              : "left-0 text-center right-0"
           } text-xs opacity-75`}
         >
           Created by Bernard Murphy

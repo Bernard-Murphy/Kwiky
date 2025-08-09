@@ -12,8 +12,11 @@ import {
   ImageIcon,
   Gamepad2,
   CircleUserRound,
+  MessageCircle,
 } from "lucide-react";
-import { abbreviatedText } from "@/lib/utils";
+import { abbreviatedText, makeDateHR, getTimeHR } from "@/lib/methods";
+import AnimatedButton from "@/components/animated-button";
+import { Link } from "react-router-dom";
 
 export interface BrowseProps {
   posts: Post[];
@@ -21,18 +24,6 @@ export interface BrowseProps {
 
 export default function BrowseList({ posts }: BrowseProps) {
   console.log(posts);
-  // 'deepfake', 'game', 'image', 'music'
-
-  //   {
-  //     "_id": "ab4f40a9-2529-402e-b580-f92f186b198b",
-  //     "type": "deepfake",
-  //     "hrID": 29,
-  //     "userID": null,
-  //     "link": "files/e78b46f4678e9466c037b74ed1c4ef64.mp4",
-  //     "timestamp": "2025-08-08T09:57:05.608Z",
-  //     "prompt": "Hello fans, I am a fat faggot with bitch tits who threatened to murder my own daughter",
-  //     "metadata": {}
-  // }
 
   const checkSpecial = (id: number) => {
     if (id === 1) return true;
@@ -51,146 +42,235 @@ export default function BrowseList({ posts }: BrowseProps) {
     switch (post.type) {
       case "deepfake":
         return (
-          <Card className="bg-black/20 text-white">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div>
-                  <CircleUserRound />
-                </div>
-                <div
-                  className={
-                    checkSpecial(post.hrID)
-                      ? "text-yellow-300 opacity-flash"
-                      : "text-white"
-                  }
-                >
-                  {post.hrID}
-                </div>
-              </CardTitle>
-              <CardDescription>
-                {post.username ? "@" + post.username : "Anonymous"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
-            </CardContent>
-            <CardFooter>
-              <p>Card Footer</p>
-            </CardFooter>
-          </Card>
+          <Link to={"/post/" + post.hrID} className="block h-full w-full">
+            <AnimatedButton
+              type="button"
+              variant="custom"
+              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full"
+            >
+              <Card className="bg-black/20 text-white h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div>
+                      <CircleUserRound />
+                    </div>
+                    <div
+                      className={
+                        checkSpecial(post.hrID)
+                          ? "text-yellow-300 opacity-flash"
+                          : "text-white"
+                      }
+                    >
+                      #{post.hrID}
+                    </div>
+                  </CardTitle>
+                  <CardDescription className="flex justify-between">
+                    {post.username ? "@" + post.username : "Anonymous"}
+                    <div>
+                      <div className="text-muted-foreground text-sm text-right">
+                        {makeDateHR(post.timestamp || "")}
+                      </div>
+                      <div className="text-muted-foreground text-sm text-right">
+                        {getTimeHR(post.timestamp || "")}
+                      </div>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <img
+                    className="block mx-auto w-3/4"
+                    src={
+                      "https://" +
+                      process.env.REACT_APP_ASSET_LOCATION +
+                      "/thumbnails/" +
+                      post.metadata.thumbnail
+                    }
+                  />
+                </CardContent>
+                <CardFooter className="flex-1">
+                  <div className="w-full h-full flex flex-col justify-between">
+                    <p>{abbreviatedText(post.prompt || "")}</p>
+                    <div className="flex justify-end space-x-2">
+                      <MessageCircle />
+                      <p className="text-bold">
+                        {post.comments?.length || "0"}
+                      </p>
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
+            </AnimatedButton>
+          </Link>
         );
       case "game":
         return (
-          <Card className="bg-black/20 text-white">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div>
-                  <Gamepad2 />
-                </div>
-                <div
-                  className={
-                    checkSpecial(post.hrID)
-                      ? "text-yellow-300 opacity-flash"
-                      : "text-white"
-                  }
-                >
-                  {post.hrID}
-                </div>
-              </CardTitle>
-              <CardDescription>
-                {post.username ? "@" + post.username : "Anonymous"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <h5 className="text-center font-bold">{post.metadata.title}</h5>
-            </CardContent>
-            <CardFooter>
-              <p>{abbreviatedText(post.prompt || "")}</p>
-            </CardFooter>
-          </Card>
+          <Link to={"/post/" + post.hrID} className="block h-full w-full">
+            <AnimatedButton
+              type="button"
+              variant="custom"
+              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full"
+            >
+              <Card className="bg-black/20 text-white h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div>
+                      <Gamepad2 />
+                    </div>
+                    <div
+                      className={
+                        checkSpecial(post.hrID)
+                          ? "text-yellow-300 opacity-flash"
+                          : "text-white"
+                      }
+                    >
+                      #{post.hrID}
+                    </div>
+                  </CardTitle>
+                  <CardDescription className="flex justify-between">
+                    {post.username ? "@" + post.username : "Anonymous"}
+                    <div>
+                      <div className="text-muted-foreground text-sm text-right">
+                        {makeDateHR(post.timestamp || "")}
+                      </div>
+                      <div className="text-muted-foreground text-sm text-right">
+                        {getTimeHR(post.timestamp || "")}
+                      </div>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <h5 className="text-center font-bold">
+                    {post.metadata.title}
+                  </h5>
+                </CardContent>
+                <CardFooter className="flex-1">
+                  <div className="w-full h-full flex flex-col justify-between">
+                    <p>{abbreviatedText(post.prompt || "")}</p>
+                    <div className="flex justify-end space-x-2">
+                      <MessageCircle />
+                      <p className="text-bold">
+                        {post.comments?.length || "0"}
+                      </p>
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
+            </AnimatedButton>
+          </Link>
         );
       case "image":
         return (
-          <Card className="bg-black/20 text-white">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div>
-                  <ImageIcon />
-                </div>
-                <div
-                  className={
-                    checkSpecial(post.hrID)
-                      ? "text-yellow-300 opacity-flash"
-                      : "text-white"
-                  }
-                >
-                  {post.hrID}
-                </div>
-              </CardTitle>
-              <CardDescription>
-                {post.username ? "@" + post.username : "Anonymous"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <img
-                className="block mx-auto w-1/2"
-                src={
-                  "https://" +
-                  process.env.REACT_APP_ASSET_LOCATION +
-                  "/thumbnails/" +
-                  post.metadata.thumbnail
-                }
-              />
-            </CardContent>
-            <CardFooter>
-              <p>{abbreviatedText(post.prompt || "")}</p>
-            </CardFooter>
-          </Card>
+          <Link to={"/post/" + post.hrID} className="block h-full w-full">
+            <AnimatedButton
+              type="button"
+              variant="custom"
+              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full"
+            >
+              <Card className="bg-black/20 text-white h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div>
+                      <ImageIcon />
+                    </div>
+                    <div
+                      className={
+                        checkSpecial(post.hrID)
+                          ? "text-yellow-300 opacity-flash"
+                          : "text-white"
+                      }
+                    >
+                      #{post.hrID}
+                    </div>
+                  </CardTitle>
+                  <CardDescription className="flex justify-between">
+                    {post.username ? "@" + post.username : "Anonymous"}
+                    <div>
+                      <div className="text-muted-foreground text-sm text-right">
+                        {makeDateHR(post.timestamp || "")}
+                      </div>
+                      <div className="text-muted-foreground text-sm text-right">
+                        {getTimeHR(post.timestamp || "")}
+                      </div>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <img
+                    className="block mx-auto w-3/4"
+                    src={
+                      "https://" +
+                      process.env.REACT_APP_ASSET_LOCATION +
+                      "/thumbnails/" +
+                      post.metadata.thumbnail
+                    }
+                  />
+                </CardContent>
+                <CardFooter className="flex-1">
+                  <div className="w-full h-full flex flex-col justify-between">
+                    <p>{abbreviatedText(post.prompt || "")}</p>
+                    <div className="flex justify-end space-x-2">
+                      <MessageCircle />
+                      <p className="text-bold">
+                        {post.comments?.length || "0"}
+                      </p>
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
+            </AnimatedButton>
+          </Link>
         );
       case "music":
         return (
-          <Card className="bg-black/20 text-white">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div>
-                  <MusicIcon />
-                </div>
-                <div
-                  className={
-                    checkSpecial(post.hrID)
-                      ? "text-yellow-300 opacity-flash"
-                      : "text-white"
-                  }
-                >
-                  {post.hrID}
-                </div>
-              </CardTitle>
-              <CardDescription>
-                {post.username ? "@" + post.username : "Anonymous"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
-            </CardContent>
-          </Card>
+          <Link to={"/post/" + post.hrID} className="block h-full w-full">
+            <AnimatedButton
+              type="button"
+              variant="custom"
+              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full"
+            >
+              <Card className="bg-black/20 text-white h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div>
+                      <MusicIcon />
+                    </div>
+                    <div
+                      className={
+                        checkSpecial(post.hrID)
+                          ? "text-yellow-300 opacity-flash"
+                          : "text-white"
+                      }
+                    >
+                      #{post.hrID}
+                    </div>
+                  </CardTitle>
+                  <CardDescription>
+                    {post.username ? "@" + post.username : "Anonymous"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <h5 className="text-center font-bold">
+                    {post.metadata.title}
+                  </h5>
+                </CardContent>
+                <CardFooter className="flex-1">
+                  <div className="w-full h-full flex flex-col justify-between">
+                    <p>{abbreviatedText(post.metadata.lyrics || "", 250)}</p>
+                    <div className="flex justify-end space-x-2">
+                      <MessageCircle />
+                      <p className="text-bold">
+                        {post.comments?.length || "0"}
+                      </p>
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
+            </AnimatedButton>
+          </Link>
         );
       default:
-        return (
-          <Card className="bg-black/20 text-white">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div></div>
-              </CardTitle>
-              <CardDescription>Card Description</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
-            </CardContent>
-            <CardFooter>
-              <p>Card Footer</p>
-            </CardFooter>
-          </Card>
-        );
+        console.log("oob post", post);
+        return <></>;
     }
   });
 }

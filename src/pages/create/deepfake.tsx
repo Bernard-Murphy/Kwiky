@@ -5,6 +5,7 @@ import { UserRound, AudioLines } from "lucide-react";
 import { transitions as t } from "@/lib/utils";
 import AnimatedButton from "@/components/animated-button";
 import Spinner from "@/components/ui/spinner";
+import { getFileSize } from "@/lib/methods";
 
 export interface DeepfakeProps {
   message: string;
@@ -112,6 +113,8 @@ export default function Deepfake({
                     <div className="flex items-center w-full">
                       <div className="text-center font-medium text-gray-400 w-full">
                         {imageFile?.name || "Face"}
+                        {" • "}
+                        {getFileSize(imageFile?.size || 0)}
                       </div>
                     </div>
                   </div>
@@ -174,6 +177,8 @@ export default function Deepfake({
                     <div className="flex items-center w-full">
                       <div className="text-center font-medium text-gray-400 w-full">
                         {audioFile?.name || "Audio Sample"}
+                        {" • "}
+                        {getFileSize(audioFile?.size || 0)}
                       </div>
                     </div>
                   </div>

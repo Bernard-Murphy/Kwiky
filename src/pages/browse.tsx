@@ -20,12 +20,24 @@ export interface Post {
   userID?: string | undefined;
   username?: string;
   prompt?: string;
+  comments?: Comment[];
   metadata: {
     title?: string;
     uncensored?: boolean;
     style?: string;
     lyrics?: string;
     thumbnail?: string;
+  };
+}
+
+export interface Comment {
+  _id: string;
+  postID: string;
+  userID?: string | undefined;
+  body: string;
+  hidden: boolean;
+  metadata?: {
+    notes?: string | undefined;
   };
 }
 

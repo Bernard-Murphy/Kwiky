@@ -97,6 +97,9 @@ const handler = (io) => {
               },
             }
           );
+          const metadata = {
+            thumbnail,
+          };
           await db.collection("posts").insertOne({
             _id: crypto.randomUUID(),
             type: "deepfake",
@@ -105,9 +108,7 @@ const handler = (io) => {
             link,
             timestamp: new Date(),
             prompt: req.body.message,
-            metadata: {
-              thumbnail,
-            },
+            metadata,
           });
           await db.collection("searchBlobs").insertOne({
             type: "deepfake",
