@@ -110,6 +110,7 @@ const handler = (io) => {
             prompt: req.body.message,
             metadata,
           });
+          io.emit("post-count", hrIDs.post);
           await db.collection("searchBlobs").insertOne({
             type: "deepfake",
             hrID: String(hrIDs.post),

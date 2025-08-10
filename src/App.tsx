@@ -1,7 +1,7 @@
 "use client";
 
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState, createContext, useContext, useEffect } from "react";
 import Navbar from "./components/navbar";
 import ThemeSelector from "./components/theme-selector";
@@ -23,7 +23,9 @@ import { Toaster } from "./components/ui/sonner";
 import { io, Socket } from "socket.io-client";
 import { type ChatMessage } from "./pages/chat";
 import axios from "axios";
-import PostPage from "./pages/post";
+import PostHeader from "./pages/post/header";
+import PostContent from "./pages/post/content";
+import { transitions as t } from "./lib/utils";
 
 const socket: Socket = io(process.env.REACT_APP_API);
 
@@ -53,6 +55,7 @@ interface AppContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   authWorking: boolean;
+  postCount: number;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -79,6 +82,13 @@ export default function App() {
 
   const [browseItems, setBrowseItems] = useState<Post[]>([]);
   const [browseStatus, setBrowseStatus] = useState<BrowseStatus>("working");
+
+  const [postAnimationDirection, setPostAnimationDirection] = useState<
+    "left" | "right" | undefined
+  >();
+  const [postCount, setPostCount] = useState<number>(0);
+
+  const location = useLocation();
 
   useEffect(() => {
     socket.disconnect();
@@ -112,6 +122,7 @@ export default function App() {
     axios
       .get(process.env.REACT_APP_API + "/auth/init")
       .then((res) => {
+        setPostCount(res.data.postCount);
         if (res.data.user) {
           if (res.data.user.avatar)
             res.data.user.avatar =
@@ -129,21 +140,41 @@ export default function App() {
   };
 
   useEffect(() => {
+    socket.on("post-count", setPostCount);
     authInit();
     chatInit();
     browseQuery();
   }, []);
 
-  const location = useLocation();
+  useEffect(() => {
+    setPostAnimationDirection(undefined);
+  }, [location.pathname.includes("/post/")]);
 
   return (
     <AppContext.Provider
-      value={{ theme, setTheme, user, setUser, authWorking }}
+      value={{ theme, setTheme, user, setUser, authWorking, postCount }}
     >
       <div
-        className={`min-h-screen transition-colors duration-300 ${themeClasses[theme]}`}
+        className={`min-h-screen transition-colors duration-300 overflow-hidden ${themeClasses[theme]}`}
       >
         <Navbar />
+        <AnimatePresence mode="wait">
+          <motion.div
+            transition={t.transition}
+            exit={t.fade_out_scale_1}
+            animate={t.normalize}
+            initial={t.fade_out}
+            key={String(location.pathname.includes("/post/"))}
+          >
+            {location.pathname.includes("/post/") && (
+              <PostHeader
+                animationDirection={postAnimationDirection}
+                setAnimationDirection={setPostAnimationDirection}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           <Routes key={location.pathname} location={location}>
             <Route
@@ -175,7 +206,12 @@ export default function App() {
               element={<ResetPasswordPage />}
             />
             <Route path="/cancel/:resetId" element={<CancelPage />} />
-            <Route path="/post/:postId" element={<PostPage />} />
+            <Route
+              path="/post/:postId"
+              element={
+                <PostContent animationDirection={postAnimationDirection} />
+              }
+            />
             <Route path="/profile" element={<ProfilePage />} />
             <Route
               path="/chat"
@@ -196,7 +232,8 @@ export default function App() {
         <ThemeSelector createTab={createTab} />
         <div
           className={`fixed bottom-2 ${
-            ["/register", "/browse"].includes(location.pathname)
+            ["/register", "/browse"].includes(location.pathname) ||
+            location.pathname.includes("/post/")
               ? "right-5"
               : "left-0 text-center right-0"
           } text-xs opacity-75`}

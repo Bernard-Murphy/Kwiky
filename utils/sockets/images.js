@@ -107,11 +107,12 @@ export default async function images(io, socket) {
                 },
               }
             );
+            io.emit("post-count", hrIDs.post);
             await db.collection("posts").insertOne({
               _id: crypto.randomUUID(),
               type: "image",
               hrID: hrIDs.post,
-              link: `/files/${md5}.png`,
+              link: `files/${md5}.png`,
               timestamp: new Date(),
               userID: user?._id,
               prompt,
@@ -124,13 +125,13 @@ export default async function images(io, socket) {
             await db.collection("searchBlobs").insertOne({
               type: "image",
               hrID: String(hrIDs.post),
-              link: `/files/${md5}.png`,
+              link: `files/${md5}.png`,
               username: user?.username || "Anonymous",
               timestamp: new Date().toISOString(),
               prompt: String(prompt || ""),
               metadata: String(style || "") + " " + String(uncensored || ""),
             });
-            socket.emit("images-link", `/files/${md5}.png`);
+            socket.emit("images-link", `files/${md5}.png`);
           })
           .catch((err) => {
             console.log("error", err);

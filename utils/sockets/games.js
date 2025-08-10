@@ -87,6 +87,7 @@ export default async function games(io, socket) {
             title,
           },
         });
+        io.emit("post-count", hrIDs.post);
         await db.collection("searchBlobs").insertOne({
           type: "game",
           hrID: hrIDs.post,

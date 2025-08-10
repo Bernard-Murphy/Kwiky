@@ -46,7 +46,7 @@ export default function BrowseList({ posts }: BrowseProps) {
             <AnimatedButton
               type="button"
               variant="custom"
-              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full"
+              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full rounded-xl"
             >
               <Card className="bg-black/20 text-white h-full">
                 <CardHeader>
@@ -108,7 +108,7 @@ export default function BrowseList({ posts }: BrowseProps) {
             <AnimatedButton
               type="button"
               variant="custom"
-              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full"
+              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full rounded-xl"
             >
               <Card className="bg-black/20 text-white h-full">
                 <CardHeader>
@@ -164,7 +164,7 @@ export default function BrowseList({ posts }: BrowseProps) {
             <AnimatedButton
               type="button"
               variant="custom"
-              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full"
+              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full rounded-xl"
             >
               <Card className="bg-black/20 text-white h-full">
                 <CardHeader>
@@ -226,7 +226,7 @@ export default function BrowseList({ posts }: BrowseProps) {
             <AnimatedButton
               type="button"
               variant="custom"
-              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full"
+              className="p-0 px-0 py-0 hover:bg-gray-700 h-full w-full rounded-xl"
             >
               <Card className="bg-black/20 text-white h-full">
                 <CardHeader>

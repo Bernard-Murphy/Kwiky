@@ -252,6 +252,9 @@ export default function Music({
                       ))}
                     </AnimatedButton>
                   </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Click to Copy</p>
+                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </motion.div>

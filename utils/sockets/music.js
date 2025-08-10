@@ -81,7 +81,7 @@ const uploadToS3 = async (audioFile) => {
       })
     );
     fs.unlinkSync(filePath);
-    return `/files/${md5_audio}.mp3`;
+    return `files/${md5_audio}.mp3`;
   } catch (err) {
     console.log("upload to feed nana error", err);
     return "";
@@ -284,6 +284,7 @@ export default async function music(io, socket) {
               },
             }
           );
+          io.emit("post-count", hrIDs.post);
           await db.collection("posts").insertOne({
             _id: crypto.randomUUID(),
             type: "music",

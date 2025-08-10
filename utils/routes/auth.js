@@ -122,10 +122,12 @@ const handler = (io) => {
     }
   });
 
-  router.get("/init", (req, res) => {
+  router.get("/init", async (req, res) => {
     try {
+      const postCount = await db.collection("hrIDs").findOne({});
       res.status(200).json({
         user: req.session.user,
+        postCount: postCount.post - 1,
       });
     } catch (err) {
       console.log("/auth/init error", err);

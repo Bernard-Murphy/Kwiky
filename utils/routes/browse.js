@@ -60,6 +60,22 @@ const handler = (io) => {
     }
   });
 
+  router.get("/post/:postID", async (req, res) => {
+    try {
+      const post = await db
+        .collection("posts")
+        .findOne({ hrID: Number(req.params.postID) });
+      if (!post) {
+        console.log("not found", req.params.postID);
+        return res.sendStatus(404);
+      }
+      res.status(200).json({ post });
+    } catch (err) {
+      console.log("fetch post error", err);
+      res.sendStatus(500);
+    }
+  });
+
   return router;
 };
 
