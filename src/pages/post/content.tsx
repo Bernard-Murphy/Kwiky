@@ -1,7 +1,7 @@
 import { transitions as t } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import AnimatedButton from "@/components/animated-button";
 import {
   Tooltip,
@@ -26,7 +26,6 @@ export default function PostContent({ animationDirection }: PostContentProps) {
   const params = useParams();
   const [loading, setLoading] = useState<boolean>(true);
   const [post, setPost] = useState<Post | undefined>();
-  const navigate = useNavigate();
   const postId = Number(params.postId);
   console.log(post);
 
