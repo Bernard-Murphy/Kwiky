@@ -114,3 +114,16 @@ export const getTimeHR = (date: Date | string) => {
   if (String(minutes).length === 1) minutes = `0${minutes}`;
   return hours + ":" + minutes + meridian;
 };
+
+export const checkSpecial = (id: number) => {
+  if (id === 1) return true;
+  const split = String(id).split("");
+  if (split.length === 1) return false;
+  if (split.every((c) => c === split[0])) return true;
+  if (split.length < 3) return false;
+  let special = true;
+  split.forEach((char, s) => {
+    if (s && Number(char)) special = false;
+  });
+  return special;
+};

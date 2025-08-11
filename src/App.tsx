@@ -47,6 +47,7 @@ interface User {
   email: string;
   bio?: string;
   avatar?: string;
+  hrID: number;
 }
 
 interface AppContextType {

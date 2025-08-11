@@ -46,6 +46,7 @@ const handler = (io) => {
         email: user.email,
         bio: user.bio,
         avatar: user.avatar,
+        hrID: user.hrID,
       };
       req.session.user = sessionUser;
       res.status(200).json({
@@ -108,6 +109,7 @@ const handler = (io) => {
         email: newUser.email.trim(),
         bio: newUser.bio,
         avatar: newUser.avatar,
+        hrID: newUser.hrID,
       };
 
       res.status(200).json({
@@ -115,6 +117,7 @@ const handler = (io) => {
         email: newUser.email.trim(),
         bio: newUser.bio,
         avatar: newUser.avatar,
+        hrID: newUser.hrID,
       });
     } catch (err) {
       console.log("/register error", req.body, err);
@@ -218,15 +221,16 @@ const handler = (io) => {
           },
         }
       );
-      req.session.user = newUserInfo;
+      req.session.user = {
+        _id: newUserInfo._id,
+        username: newUserInfo.username,
+        email: newUserInfo.email,
+        bio: newUserInfo.bio,
+        avatar: newUserInfo.avatar,
+        hrID: newUserInfo.hrID,
+      };
       res.status(200).json({
-        user: {
-          _id: newUserInfo._id,
-          username: newUserInfo.username,
-          email: newUserInfo.email,
-          bio: newUserInfo.bio,
-          avatar: newUserInfo.avatar,
-        },
+        user: req.session.user,
       });
     } catch (err) {
       console.log(err);

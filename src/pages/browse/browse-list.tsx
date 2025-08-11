@@ -13,8 +13,14 @@ import {
   Gamepad2,
   CircleUserRound,
   MessageCircle,
+  Speech,
 } from "lucide-react";
-import { abbreviatedText, makeDateHR, getTimeHR } from "@/lib/methods";
+import {
+  abbreviatedText,
+  makeDateHR,
+  getTimeHR,
+  checkSpecial,
+} from "@/lib/methods";
 import AnimatedButton from "@/components/animated-button";
 import { Link } from "react-router-dom";
 
@@ -25,22 +31,10 @@ export interface BrowseProps {
 export default function BrowseList({ posts }: BrowseProps) {
   console.log(posts);
 
-  const checkSpecial = (id: number) => {
-    if (id === 1) return true;
-    const split = String(id).split("");
-    if (split.length === 1) return false;
-    if (split.every((c) => c === split[0])) return true;
-    if (split.length < 3) return false;
-    let special = true;
-    split.forEach((char, s) => {
-      if (s && Number(char)) special = false;
-    });
-    return special;
-  };
-
   return posts.map((post) => {
     switch (post.type) {
       case "deepfake":
+        const audioOnly = post?.metadata?.audioOnly;
         return (
           <Link to={"/post/" + post.hrID} className="block h-full w-full">
             <AnimatedButton
@@ -51,9 +45,7 @@ export default function BrowseList({ posts }: BrowseProps) {
               <Card className="bg-black/20 text-white h-full">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <div>
-                      <CircleUserRound />
-                    </div>
+                    <div>{audioOnly ? <Speech /> : <CircleUserRound />}</div>
                     <div
                       className={
                         checkSpecial(post.hrID)
@@ -64,8 +56,27 @@ export default function BrowseList({ posts }: BrowseProps) {
                       #{post.hrID}
                     </div>
                   </CardTitle>
-                  <CardDescription className="flex justify-between">
-                    {post.username ? "@" + post.username : "Anonymous"}
+                  <CardDescription className="flex justify-between mt-2">
+                    {post.username ? (
+                      <div className="flex">
+                        <div className="w-6 h-6 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all mr-2">
+                          {post?.avatar ? (
+                            <img
+                              src={post?.avatar || "/blank-avatar.png"}
+                              alt="Avatar"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                              {post?.username.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div>@{post?.username}</div>
+                      </div>
+                    ) : (
+                      "Anonymous"
+                    )}
                     <div>
                       <div className="text-muted-foreground text-sm text-right">
                         {makeDateHR(post.timestamp || "")}
@@ -77,15 +88,17 @@ export default function BrowseList({ posts }: BrowseProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <img
-                    className="block mx-auto w-3/4"
-                    src={
-                      "https://" +
-                      process.env.REACT_APP_ASSET_LOCATION +
-                      "/thumbnails/" +
-                      post.metadata.thumbnail
-                    }
-                  />
+                  {!post?.metadata?.audioOnly && (
+                    <img
+                      className="block mx-auto w-3/4"
+                      src={
+                        "https://" +
+                        process.env.REACT_APP_ASSET_LOCATION +
+                        "/thumbnails/" +
+                        post.metadata.thumbnail
+                      }
+                    />
+                  )}
                 </CardContent>
                 <CardFooter className="flex-1">
                   <div className="w-full h-full flex flex-col justify-between">
@@ -126,8 +139,27 @@ export default function BrowseList({ posts }: BrowseProps) {
                       #{post.hrID}
                     </div>
                   </CardTitle>
-                  <CardDescription className="flex justify-between">
-                    {post.username ? "@" + post.username : "Anonymous"}
+                  <CardDescription className="flex justify-between mt-2">
+                    {post.username ? (
+                      <div className="flex">
+                        <div className="w-6 h-6 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all mr-2">
+                          {post?.avatar ? (
+                            <img
+                              src={post?.avatar || "/blank-avatar.png"}
+                              alt="Avatar"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                              {post?.username.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div>@{post?.username}</div>
+                      </div>
+                    ) : (
+                      "Anonymous"
+                    )}
                     <div>
                       <div className="text-muted-foreground text-sm text-right">
                         {makeDateHR(post.timestamp || "")}
@@ -182,8 +214,27 @@ export default function BrowseList({ posts }: BrowseProps) {
                       #{post.hrID}
                     </div>
                   </CardTitle>
-                  <CardDescription className="flex justify-between">
-                    {post.username ? "@" + post.username : "Anonymous"}
+                  <CardDescription className="flex justify-between mt-2">
+                    {post.username ? (
+                      <div className="flex">
+                        <div className="w-6 h-6 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all mr-2">
+                          {post?.avatar ? (
+                            <img
+                              src={post?.avatar || "/blank-avatar.png"}
+                              alt="Avatar"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                              {post?.username.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div>@{post?.username}</div>
+                      </div>
+                    ) : (
+                      "Anonymous"
+                    )}
                     <div>
                       <div className="text-muted-foreground text-sm text-right">
                         {makeDateHR(post.timestamp || "")}
@@ -244,8 +295,35 @@ export default function BrowseList({ posts }: BrowseProps) {
                       #{post.hrID}
                     </div>
                   </CardTitle>
-                  <CardDescription>
-                    {post.username ? "@" + post.username : "Anonymous"}
+                  <CardDescription className="flex justify-between mt-2">
+                    {post.username ? (
+                      <div className="flex">
+                        <div className="w-6 h-6 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all mr-2">
+                          {post?.avatar ? (
+                            <img
+                              src={post?.avatar || "/blank-avatar.png"}
+                              alt="Avatar"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                              {post?.username.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div>@{post?.username}</div>
+                      </div>
+                    ) : (
+                      "Anonymous"
+                    )}
+                    <div>
+                      <div className="text-muted-foreground text-sm text-right">
+                        {makeDateHR(post.timestamp || "")}
+                      </div>
+                      <div className="text-muted-foreground text-sm text-right">
+                        {getTimeHR(post.timestamp || "")}
+                      </div>
+                    </div>
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

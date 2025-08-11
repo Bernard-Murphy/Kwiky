@@ -32,9 +32,15 @@ export const set_password_schema = y.object().shape({
     .required(),
 });
 
+export const comment_schema = y.object().shape({
+  postID: y.string().required(),
+  text: y.string().max(1000).required(),
+});
+
 export default {
   register_schema,
   login_schema,
   forgot_password_schema,
+  comment_schema,
   set_password_schema,
 };

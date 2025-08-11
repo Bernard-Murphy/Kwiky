@@ -5,14 +5,39 @@ import { transitions as t } from "@/lib/utils";
 import AnimatedButton from "@/components/animated-button";
 import { User, Palette } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Spinner from "@/components/ui/spinner";
+import { type Post } from "./browse";
+import BrowseList from "./browse/browse-list";
 
 type ProfileTab = "userInfo" | "myContent";
 
+const api = process.env.REACT_APP_API;
+
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<ProfileTab>("userInfo");
+  const [loadingPosts, setLoadingPosts] = useState<boolean>(true);
+  const [posts, setPosts] = useState<Post[]>([]);
   const { user } = useApp();
 
   const navigate = useNavigate();
+
+  const loadPosts = () =>
+    axios
+      .get(api + "/browse/by-user/" + user!.hrID)
+      .then((res) => {
+        setPosts(res.data.posts);
+        setLoadingPosts(false);
+      })
+      .catch((err) => {
+        console.log("error loading posts", err);
+        setTimeout(loadPosts, 2000);
+      });
+
+  useEffect(() => {
+    if (user) loadPosts();
+  }, []);
+
   useEffect(() => {
     if (!user) navigate("/login");
   }, [user?.username]);
@@ -160,10 +185,43 @@ export default function ProfilePage() {
                         }}
                         key="myContent"
                       >
-                        <h2 className="text-2xl font-bold mb-6">My Content</h2>
-                        <div className="text-center text-gray-400 py-12">
-                          <p>Your created content will appear here...</p>
-                        </div>
+                        <AnimatePresence mode="wait">
+                          {loadingPosts ? (
+                            <motion.div
+                              key="loading"
+                              transition={t.transition}
+                              exit={{
+                                opacity: 0,
+                                y: -30,
+                              }}
+                              animate={t.normalize}
+                              initial={{
+                                opacity: 0,
+                                y: -30,
+                              }}
+                              className="flex w-full justify-center pt-5"
+                            >
+                              <Spinner size="lg" />
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key="loaded"
+                              transition={t.transition}
+                              exit={{
+                                opacity: 0,
+                                y: 30,
+                              }}
+                              animate={t.normalize}
+                              initial={{
+                                opacity: 0,
+                                y: 30,
+                              }}
+                              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                            >
+                              <BrowseList posts={posts} />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </motion.div>
                     )}
                   </AnimatePresence>

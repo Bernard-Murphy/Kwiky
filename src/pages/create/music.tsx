@@ -68,12 +68,12 @@ export default function Music({
         transition={t.transition}
         exit={{
           opacity: 0,
-          x: 50,
+          y: -50,
         }}
         animate={t.normalize}
         initial={{
           opacity: 0,
-          x: 50,
+          y: -50,
         }}
         className="space-y-4"
       >
@@ -110,12 +110,12 @@ export default function Music({
         transition={t.transition}
         exit={{
           opacity: 0,
-          y: 50,
+          x: 50,
         }}
         animate={t.normalize}
         initial={{
           opacity: 0,
-          y: 50,
+          x: 50,
         }}
       >
         <label className="block text-sm font-medium mb-2">Title</label>
@@ -168,12 +168,12 @@ export default function Music({
         transition={t.transition}
         exit={{
           opacity: 0,
-          y: 70,
+          y: 50,
         }}
         animate={t.normalize}
         initial={{
           opacity: 0,
-          y: 70,
+          y: 50,
         }}
       >
         <AnimatedButton

@@ -289,7 +289,7 @@ export default async function music(io, socket) {
             _id: crypto.randomUUID(),
             type: "music",
             hrID: hrIDs.post,
-            userID: user?._id,
+            userID: user?.hrID,
             link: "",
             links,
             timestamp: new Date(),
@@ -317,7 +317,7 @@ export default async function music(io, socket) {
               " " +
               String(uncensoredMusic === true || "false"),
           });
-          socket.emit("music-links", links);
+          socket.emit("new-post", hrIDs.post);
         } catch (err) {
           console.log("music-new-song error", err);
           socket.emit("music-error");

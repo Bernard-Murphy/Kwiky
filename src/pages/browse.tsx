@@ -19,21 +19,27 @@ export interface Post {
   timestamp: Date | string;
   userID?: string | undefined;
   username?: string;
+  avatar?: string;
   prompt?: string;
-  comments?: Comment[];
+  comments: Comment[];
   metadata: {
     title?: string;
     uncensored?: boolean;
     style?: string;
     lyrics?: string;
     thumbnail?: string;
+    audioOnly?: boolean;
   };
 }
 
 export interface Comment {
   _id: string;
   postID: string;
+  timestamp: Date | string;
   userID?: string | undefined;
+  username?: string;
+  avatar?: string;
+  hrID: number;
   body: string;
   hidden: boolean;
   metadata?: {
@@ -96,6 +102,7 @@ export default function BrowsePage({
 
   const triggerQuery = () => {
     setBrowseStatus("working");
+    setShowSearchOptions(false);
     const constraints: BrowseConstraints = {
       filters,
       keywords,
@@ -127,7 +134,10 @@ export default function BrowsePage({
               placeholder="Search"
               className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
             />
-            <AnimatedButton onClick={triggerQuery}>
+            <AnimatedButton
+              disabled={browseStatus === "working"}
+              onClick={triggerQuery}
+            >
               <div className="flex items-center justify-center">
                 <Search className="me-2" />
                 Submit

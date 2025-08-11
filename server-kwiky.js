@@ -99,6 +99,7 @@ server.listen(port, async () => {
         _id: crypto.randomBytes(8).toString("hex"),
         user: 1,
         post: 1,
+        comment: 1,
       });
     console.log("Kwiky running on port", port);
   } catch (err) {

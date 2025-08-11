@@ -15,6 +15,7 @@ import { type Post } from "../browse";
 import { toast } from "sonner";
 import { copyText, makeDateHR, getTimeHR } from "@/lib/methods";
 import { Input } from "@/components/ui/input";
+import CommentSection from "./comments";
 
 const api = process.env.REACT_APP_API;
 
@@ -34,11 +35,25 @@ export default function PostContent({ animationDirection }: PostContentProps) {
       <>
         <div className="flex justify-between">
           <p>
-            Posted by{" "}
             {post?.username ? (
-              <span className="text-blue-500">@{post?.username}</span>
+              <div className="flex">
+                <div className="w-10 h-10 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all mr-2">
+                  {post?.avatar ? (
+                    <img
+                      src={post?.avatar || "/blank-avatar.png"}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                      {post?.username.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="text-blue-500 text-lg">@{post?.username}</div>
+              </div>
             ) : (
-              "Anonymous"
+              <div className="text-lg">Anonymous</div>
             )}
           </p>
           <div>
@@ -61,14 +76,54 @@ export default function PostContent({ animationDirection }: PostContentProps) {
       case "deepfake":
         link =
           "https://" + process.env.REACT_APP_ASSET_LOCATION + "/" + post.link;
+        const audioOnly = post?.metadata?.audioOnly;
         return (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-2">
-            <div
-              className="col-span-4 lg:col-span-3"
-              style={{ maxHeight: "75vh" }}
-            >
-              <video controls src={link} className="mt-2 block w-full" />
-            </div>
+            {audioOnly ? (
+              <div
+                className="col-span-4 lg:col-span-3 w-3/4 mx-auto"
+                style={{ maxHeight: "75vh" }}
+              >
+                <motion.div
+                  transition={t.transition}
+                  exit={t.fade_out_scale_1}
+                  animate={t.normalize}
+                  initial={t.fade_out}
+                  key={link}
+                  className="my-6"
+                >
+                  <audio className="w-full block mb-2" controls src={link} />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="w-full my-1">
+                        <AnimatedButton
+                          variant="custom"
+                          className="w-full px-0 py-0"
+                          onClick={() => copyText(link)}
+                        >
+                          <Input
+                            className="cursor-pointer"
+                            value={link}
+                            readOnly
+                            type="text"
+                          />
+                        </AnimatedButton>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to Copy</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </motion.div>
+              </div>
+            ) : (
+              <div
+                className="col-span-4 lg:col-span-3"
+                style={{ maxHeight: "75vh" }}
+              >
+                <video controls src={link} className="mt-2 block w-full" />
+              </div>
+            )}
 
             <div className="col-span-4 lg:col-span-1 pt-5">
               <Info />
@@ -111,6 +166,9 @@ export default function PostContent({ animationDirection }: PostContentProps) {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+              {post?.comments && (
+                <CommentSection post={post} setPost={setPost} />
+              )}
             </div>
           </div>
         );
@@ -330,6 +388,7 @@ export default function PostContent({ animationDirection }: PostContentProps) {
     axios
       .get(api + "/browse/post/" + postId)
       .then((res) => {
+        console.log("res", res);
         setPost(res.data.post);
         setLoading(false);
       })

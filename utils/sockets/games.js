@@ -80,7 +80,7 @@ export default async function games(io, socket) {
           hrID: hrIDs.post,
           link: `files/${gameID}/index.html`,
           type: "game",
-          userID: user?._id,
+          userID: user?.hrID,
           timestamp: new Date(),
           prompt,
           metadata: {
@@ -97,7 +97,7 @@ export default async function games(io, socket) {
           prompt: String(prompt || ""),
           metadata: String(title || ""),
         });
-        socket.emit("games-link", `files/${gameID}/index.html`);
+        socket.emit("new-post", hrIDs.post);
       } catch (err) {
         console.log("create-game error", err);
         socket.emit("games-error");

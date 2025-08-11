@@ -114,7 +114,7 @@ export default async function images(io, socket) {
               hrID: hrIDs.post,
               link: `files/${md5}.png`,
               timestamp: new Date(),
-              userID: user?._id,
+              userID: user?.hrID,
               prompt,
               metadata: {
                 style,
@@ -131,7 +131,7 @@ export default async function images(io, socket) {
               prompt: String(prompt || ""),
               metadata: String(style || "") + " " + String(uncensored || ""),
             });
-            socket.emit("images-link", `files/${md5}.png`);
+            socket.emit("new-post", hrIDs.post);
           })
           .catch((err) => {
             console.log("error", err);

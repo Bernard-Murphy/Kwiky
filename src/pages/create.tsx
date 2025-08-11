@@ -20,6 +20,7 @@ import Music from "./create/music";
 import { type ImageDimensions } from "./create/images";
 import Deepfake from "./create/deepfake";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export interface CreatePageProps {
   socket: Socket;
@@ -75,6 +76,9 @@ export default function CreatePage({
     string | null
   >(null);
   const [deepfakeVideoLink, setDeepFakeVideoLink] = useState<any>(null);
+  const [deepfakeAudioOnly, setDeepfakeAudioOnly] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     socket.on("music-lyrics", (lyrics) => {
@@ -151,6 +155,8 @@ export default function CreatePage({
       setDeepfakeStatus("");
       setDeepfakeWorking(false);
     });
+
+    socket.on("new-post", (postId: string) => navigate("/post/" + postId));
   }, []);
 
   useEffect(() => {
@@ -240,14 +246,21 @@ export default function CreatePage({
 
   const deepfakeSubmit = async () => {
     try {
-      if (!deepfakeAudio || !deepfakeImage || !deepfakeMessage) return;
+      if (
+        !deepfakeAudio ||
+        (!deepfakeAudioOnly && !deepfakeImage) ||
+        !deepfakeMessage
+      )
+        return;
 
       setDeepfakeWorking(true);
       const fd = new FormData();
       fd.append("socketID", socket.id || "");
       fd.append("message", deepfakeMessage);
       fd.append("audio", deepfakeAudio, deepfakeAudio.name);
-      fd.append("image", deepfakeImage, deepfakeImage.name);
+      if (!deepfakeAudioOnly)
+        fd.append("image", deepfakeImage!, deepfakeImage!.name);
+      else fd.append("audioOnly", String(deepfakeAudioOnly));
 
       setDeepfakeStatus("Uploading");
 
@@ -396,6 +409,9 @@ export default function CreatePage({
                 audioPreview={deepfakeAudioPreview}
                 setAudioPreview={setDeepfakeAudioPreview}
                 videoLink={deepfakeVideoLink}
+                audioOnly={deepfakeAudioOnly}
+                setAudioOnly={setDeepfakeAudioOnly}
+                activeTab={activeTab}
               />
             </div>
           )}

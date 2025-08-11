@@ -32,7 +32,7 @@ export default function LoginPage() {
     }
   }, [altEntranceAnimation]);
   useEffect(() => {
-    if (user) navigate("/test"); // navigate("/profile");
+    if (user) navigate("/profile");
   }, [user?.username]);
 
   useEffect(() => {

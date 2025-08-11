@@ -6,6 +6,8 @@ import { transitions as t } from "@/lib/utils";
 import AnimatedButton from "@/components/animated-button";
 import Spinner from "@/components/ui/spinner";
 import { getFileSize } from "@/lib/methods";
+import React, { useEffect, useState } from "react";
+import { type CreateTab } from "@/App";
 
 export interface DeepfakeProps {
   message: string;
@@ -22,6 +24,9 @@ export interface DeepfakeProps {
   audioPreview: string | null;
   setAudioPreview: (url: string) => void;
   videoLink: string | null;
+  audioOnly: boolean;
+  setAudioOnly: (option: boolean) => void;
+  activeTab: CreateTab;
 }
 
 export default function Deepfake({
@@ -39,7 +44,16 @@ export default function Deepfake({
   audioPreview,
   setAudioPreview,
   videoLink,
+  audioOnly,
+  setAudioOnly,
 }: DeepfakeProps) {
+  const [hideFace, setHideFace] = useState<boolean>(audioOnly);
+
+  useEffect(() => {
+    if (hideFace) setAudioOnly(true);
+    else setAudioOnly(false);
+  }, [hideFace]);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -56,6 +70,14 @@ export default function Deepfake({
       const reader = new FileReader();
       reader.onload = () => setAudioPreview(reader.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAudioOnly = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setHideFace(true);
+    } else {
+      setHideFace(false);
     }
   };
 
@@ -80,59 +102,73 @@ export default function Deepfake({
             opacity: 0,
             x: -50,
           }}
-          className="w-1/2 p-2"
+          style={{
+            transition: "width 200ms",
+          }}
+          className={hideFace ? "w-0 " : "w-1/2 p-2"}
         >
-          <div className="relative inline-block w-full h-64">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-              id="image-upload"
-            />
-
-            <AnimatedButton
-              variant="custom"
-              type="button"
-              className={`block w-full h-full mx-auto cursor-pointer hover:bg-gray-700 duration-200 overflow-hidden rounded-md pt-4 px-4 pb-2 ${
-                imagePreview ? "bg-gray-800" : ""
-              }`}
-            >
-              <label
-                className="cursor-pointer h-full w-full block"
-                htmlFor="image-upload"
+          <AnimatePresence mode="wait">
+            {!audioOnly && (
+              <motion.div
+                transition={t.transition}
+                exit={t.fade_out_scale_1}
+                animate={t.normalize}
+                initial={t.fade_out}
+                className="relative inline-block w-full h-64"
               >
-                {imagePreview ? (
-                  <div className="w-full h-full flex flex-col justify-evenly align-center">
-                    <img
-                      src={imagePreview || "/placeholder.svg"}
-                      alt="Avatar preview"
-                      style={{ height: "80%" }}
-                      className="mx-auto block"
-                    />
-                    <div className="flex items-center w-full">
-                      <div className="text-center font-medium text-gray-400 w-full">
-                        {imageFile?.name || "Face"}
-                        {" • "}
-                        {getFileSize(imageFile?.size || 0)}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload"
+                />
+
+                <AnimatedButton
+                  variant="custom"
+                  type="button"
+                  className={`block w-full h-full mx-auto cursor-pointer hover:bg-gray-700 duration-200 overflow-hidden rounded-md pt-4 px-4 pb-2 ${
+                    imagePreview ? "bg-gray-800" : ""
+                  }`}
+                >
+                  <label
+                    className="cursor-pointer h-full w-full block"
+                    htmlFor="image-upload"
+                  >
+                    {imagePreview ? (
+                      <div className="w-full h-full flex flex-col justify-evenly align-center">
+                        <img
+                          src={imagePreview || "/placeholder.svg"}
+                          alt="Avatar preview"
+                          style={{ height: "80%" }}
+                          className="mx-auto block"
+                        />
+                        <div className="flex items-center w-full">
+                          <div className="text-center font-medium text-gray-400 w-full">
+                            {imageFile?.name || "Face"}
+                            {" • "}
+                            {getFileSize(imageFile?.size || 0)}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="w-full h-full flex flex-col justify-evenly align-center">
-                    <UserRound
-                      className="w-24 text-gray-400 block mx-auto"
-                      style={{ height: "80%" }}
-                    />
-                    <div className="text-center font-medium text-gray-400">
-                      Face
-                    </div>
-                  </div>
-                )}
-              </label>
-            </AnimatedButton>
-          </div>
+                    ) : (
+                      <div className="w-full h-full flex flex-col justify-evenly align-center">
+                        <UserRound
+                          className="w-24 text-gray-400 block mx-auto"
+                          style={{ height: "80%" }}
+                        />
+                        <div className="text-center font-medium text-gray-400">
+                          Face
+                        </div>
+                      </div>
+                    )}
+                  </label>
+                </AnimatedButton>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
+
         <motion.div
           transition={t.transition}
           exit={{
@@ -144,7 +180,7 @@ export default function Deepfake({
             opacity: 0,
             x: 50,
           }}
-          className="w-1/2 p-2"
+          className="w-1/2 p-2 mx-auto"
         >
           <div className="relative inline-block w-full h-64">
             <input
@@ -157,7 +193,7 @@ export default function Deepfake({
             <AnimatedButton
               variant="custom"
               type="button"
-              className={`block w-full h-full mx-auto cursor-pointer hover:bg-gray-700 duration-200 overflow-hidden rounded-md pt-4 px-4 pb-2  ${
+              className={`block w-full h-full mx-auto cursor-pointer hover:bg-gray-700 duration-200 overflow-hidden rounded-md pt-4 px-4 pb-2 ${
                 audioPreview ? "bg-gray-800" : ""
               }`}
             >
@@ -210,13 +246,26 @@ export default function Deepfake({
           y: 50,
         }}
       >
-        <label className="block text-sm font-medium mb-2">Message</label>
+        <div className="flex justify-between items-center mb-2">
+          <label className="block text-sm font-medium">Message</label>
+          <label className="block">
+            <input
+              type="checkbox"
+              checked={audioOnly}
+              onChange={handleAudioOnly}
+              className="mr-2"
+            />
+            Audio Only
+          </label>
+        </div>
+
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Hello, my name is..."
           className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none mb-2"
         />
+
         <AnimatedButton disabled={working} onClick={submit}>
           <AnimatePresence mode="wait">
             <motion.div
