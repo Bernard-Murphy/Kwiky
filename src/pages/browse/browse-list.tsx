@@ -23,15 +23,20 @@ import {
 } from "@/lib/methods";
 import AnimatedButton from "@/components/animated-button";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export interface BrowseProps {
   posts: Post[];
 }
 
 export default function BrowseList({ posts }: BrowseProps) {
-  console.log(posts);
+  const [pagePosts, setPagePosts] = useState<Post[]>(posts);
 
-  return posts.map((post) => {
+  useEffect(() => {
+    setPagePosts(posts);
+  }, []);
+
+  return pagePosts.map((post) => {
     switch (post.type) {
       case "deepfake":
         const audioOnly = post?.metadata?.audioOnly;

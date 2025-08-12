@@ -91,6 +91,8 @@ export default function App() {
 
   const [browseItems, setBrowseItems] = useState<Post[]>([]);
   const [browseStatus, setBrowseStatus] = useState<BrowseStatus>("working");
+  const [browsePage, setBrowsePage] = useState<number>(1);
+  const [maxBrowsePages, setMaxBrowsePages] = useState<number>(1);
 
   const [postAnimationDirection, setPostAnimationDirection] = useState<
     "left" | "right" | undefined
@@ -115,11 +117,24 @@ export default function App() {
       })
       .finally(() => setChatInitialized(true));
 
-  const browseQuery = (constraints?: BrowseConstraints) =>
+  const browseQuery = (
+    constraints?: BrowseConstraints,
+    keepPrevious?: boolean
+  ) =>
     axios
-      .post(process.env.REACT_APP_API + "/browse/fetch", constraints || {})
+      .post(process.env.REACT_APP_API + "/browse/fetch", {
+        constraints,
+        skip: keepPrevious ? browseItems.length : 0,
+      })
       .then((res) => {
-        setBrowseItems(res.data);
+        setBrowseItems(
+          keepPrevious ? browseItems.concat(res.data.posts) : res.data.posts
+        );
+        if (!keepPrevious) {
+          setBrowsePage(1);
+          setMaxBrowsePages(res.data.maxPages);
+        }
+
         setBrowseStatus("complete");
       })
       .catch((err) => {
@@ -209,6 +224,9 @@ export default function App() {
                   browseStatus={browseStatus}
                   setBrowseStatus={setBrowseStatus}
                   browseQuery={browseQuery}
+                  browsePage={browsePage}
+                  setBrowsePage={setBrowsePage}
+                  maxBrowsePages={maxBrowsePages}
                 />
               }
             />

@@ -17,7 +17,7 @@ const testUser = {
 const handler = (io) => {
   router.post("/fetch", async (req, res) => {
     try {
-      const constraints = req.body;
+      const constraints = req.body.constraints;
 
       let aggregation = [
         {
@@ -140,6 +140,9 @@ const handler = (io) => {
           },
         },
         {
+          $skip: req.body.skip,
+        },
+        {
           $limit: 49,
         },
         {
@@ -164,8 +167,9 @@ const handler = (io) => {
         .collection("posts")
         .aggregate(aggregation)
         .toArray();
+      const count = await db.collection("posts").countDocuments(match.$match);
 
-      res.status(200).json(posts);
+      res.status(200).json({ posts, maxPages: Math.ceil(count / 49) });
     } catch (err) {
       console.log("init error", err);
       res.sendStatus(500);
@@ -174,7 +178,6 @@ const handler = (io) => {
 
   router.get("/by-user/:userID", async (req, res) => {
     try {
-      console.log("by user", Number(req.params.userID));
       const posts = await db
         .collection("posts")
         .aggregate([
@@ -359,7 +362,7 @@ const handler = (io) => {
         console.log("not found", req.params.postID);
         return res.sendStatus(404);
       }
-      console.log(post[0]);
+
       res.status(200).json({ post: post[0] });
     } catch (err) {
       console.log("fetch post error", err);

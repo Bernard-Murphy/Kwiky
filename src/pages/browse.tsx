@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, RotateCcw, Search } from "lucide-react";
 import AnimatedButton from "@/components/animated-button";
@@ -9,6 +9,7 @@ import DatePicker from "@/components/datepicker";
 import Spinner from "@/components/ui/spinner";
 import { useApp, themeClasses } from "@/App";
 import BrowseList from "./browse/browse-list";
+import BrowseNav from "./browse/browse-nav";
 
 export interface Post {
   _id: string;
@@ -67,7 +68,13 @@ export interface BrowseProps {
   browseItems: Post[];
   browseStatus: BrowseStatus;
   setBrowseStatus: (option: BrowseStatus) => void;
-  browseQuery: (constraints?: BrowseConstraints) => void;
+  browseQuery: (
+    constraints?: BrowseConstraints,
+    keepPrevious?: boolean
+  ) => void;
+  browsePage: number;
+  setBrowsePage: (page: number) => void;
+  maxBrowsePages: number;
 }
 
 export default function BrowsePage({
@@ -75,6 +82,9 @@ export default function BrowsePage({
   browseStatus,
   setBrowseStatus,
   browseQuery,
+  browsePage,
+  setBrowsePage,
+  maxBrowsePages,
 }: BrowseProps) {
   const [showSearchOptions, setShowSearchOptions] = useState(false);
   const [filters, setFilters] = useState<{ [key in ContentFlavor]: boolean }>({
@@ -92,6 +102,25 @@ export default function BrowsePage({
     start: undefined,
     end: undefined,
   });
+  const [animationDirection, setAnimationDirection] = useState<
+    "left" | "right" | undefined
+  >();
+
+  useEffect(() => {
+    if (
+      browseItems.length <= 49 * (browsePage - 1) &&
+      browseStatus === "complete"
+    )
+      browseQuery(
+        {
+          filters,
+          keywords,
+          dateRange,
+          includeUncensored,
+        },
+        true
+      );
+  }, [browsePage]);
 
   const { theme } = useApp();
 
@@ -349,9 +378,73 @@ export default function BrowsePage({
                       animate={t.normalize}
                       initial={t.fade_out}
                       key="found"
-                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4"
                     >
-                      <BrowseList posts={browseItems} />
+                      {maxBrowsePages > 1 && (
+                        <BrowseNav
+                          animationDirection={animationDirection}
+                          setAnimationDirection={setAnimationDirection}
+                          maxPages={maxBrowsePages}
+                          currentPage={browsePage}
+                          setPage={setBrowsePage}
+                        />
+                      )}
+
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          transition={t.transition}
+                          exit={
+                            animationDirection === "right"
+                              ? t.fade_out_right
+                              : animationDirection === "left"
+                              ? t.fade_out_left
+                              : t.fade_out
+                          }
+                          animate={t.normalize}
+                          initial={
+                            animationDirection === "right"
+                              ? t.fade_out_left
+                              : animationDirection === "left"
+                              ? t.fade_out_right
+                              : t.fade_out
+                          }
+                          key={String(browsePage)}
+                        >
+                          <AnimatePresence mode="wait">
+                            {browseItems.length <= 49 * (browsePage - 1) &&
+                            browseStatus === "complete" ? (
+                              <motion.div
+                                transition={t.transition}
+                                exit={t.fade_out_scale_1}
+                                animate={t.normalize}
+                                initial={t.fade_out}
+                                key="spinner"
+                                className="flex items-center justify-center mt-6"
+                              >
+                                <Spinner size="lg" />
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                transition={t.transition}
+                                exit={t.fade_out_scale_1}
+                                animate={t.normalize}
+                                initial={t.fade_out}
+                                key="items"
+                                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4"
+                              >
+                                <BrowseList
+                                  posts={browseItems.filter((post, index) => {
+                                    console.log(post);
+                                    return (
+                                      index < 49 * browsePage &&
+                                      index >= 49 * (browsePage - 1)
+                                    );
+                                  })}
+                                />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      </AnimatePresence>
                     </motion.div>
                   ) : (
                     <motion.div
@@ -361,9 +454,7 @@ export default function BrowsePage({
                       initial={t.fade_out}
                       key="none-found"
                     >
-                      <h5 className="text-center">
-                        No results found (Work in progress)
-                      </h5>
+                      <h5 className="text-center">No results found</h5>
                     </motion.div>
                   )}
                 </AnimatePresence>
