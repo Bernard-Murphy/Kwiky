@@ -216,9 +216,16 @@ export default function ProfilePage() {
                                 opacity: 0,
                                 y: 30,
                               }}
-                              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
                             >
-                              <BrowseList posts={posts} />
+                              {posts.length ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                  <BrowseList posts={posts} />
+                                </div>
+                              ) : (
+                                <h5 className="text-center mt-5 text-xl">
+                                  No posts found
+                                </h5>
+                              )}
                             </motion.div>
                           )}
                         </AnimatePresence>

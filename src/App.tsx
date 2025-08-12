@@ -59,6 +59,13 @@ interface AppContextType {
   postCount: number;
 }
 
+const testUser = {
+  hrID: 1,
+  username: "bernard",
+  email: "lilmilk@gmail.com",
+  bio: "",
+};
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const useApp = () => {
@@ -75,6 +82,7 @@ export default function App() {
 
   const [authWorking, setAuthWorking] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
+  // const [user, setUser] = useState<User | null>(testUser);
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInitialized, setChatInitialized] = useState<boolean>(false);
