@@ -5,7 +5,7 @@ import path from "path";
 import crypto from "crypto";
 
 const __dirname = new URL(".", import.meta.url).pathname;
-dotenv.config({ path: path.join(__dirname, "..", ".env") });
+dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 
 const mongoUrl =
   process.env.MONGO_URL ||
