@@ -15,6 +15,7 @@ import BrowsePage, {
   type Post,
   type BrowseStatus,
   type BrowseConstraints,
+  type ContentFlavor,
 } from "./pages/browse";
 import ChatPage from "./pages/chat";
 import ProfilePage from "./pages/profile";
@@ -93,6 +94,24 @@ export default function App() {
   const [browseStatus, setBrowseStatus] = useState<BrowseStatus>("working");
   const [browsePage, setBrowsePage] = useState<number>(1);
   const [maxBrowsePages, setMaxBrowsePages] = useState<number>(1);
+  const [browseFilters, setBrowseFilters] = useState<{
+    [key in ContentFlavor]: boolean;
+  }>({
+    music: true,
+    images: true,
+    games: true,
+    deepfakes: true,
+  });
+  const [browseIncludeUncensored, setBrowseIncludeUncensored] =
+    useState<boolean>(false);
+  const [browseKeywords, setBrowseKeywords] = useState<string>("");
+  const [browseDateRange, setBrowseDateRange] = useState<{
+    start: Date | undefined;
+    end: Date | undefined;
+  }>({
+    start: undefined,
+    end: undefined,
+  });
 
   const [postAnimationDirection, setPostAnimationDirection] = useState<
     "left" | "right" | undefined
@@ -120,7 +139,7 @@ export default function App() {
   const browseQuery = (
     constraints?: BrowseConstraints,
     keepPrevious?: boolean
-  ) =>
+  ) => {
     axios
       .post(process.env.REACT_APP_API + "/browse/fetch", {
         constraints,
@@ -141,6 +160,7 @@ export default function App() {
         console.log("error getting initial browse items", err);
         setBrowseStatus("errored");
       });
+  };
 
   const authInit = () => {
     axios
@@ -227,6 +247,14 @@ export default function App() {
                   browsePage={browsePage}
                   setBrowsePage={setBrowsePage}
                   maxBrowsePages={maxBrowsePages}
+                  includeUncensored={browseIncludeUncensored}
+                  setIncludeUncensored={setBrowseIncludeUncensored}
+                  keywords={browseKeywords}
+                  setKeywords={setBrowseKeywords}
+                  filters={browseFilters}
+                  setFilters={setBrowseFilters}
+                  dateRange={browseDateRange}
+                  setDateRange={setBrowseDateRange}
                 />
               }
             />

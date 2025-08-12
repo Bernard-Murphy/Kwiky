@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, RotateCcw, Search } from "lucide-react";
+import { ChevronDown, RotateCcw, Search, Ellipsis } from "lucide-react";
 import AnimatedButton from "@/components/animated-button";
 import { transitions as t } from "@/lib/utils";
 import DatePicker from "@/components/datepicker";
@@ -50,7 +50,7 @@ export interface Comment {
 
 export type BrowseStatus = "working" | "errored" | "complete";
 
-type ContentFlavor = "music" | "images" | "games" | "deepfakes";
+export type ContentFlavor = "music" | "images" | "games" | "deepfakes";
 
 export interface BrowseConstraints {
   filters?: {
@@ -75,6 +75,24 @@ export interface BrowseProps {
   browsePage: number;
   setBrowsePage: (page: number) => void;
   maxBrowsePages: number;
+  includeUncensored: boolean;
+  setIncludeUncensored: (option: boolean) => void;
+  keywords: string;
+  setKeywords: (words: string) => void;
+  filters: {
+    [key in ContentFlavor]: boolean;
+  };
+  setFilters: (option: {
+    [key in ContentFlavor]: boolean;
+  }) => void;
+  dateRange: {
+    start: Date | undefined;
+    end: Date | undefined;
+  };
+  setDateRange: (range: {
+    start: Date | undefined;
+    end: Date | undefined;
+  }) => void;
 }
 
 export default function BrowsePage({
@@ -85,23 +103,16 @@ export default function BrowsePage({
   browsePage,
   setBrowsePage,
   maxBrowsePages,
+  includeUncensored,
+  setIncludeUncensored,
+  keywords,
+  setKeywords,
+  filters,
+  setFilters,
+  dateRange,
+  setDateRange,
 }: BrowseProps) {
   const [showSearchOptions, setShowSearchOptions] = useState(false);
-  const [filters, setFilters] = useState<{ [key in ContentFlavor]: boolean }>({
-    music: true,
-    images: true,
-    games: true,
-    deepfakes: true,
-  });
-  const [includeUncensored, setIncludeUncensored] = useState<boolean>(false);
-  const [keywords, setKeywords] = useState("");
-  const [dateRange, setDateRange] = useState<{
-    start: Date | undefined;
-    end: Date | undefined;
-  }>({
-    start: undefined,
-    end: undefined,
-  });
   const [animationDirection, setAnimationDirection] = useState<
     "left" | "right" | undefined
   >();
@@ -110,7 +121,7 @@ export default function BrowsePage({
     if (
       browseItems.length <= 49 * (browsePage - 1) &&
       browseStatus === "complete"
-    )
+    ) {
       browseQuery(
         {
           filters,
@@ -120,15 +131,16 @@ export default function BrowsePage({
         },
         true
       );
+    }
   }, [browsePage]);
 
   const { theme } = useApp();
 
   const handleFilterChange = (filter: keyof typeof filters) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filter]: !prev[filter],
-    }));
+    setFilters({
+      ...filters,
+      [filter]: !filters[filter],
+    });
   };
 
   const triggerQuery = () => {
@@ -167,13 +179,39 @@ export default function BrowsePage({
               className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
             />
             <AnimatedButton
-              disabled={browseStatus === "working"}
+              disabled={
+                browseStatus === "working" ||
+                browseItems.length <= 49 * (browsePage - 1)
+              }
               onClick={triggerQuery}
             >
-              <div className="flex items-center justify-center">
-                <Search className="me-2" />
-                Submit
-              </div>
+              <AnimatePresence mode="wait">
+                {browseStatus === "working" ||
+                browseItems.length <= 49 * (browsePage - 1) ? (
+                  <motion.div
+                    transition={t.transition}
+                    exit={t.fade_out_scale_1}
+                    animate={t.normalize}
+                    initial={t.fade_out}
+                    className="flex items-center justify-center"
+                    key="working"
+                  >
+                    <Ellipsis />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    transition={t.transition}
+                    exit={t.fade_out_scale_1}
+                    animate={t.normalize}
+                    initial={t.fade_out}
+                    className="flex items-center justify-center"
+                    key="not-working"
+                  >
+                    <Search className="me-2" />
+                    Submit
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </AnimatedButton>
           </div>
           <AnimatedButton
@@ -267,10 +305,10 @@ export default function BrowsePage({
                           className="w-full"
                           date={dateRange.start}
                           setDate={(d) =>
-                            setDateRange((prev) => ({
-                              ...prev,
+                            setDateRange({
+                              ...dateRange,
                               start: d,
-                            }))
+                            })
                           }
                         />
                       </div>
@@ -280,10 +318,10 @@ export default function BrowsePage({
                           className="w-full"
                           date={dateRange.end}
                           setDate={(d) =>
-                            setDateRange((prev) => ({
-                              ...prev,
+                            setDateRange({
+                              ...dateRange,
                               end: d,
-                            }))
+                            })
                           }
                         />
                       </div>
@@ -433,7 +471,7 @@ export default function BrowsePage({
                               >
                                 <BrowseList
                                   posts={browseItems.filter((post, index) => {
-                                    console.log(post);
+                                    if (false) console.log(post);
                                     return (
                                       index < 49 * browsePage &&
                                       index >= 49 * (browsePage - 1)
