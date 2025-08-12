@@ -59,12 +59,12 @@ interface AppContextType {
   postCount: number;
 }
 
-const testUser = {
-  hrID: 1,
-  username: "bernard",
-  email: "lilmilk@gmail.com",
-  bio: "",
-};
+// const testUser = {
+//   hrID: 1,
+//   username: "bernard",
+//   email: "lilmilk@gmail.com",
+//   bio: "",
+// };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
