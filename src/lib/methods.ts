@@ -74,7 +74,7 @@ export const abbreviatedText = (text: string, length?: number) => {
   badWords.forEach(
     (word) =>
       (text = text.replaceAll(
-        new RegExp(word, "i"),
+        new RegExp(word, "gi"),
         Array.from(Array(word.length).keys())
           .map(() => "*")
           .join("")
