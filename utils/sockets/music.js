@@ -69,6 +69,7 @@ const uploadToS3 = async (audioFile) => {
     const filePath = `${__dirname.includes("C:/") ? "." : __dirname}/temp/${
       audioFile.split("/")[audioFile.split("/").length - 1]
     }`;
+    console.log("s3", filePath);
     const audio = fs.readFileSync(filePath);
     const md5_audio = crypto.createHash("md5").update(audioFile).digest("hex");
     await s3.send(
@@ -96,7 +97,7 @@ const fetchAndWriteFile = (url) =>
           const filename = `${
             __dirname.includes("C:/") ? "." : __dirname
           }/temp/${url.split("/")[url.split("/").length - 1]}`;
-
+          console.log("fetchAndWriteFile", url, filename);
           if (res.statusCode !== 200) {
             return reject(res);
           }
@@ -134,6 +135,7 @@ const getMurekaJob = (trace_id) =>
             })
             .then(async (res) => {
               try {
+                console.log("mureka", res.data);
                 switch (res.data.status) {
                   case "succeeded":
                     return resolve(res.data);
@@ -183,9 +185,11 @@ const murekaQuery = (lyrics, musicStyle) =>
         model: "auto",
         prompt,
       };
+      console.log("mureka start");
       axios
         .post("https://api.mureka.ai/v1/song/generate", body, options)
         .then(async (res) => {
+          console.log("mureka end");
           try {
             const job = await getMurekaJob(res.data.id);
             resolve(job);
@@ -263,7 +267,7 @@ export default async function music(io, socket) {
           }
 
           const songData = await murekaQuery(lyrics, musicStyle);
-
+          console.log("data", songData);
           const links = [];
           for (let c = 0; c < songData.choices.length; c++) {
             const song = songData.choices[c];

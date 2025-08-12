@@ -56,6 +56,7 @@ export interface BrowseConstraints {
     [key in ContentFlavor]: boolean;
   };
   keywords?: string;
+  includeUncensored?: boolean;
   dateRange?: {
     start: Date | undefined;
     end: Date | undefined;
@@ -82,6 +83,7 @@ export default function BrowsePage({
     games: true,
     deepfakes: true,
   });
+  const [includeUncensored, setIncludeUncensored] = useState<boolean>(false);
   const [keywords, setKeywords] = useState("");
   const [dateRange, setDateRange] = useState<{
     start: Date | undefined;
@@ -107,6 +109,7 @@ export default function BrowsePage({
       filters,
       keywords,
       dateRange,
+      includeUncensored,
     };
     browseQuery(constraints);
   };
@@ -213,7 +216,17 @@ export default function BrowsePage({
                       </div>
                     </div>
                   </div>
-
+                  <hr className="mt-2" />
+                  <label className="flex items-center my-4">
+                    <input
+                      type="checkbox"
+                      checked={includeUncensored}
+                      onChange={(e) => setIncludeUncensored(e.target.checked)}
+                      className="mr-2"
+                    />
+                    Include Uncensored
+                  </label>
+                  <hr className="mb-4" />
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       Date Range

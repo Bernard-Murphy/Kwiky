@@ -152,7 +152,9 @@ export default function App() {
     socket.on("post-count", setPostCount);
     authInit();
     chatInit();
-    browseQuery();
+    browseQuery({
+      includeUncensored: false,
+    });
   }, []);
 
   useEffect(() => {

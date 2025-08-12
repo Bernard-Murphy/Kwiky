@@ -83,6 +83,10 @@ const handler = (io) => {
       };
 
       if (constraints && Object.keys(constraints).length) {
+        if (!constraints.includeUncensored)
+          match.$match["metadata.uncensored"] = {
+            $ne: true,
+          };
         if (constraints.filters) {
           match.$match.type = {
             $in: [],
