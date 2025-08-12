@@ -80,7 +80,7 @@ const main = async () => {
         userID: null,
         link: "",
         links,
-        timestamp: new Date(),
+        timestamp: new Date(post.timestamp),
         prompt: "",
         metadata: {
           title: "Untitled",
