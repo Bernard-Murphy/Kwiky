@@ -207,6 +207,9 @@ export default function App() {
       start: undefined,
       end: undefined,
     });
+    browseQuery({
+      includeUncensored: false,
+    });
   };
 
   useEffect(() => {

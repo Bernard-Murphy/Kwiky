@@ -1,4 +1,10 @@
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useState,
+  Fragment,
+} from "react";
 import { toast } from "sonner";
 import AnimatedButton from "@/components/animated-button";
 import { transitions as t } from "@/lib/utils";
@@ -144,78 +150,104 @@ export default function Chat({
       >
         <div className="absolute left-5">
           <div className="relative">
-            {chatMessages.length === 0 ? (
-              <></>
-            ) : (
-              <>
-                <AnimatedButton
-                  variant="ghost"
-                  onClick={() => setClearAllOpen((curr) => !curr)}
-                  className="flex items-center"
+            <AnimatePresence mode="wait">
+              {chatMessages.length === 0 ? (
+                <Fragment key="no-messages"></Fragment>
+              ) : (
+                <motion.div
+                  transition={t.transition}
+                  exit={t.fade_out_scale_1}
+                  animate={t.normalize}
+                  initial={t.fade_out}
+                  key="yes-messages"
                 >
-                  <Eraser className="me-2" />
-                  Clear All
-                </AnimatedButton>
-                <AnimatePresence>
-                  {clearAllOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
-                    >
-                      <h5 className="px-4">Are you sure?</h5>
-                      <button
-                        onClick={clearAll}
-                        className="w-full text-left px-4 py-2 hover:bg-red-200 text-red-400 transition-colors cursor-pointer"
+                  <AnimatedButton
+                    variant="ghost"
+                    onClick={() => setClearAllOpen((curr) => !curr)}
+                    className="flex items-center"
+                  >
+                    <Eraser className="me-2" />
+                    Clear All
+                  </AnimatedButton>
+                  <AnimatePresence>
+                    {clearAllOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
                       >
-                        Yes
-                      </button>
-                      <button
-                        onClick={() => setClearAllOpen(false)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
-                      >
-                        No
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </>
-            )}
+                        <h5 className="px-4">Are you sure?</h5>
+                        <button
+                          onClick={clearAll}
+                          className="w-full text-left px-4 py-2 hover:bg-red-200 text-red-400 transition-colors cursor-pointer"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          onClick={() => setClearAllOpen(false)}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
+                        >
+                          No
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
-        {chatMessages.length === 0 ? (
-          <MessageCircleMore
-            className="text-gray-400 block mx-auto mt-8"
-            size={100}
-          />
-        ) : (
-          <div className="space-y-4 ">
-            {chatMessages.map((message, index) => (
-              <motion.div
-                transition={t.transition}
-                exit={t.fade_out_scale_1}
-                animate={t.normalize}
-                initial={t.fade_out}
-                key={index}
-                className={`flex ${
-                  message.isUser ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    message.isUser
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700 text-gray-100"
+        <AnimatePresence mode="wait">
+          {chatMessages.length === 0 ? (
+            <motion.div
+              className="w-full"
+              transition={t.transition}
+              exit={t.fade_out_scale_1}
+              animate={t.normalize}
+              initial={t.fade_out}
+              key="no-messages"
+            >
+              <MessageCircleMore
+                className="text-gray-400 block mx-auto mt-8"
+                size={100}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              transition={t.transition}
+              exit={t.fade_out_scale_1}
+              animate={t.normalize}
+              initial={t.fade_out}
+              key="yes-messages"
+              className="space-y-4 "
+            >
+              {chatMessages.map((message, index) => (
+                <motion.div
+                  transition={t.transition}
+                  exit={t.fade_out_scale_1}
+                  animate={t.normalize}
+                  initial={t.fade_out}
+                  key={index}
+                  className={`flex ${
+                    message.isUser ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {message.text}
-                </div>
-              </motion.div>
-            ))}
-            {awaitingChatResponse && <TypingIndicator />}
-          </div>
-        )}
+                  <div
+                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      message.isUser
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-700 text-gray-100"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                </motion.div>
+              ))}
+              {awaitingChatResponse && <TypingIndicator />}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
       <motion.div
         transition={t.transition}

@@ -138,7 +138,7 @@ export default function Images({
         <div className="text-center text-red-400 mt-2">
           {imageStatus === "Errored"
             ? "An error occurred. Please try again later."
-            : "You may not use this service to generate porn"}
+            : "You may not use this service to generate sexual content or nudity"}
         </div>
       </motion.div>
       <motion.div

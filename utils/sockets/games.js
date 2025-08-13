@@ -45,7 +45,7 @@ export default async function games(io, socket) {
               
               ${prompt}
               
-              Return ONLY an array of JSON objects. Do not return anything else. Do not show your work or explain your line of thinking. The first key in each object, called "path", will be the path to the file, and the second key, called "content", will be the content of the file. If any graphics or sprites are required that cannot be represented using simple colors and shapes, use svg images.`,
+              Return ONLY an array of JSON objects. Do not return anything else. Do not show your work or explain your line of thinking. The first key in each object, called "path", will be the path to the file, and the second key, called "content", will be the content of the file. The main html file that contains the game must be named "index.html". If any graphics or sprites are required that cannot be represented using simple colors and shapes, use svg images.`,
             },
           ],
           model: "qwen/qwen3-32b",
@@ -53,7 +53,13 @@ export default async function games(io, socket) {
         if (typeof chatCompletion === "string")
           chatCompletion = JSON.parse(chatCompletion);
         let data = chatCompletion.choices[0].message.content;
-        const json = JSON.parse(data.split("</think>")[1].trim());
+        console.log(data);
+        let json;
+        try {
+          json = JSON.parse(data.split("</think>")[1].trim());
+        } catch (err) {
+          json = eval(data);
+        }
         const gameID = crypto.randomUUID();
         for (let i = 0; i < json.length; i++) {
           const file = json[i];

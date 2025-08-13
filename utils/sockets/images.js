@@ -44,7 +44,7 @@ export default async function images(io, socket) {
           messages: [
             {
               role: "user",
-              content: `If the following prompt is requesting sexual content, respond with a single word: "yes". Otherwise, respond with "no". Prompt: ${prompt}`,
+              content: `If the following prompt is requesting overtly sexual content and/or nudity, respond with a single word: "yes". Otherwise, respond with "no". Prompt: ${prompt}`,
             },
           ],
           venice_parameters: {

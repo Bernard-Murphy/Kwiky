@@ -24,16 +24,16 @@ const testUser = {
 
 const handler = (io) => {
   router.post("/", async (req, res) => {
+    const socketID = req.body.socketID;
     try {
       const audioOnly = String(req.body.audioOnly) === "true";
-      const user = testEnv ? testUser : socket.request.session?.user;
+      const user = testEnv ? testUser : req.session?.user;
       if (
         !req.body.message ||
         !req.files.audio ||
         (!audioOnly && !req.files.image)
       )
         return res.sendStatus(400);
-      const socketID = req.body.socketID;
 
       io.to(socketID).emit("deepfake-status", "Processing Media");
       res.sendStatus(200);
