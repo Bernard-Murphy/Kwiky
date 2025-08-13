@@ -21,14 +21,18 @@ const api = process.env.REACT_APP_API;
 
 export interface PostContentProps {
   animationDirection: "left" | "right" | undefined;
+  setAnimationDirection: (option: "left" | "right" | undefined) => void;
 }
 
-export default function PostContent({ animationDirection }: PostContentProps) {
+export default function PostContent({
+  animationDirection,
+  setAnimationDirection,
+}: PostContentProps) {
   const params = useParams();
   const [loading, setLoading] = useState<boolean>(true);
   const [post, setPost] = useState<Post | undefined>();
+  // const [animationComplete, setAnimationComplete] = useState<boolean>(false);
   const postId = Number(params.postId);
-  console.log(post);
 
   const Info = () => {
     return (
@@ -80,18 +84,21 @@ export default function PostContent({ animationDirection }: PostContentProps) {
         return (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-2">
             {audioOnly ? (
-              <div
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  x: animationDirection ? 0 : -50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  x: animationDirection ? 0 : -50,
+                }}
                 className="col-span-4 lg:col-span-3 w-3/4 mx-auto"
                 style={{ maxHeight: "75vh" }}
               >
-                <motion.div
-                  transition={t.transition}
-                  exit={t.fade_out_scale_1}
-                  animate={t.normalize}
-                  initial={t.fade_out}
-                  key={link}
-                  className="my-6"
-                >
+                <div className="my-6">
                   <audio className="w-full block mb-2" controls src={link} />
                   <TooltipProvider>
                     <Tooltip>
@@ -114,18 +121,40 @@ export default function PostContent({ animationDirection }: PostContentProps) {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                </motion.div>
-              </div>
+                </div>
+              </motion.div>
             ) : (
-              <div
+              <motion.div
+                transition={t.transition}
+                exit={{
+                  opacity: 0,
+                  x: animationDirection ? 0 : -50,
+                }}
+                animate={t.normalize}
+                initial={{
+                  opacity: 0,
+                  x: animationDirection ? 0 : -50,
+                }}
                 className="col-span-4 lg:col-span-3"
                 style={{ maxHeight: "75vh" }}
               >
                 <video controls src={link} className="mt-2 block w-full" />
-              </div>
+              </motion.div>
             )}
 
-            <div className="col-span-4 lg:col-span-1 pt-5">
+            <motion.div
+              transition={t.transition}
+              exit={{
+                opacity: 0,
+                x: animationDirection ? 0 : 50,
+              }}
+              animate={t.normalize}
+              initial={{
+                opacity: 0,
+                x: animationDirection ? 0 : 50,
+              }}
+              className="col-span-4 lg:col-span-1 pt-5"
+            >
               <Info />
               <p className="mt-5">Video Link:</p>
               <TooltipProvider>
@@ -169,7 +198,7 @@ export default function PostContent({ animationDirection }: PostContentProps) {
               {post?.comments && (
                 <CommentSection post={post} setPost={setPost} />
               )}
-            </div>
+            </motion.div>
           </div>
         );
       case "game":
@@ -177,13 +206,35 @@ export default function PostContent({ animationDirection }: PostContentProps) {
           "https://" + process.env.REACT_APP_ASSET_LOCATION + "/" + post.link;
         return (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-2 mt-6">
-            <div
+            <motion.div
+              transition={t.transition}
+              exit={{
+                opacity: 0,
+                x: animationDirection ? 0 : -50,
+              }}
+              animate={t.normalize}
+              initial={{
+                opacity: 0,
+                x: animationDirection ? 0 : -50,
+              }}
               className="col-span-4 lg:col-span-3"
               style={{ height: "75vh" }}
             >
               <embed className="w-full h-full" src={link} />
-            </div>
-            <div className="col-span-4 lg:col-span-1 pt-5">
+            </motion.div>
+            <motion.div
+              transition={t.transition}
+              exit={{
+                opacity: 0,
+                x: animationDirection ? 0 : 50,
+              }}
+              animate={t.normalize}
+              initial={{
+                opacity: 0,
+                x: animationDirection ? 0 : 50,
+              }}
+              className="col-span-4 lg:col-span-1 pt-5"
+            >
               <Info />
               <h5 className="mt-5">Link to Game:</h5>
               <TooltipProvider>
@@ -220,7 +271,7 @@ export default function PostContent({ animationDirection }: PostContentProps) {
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           </div>
         );
       case "music":
@@ -228,7 +279,17 @@ export default function PostContent({ animationDirection }: PostContentProps) {
         if (!links?.length) return <></>;
         return (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-2 mt-6">
-            <div
+            <motion.div
+              transition={t.transition}
+              exit={{
+                opacity: 0,
+                x: animationDirection ? 0 : -50,
+              }}
+              animate={t.normalize}
+              initial={{
+                opacity: 0,
+                x: animationDirection ? 0 : -50,
+              }}
               className="col-span-4 lg:col-span-3 w-3/4 mx-auto"
               style={{ maxHeight: "75vh" }}
             >
@@ -239,14 +300,7 @@ export default function PostContent({ animationDirection }: PostContentProps) {
                   "/" +
                   link;
                 return (
-                  <motion.div
-                    transition={t.transition}
-                    exit={t.fade_out_scale_1}
-                    animate={t.normalize}
-                    initial={t.fade_out}
-                    key={fullLink}
-                    className="my-6"
-                  >
+                  <div key={fullLink} className="my-6">
                     <audio
                       className="w-full block mb-2"
                       controls
@@ -273,12 +327,24 @@ export default function PostContent({ animationDirection }: PostContentProps) {
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                  </motion.div>
+                  </div>
                 );
               })}
-            </div>
+            </motion.div>
 
-            <div className="col-span-4 lg:col-span-1 pt-5">
+            <motion.div
+              transition={t.transition}
+              exit={{
+                opacity: 0,
+                x: animationDirection ? 0 : 50,
+              }}
+              animate={t.normalize}
+              initial={{
+                opacity: 0,
+                x: animationDirection ? 0 : 50,
+              }}
+              className="col-span-4 lg:col-span-1 pt-5"
+            >
               <Info />
               <TooltipProvider>
                 <Tooltip>
@@ -314,7 +380,7 @@ export default function PostContent({ animationDirection }: PostContentProps) {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </div>
+            </motion.div>
           </div>
         );
       case "image":
@@ -322,15 +388,39 @@ export default function PostContent({ animationDirection }: PostContentProps) {
           "https://" + process.env.REACT_APP_ASSET_LOCATION + "/" + post.link;
         return (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-2">
-            <div className="col-span-4 lg:col-span-3 mt-2">
+            <motion.div
+              transition={t.transition}
+              exit={{
+                opacity: 0,
+                x: animationDirection ? 0 : -50,
+              }}
+              animate={t.normalize}
+              initial={{
+                opacity: 0,
+                x: animationDirection ? 0 : -50,
+              }}
+              className="col-span-4 lg:col-span-3 mt-2"
+            >
               <img
                 src={link}
                 className="block max-w-full mx-auto"
                 style={{ maxHeight: "75vh" }}
               />
-            </div>
+            </motion.div>
 
-            <div className="col-span-4 lg:col-span-1 pt-5">
+            <motion.div
+              transition={t.transition}
+              exit={{
+                opacity: 0,
+                x: animationDirection ? 0 : 50,
+              }}
+              animate={t.normalize}
+              initial={{
+                opacity: 0,
+                x: animationDirection ? 0 : 50,
+              }}
+              className="col-span-4 lg:col-span-1 pt-5"
+            >
               <Info />
               <p className="my-5">
                 Style:{" "}
@@ -375,7 +465,7 @@ export default function PostContent({ animationDirection }: PostContentProps) {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </div>
+            </motion.div>
           </div>
         );
       default:
@@ -388,7 +478,6 @@ export default function PostContent({ animationDirection }: PostContentProps) {
     axios
       .get(api + "/browse/post/" + postId)
       .then((res) => {
-        console.log("res", res);
         setPost(res.data.post);
         setLoading(false);
       })
@@ -405,6 +494,7 @@ export default function PostContent({ animationDirection }: PostContentProps) {
 
   useEffect(() => {
     load();
+    setAnimationDirection(undefined);
   }, []);
 
   return (
@@ -415,7 +505,7 @@ export default function PostContent({ animationDirection }: PostContentProps) {
           ? t.fade_out_right
           : animationDirection === "left"
           ? t.fade_out_left
-          : t.fade_out
+          : t.fade_out_scale_1
       }
       animate={t.normalize}
       initial={
@@ -423,13 +513,18 @@ export default function PostContent({ animationDirection }: PostContentProps) {
           ? t.fade_out_left
           : animationDirection === "left"
           ? t.fade_out_right
-          : t.fade_out
+          : t.fade_out_scale_1
       }
     >
       <AnimatePresence mode="wait">
         {loading ? (
           <motion.div
-            transition={t.transition}
+            transition={{
+              x: { duration: 0.2 },
+              y: { duration: 0.2 },
+              opacity: { duration: 0.12 },
+              scale: { duration: 0.16 },
+            }}
             exit={{
               opacity: 0,
               y: 30,
@@ -445,15 +540,9 @@ export default function PostContent({ animationDirection }: PostContentProps) {
             <Spinner size="lg" />
           </motion.div>
         ) : (
-          <motion.div
-            transition={t.transition}
-            exit={t.fade_out_scale_1}
-            animate={t.normalize}
-            initial={t.fade_out}
-            key="loaded"
-          >
-            <Body />
-          </motion.div>
+          <AnimatePresence mode="wait">
+            {location.pathname.includes("/post/") && <Body key="loaded" />}
+          </AnimatePresence>
         )}
       </AnimatePresence>
     </motion.div>

@@ -59,7 +59,7 @@ export default function AnimatedButton({
   const { theme } = useApp();
 
   const baseClasses =
-    "relative overflow-hidden font-medium transition-all duration-200 cursor-pointer";
+    "relative overflow-hidden font-medium transition-all duration-200";
   const variantClasses = buttonThemeClasses[theme];
 
   return (
@@ -70,7 +70,7 @@ export default function AnimatedButton({
       onClick={handleClick}
       className={`${baseClasses} ${variantClasses[variant]} ${className} ${
         pressing ? "scale-90" : ""
-      }`}
+      } ${disabled ? "" : "cursor-pointer"}`}
     >
       {children}
       {ripples.map((ripple) => (

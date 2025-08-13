@@ -20,7 +20,6 @@ import Music from "./create/music";
 import { type ImageDimensions } from "./create/images";
 import Deepfake from "./create/deepfake";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 export interface CreatePageProps {
   socket: Socket;
@@ -77,8 +76,6 @@ export default function CreatePage({
   >(null);
   const [deepfakeVideoLink, setDeepFakeVideoLink] = useState<any>(null);
   const [deepfakeAudioOnly, setDeepfakeAudioOnly] = useState<boolean>(false);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     socket.on("music-lyrics", (lyrics) => {
@@ -155,8 +152,6 @@ export default function CreatePage({
       setDeepfakeStatus("");
       setDeepfakeWorking(false);
     });
-
-    socket.on("new-post", (postId: string) => navigate("/post/" + postId));
   }, []);
 
   useEffect(() => {

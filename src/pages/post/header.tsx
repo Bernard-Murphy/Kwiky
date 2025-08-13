@@ -38,19 +38,7 @@ export default function PostPage({
   };
 
   return (
-    <motion.div
-      transition={t.transition}
-      exit={{
-        opacity: 0,
-        y: -30,
-      }}
-      animate={t.normalize}
-      initial={{
-        opacity: 0,
-        y: -30,
-      }}
-      className="pt-6 flex items-center justify-between container mx-auto"
-    >
+    <div className="pt-6 flex items-center justify-between container mx-auto">
       <div className="w-1/3 flex items-center justify-center">
         <AnimatePresence mode="wait">
           {postCount > postId && (
@@ -167,6 +155,6 @@ export default function PostPage({
           )}
         </AnimatePresence>
       </div>
-    </motion.div>
+    </div>
   );
 }

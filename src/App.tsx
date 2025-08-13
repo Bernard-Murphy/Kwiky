@@ -1,6 +1,12 @@
 "use client";
 
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, createContext, useContext, useEffect } from "react";
 import Navbar from "./components/navbar";
@@ -78,6 +84,7 @@ export const useApp = () => {
 };
 
 export default function App() {
+  const navigate = useNavigate();
   const [theme, setTheme] = useState<Theme>("dark");
   const [createTab, setCreateTab] = useState<CreateTab>("music");
 
@@ -183,8 +190,31 @@ export default function App() {
       .finally(() => setAuthWorking(false));
   };
 
+  const browseReset = () => {
+    setBrowseItems([]);
+    setBrowseStatus("working");
+    setBrowsePage(1);
+    setMaxBrowsePages(1);
+    setBrowseFilters({
+      music: true,
+      images: true,
+      games: true,
+      deepfakes: true,
+    });
+    setBrowseIncludeUncensored(false);
+    setBrowseKeywords("");
+    setBrowseDateRange({
+      start: undefined,
+      end: undefined,
+    });
+  };
+
   useEffect(() => {
     socket.on("post-count", setPostCount);
+    socket.on("new-post", (postID: string | number) => {
+      navigate("/post/" + String(postID));
+      browseReset();
+    });
     authInit();
     chatInit();
     browseQuery({
@@ -207,9 +237,15 @@ export default function App() {
         <AnimatePresence mode="wait">
           <motion.div
             transition={t.transition}
-            exit={t.fade_out_scale_1}
+            exit={{
+              opacity: 0,
+              y: -30,
+            }}
             animate={t.normalize}
-            initial={t.fade_out}
+            initial={{
+              opacity: 0,
+              y: -30,
+            }}
             key={String(location.pathname.includes("/post/"))}
           >
             {location.pathname.includes("/post/") && (
@@ -266,7 +302,10 @@ export default function App() {
             <Route
               path="/post/:postId"
               element={
-                <PostContent animationDirection={postAnimationDirection} />
+                <PostContent
+                  animationDirection={postAnimationDirection}
+                  setAnimationDirection={setPostAnimationDirection}
+                />
               }
             />
             <Route path="/profile" element={<ProfilePage />} />

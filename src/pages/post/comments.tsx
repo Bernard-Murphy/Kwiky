@@ -99,63 +99,66 @@ export default function CommentSection({ post, setPost }: CommentsProps) {
         <AnimatedCount count={commentText.length} max={maxCommentLength} />
       </div>
       {comments.length ? (
-        comments.map((comment: Comment) => (
-          <motion.div
-            key={comment._id}
-            transition={t.transition}
-            exit={t.fade_out_scale_1}
-            animate={t.normalize}
-            initial={t.fade_out}
-            className="w-full mt-2"
-          >
-            <Card className="bg-black/20 text-white w-full">
-              <CardHeader>
-                <CardTitle className="flex justify-between">
-                  {comment.username ? (
-                    <div className="flex">
-                      <div className="w-6 h-6 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all mr-2">
-                        {comment?.avatar ? (
-                          <img
-                            src={comment?.avatar || "/blank-avatar.png"}
-                            alt="Avatar"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
-                            {comment?.username.charAt(0).toUpperCase()}
-                          </div>
-                        )}
+        <>
+          <hr className="my-4" />
+          {comments.map((comment: Comment) => (
+            <motion.div
+              key={comment._id}
+              transition={t.transition}
+              exit={t.fade_out_scale_1}
+              animate={t.normalize}
+              initial={t.fade_out}
+              className="w-full mt-2"
+            >
+              <Card className="bg-black/20 text-white w-full">
+                <CardHeader>
+                  <CardTitle className="flex justify-between">
+                    {comment.username ? (
+                      <div className="flex">
+                        <div className="w-6 h-6 rounded-full bg-gray-600 overflow-hidden hover:ring-2 hover:ring-blue-400 transition-all mr-2">
+                          {comment?.avatar ? (
+                            <img
+                              src={comment?.avatar || "/blank-avatar.png"}
+                              alt="Avatar"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                              {comment?.username.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div>@{comment?.username}</div>
                       </div>
-                      <div>@{comment?.username}</div>
-                    </div>
-                  ) : (
-                    <div>Anonymous</div>
-                  )}
-                  <div>
-                    <div
-                      className={`text-right ${
-                        checkSpecial(comment.hrID)
-                          ? "text-yellow-300 opacity-flash"
-                          : "text-white"
-                      }`}
-                    >
-                      #{comment.hrID}
-                    </div>
+                    ) : (
+                      <div>Anonymous</div>
+                    )}
                     <div>
-                      <div className="text-muted-foreground text-sm text-right">
-                        {makeDateHR(comment.timestamp || "")}
+                      <div
+                        className={`text-right ${
+                          checkSpecial(comment.hrID)
+                            ? "text-yellow-300 opacity-flash"
+                            : "text-white"
+                        }`}
+                      >
+                        #{comment.hrID}
                       </div>
-                      <div className="text-muted-foreground text-sm text-right">
-                        {getTimeHR(comment.timestamp || "")}
+                      <div>
+                        <div className="text-muted-foreground text-sm text-right">
+                          {makeDateHR(comment.timestamp || "")}
+                        </div>
+                        <div className="text-muted-foreground text-sm text-right">
+                          {getTimeHR(comment.timestamp || "")}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>{comment.body}</CardContent>
-            </Card>
-          </motion.div>
-        ))
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>{comment.body}</CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </>
       ) : (
         <></>
       )}

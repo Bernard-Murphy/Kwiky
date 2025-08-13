@@ -156,7 +156,7 @@ const getMurekaJob = (trace_id) =>
               console.log("getMurekaJob error", err);
               reject(err);
             }),
-        10000
+        5000
       );
     } catch (err) {
       console.log("getMurekaJob error", err);
@@ -182,7 +182,7 @@ const murekaQuery = (lyrics, musicStyle) =>
       };
       const body = {
         lyrics,
-        model: "auto",
+        model: "mureka-6",
         prompt,
       };
       console.log("mureka start");
