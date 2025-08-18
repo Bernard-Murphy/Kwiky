@@ -1,5 +1,5 @@
 import { type Comment, type Post } from "../browse";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { transitions as t } from "@/lib/utils";
 import { checkSpecial, makeDateHR, getTimeHR } from "@/lib/methods";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,7 +24,11 @@ export default function CommentSection({ post, setPost }: CommentsProps) {
   const postID = post.hrID;
   const [commentText, setCommentText] = useState<string>("");
   const [working, setWorking] = useState<boolean>(false);
-  console.log(comments);
+  const [loaded, setLoaded] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
 
   const submit = () => {
     if (working) return;
@@ -46,7 +50,6 @@ export default function CommentSection({ post, setPost }: CommentsProps) {
     axios
       .post(api + "/browse/comment", body)
       .then((res) => {
-        console.log(res.data);
         setPost({
           ...post,
           comments: [res.data.comment as Comment, ...post.comments],
@@ -61,6 +64,8 @@ export default function CommentSection({ post, setPost }: CommentsProps) {
       })
       .finally(() => setWorking(false));
   };
+
+  if (!post?.comments) return <></>;
 
   return (
     <div className="mt-5">
@@ -106,9 +111,17 @@ export default function CommentSection({ post, setPost }: CommentsProps) {
               key={comment._id}
               transition={t.transition}
               exit={t.fade_out_scale_1}
-              animate={t.normalize}
-              initial={t.fade_out}
-              className="w-full mt-2"
+              initial={{
+                opacity: 0,
+                height: loaded ? 0 : "auto",
+                marginTop: loaded ? 0 : "calc(var(--spacing) * 2)",
+              }}
+              animate={{
+                opacity: 1,
+                height: "auto",
+                marginTop: "calc(var(--spacing) * 2)",
+              }}
+              className="w-full overflow-y-hidden"
             >
               <Card className="bg-black/20 text-white w-full">
                 <CardHeader>

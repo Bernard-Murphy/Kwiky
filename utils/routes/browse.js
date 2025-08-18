@@ -46,6 +46,11 @@ const handler = (io) => {
                 },
               },
               {
+                $sort: {
+                  hrID: -1,
+                },
+              },
+              {
                 $lookup: {
                   from: "users",
                   localField: "userID",
@@ -298,6 +303,11 @@ const handler = (io) => {
                 {
                   $match: {
                     $expr: { $eq: ["$postID", "$$id"] },
+                  },
+                },
+                {
+                  $sort: {
+                    hrID: -1,
                   },
                 },
                 {

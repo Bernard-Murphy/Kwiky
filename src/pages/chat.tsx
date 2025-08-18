@@ -13,6 +13,7 @@ import axios from "axios";
 import TypingIndicator from "@/components/ui/typing-indicator";
 import { MessageCircleMore, Eraser } from "lucide-react";
 import Spinner from "@/components/ui/spinner";
+import { useApp } from "@/App";
 
 const api = process.env.REACT_APP_API;
 
@@ -40,6 +41,8 @@ export default function Chat({
   const [uncensoredChat, setUncensoredChat] = useState(false);
   const [chatInput, setChatInput] = useState("");
   const [clearAllOpen, setClearAllOpen] = useState<boolean>(false);
+
+  const { showNavMenu } = useApp();
 
   useEffect(() => {
     if (uncensoredChat)
@@ -142,62 +145,75 @@ export default function Chat({
           opacity: 0,
           y: -50,
         }}
-        className="flex-1 bg-black/20 rounded-lg p-4 mb-4 overflow-y-auto relative"
+        className={`flex-1 bg-black/20 rounded-lg p-4 mb-4 overflow-y-auto ${
+          showNavMenu ? "" : "relative"
+        }`}
         id="chat-container"
         style={{
           scrollBehavior: "smooth",
         }}
       >
-        <div className="absolute left-5">
-          <div className="relative">
-            <AnimatePresence mode="wait">
-              {chatMessages.length === 0 ? (
-                <Fragment key="no-messages"></Fragment>
-              ) : (
-                <motion.div
-                  transition={t.transition}
-                  exit={t.fade_out_scale_1}
-                  animate={t.normalize}
-                  initial={t.fade_out}
-                  key="yes-messages"
-                >
-                  <AnimatedButton
-                    variant="ghost"
-                    onClick={() => setClearAllOpen((curr) => !curr)}
-                    className="flex items-center"
-                  >
-                    <Eraser className="me-2" />
-                    Clear All
-                  </AnimatedButton>
-                  <AnimatePresence>
-                    {clearAllOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
+        <AnimatePresence mode="wait">
+          {!showNavMenu && (
+            <motion.div
+              transition={t.transition}
+              exit={t.fade_out_scale_1}
+              animate={t.normalize}
+              initial={t.fade_out}
+              className="absolute left-5"
+            >
+              <div className="relative">
+                <AnimatePresence mode="wait">
+                  {chatMessages.length === 0 ? (
+                    <Fragment key="no-messages"></Fragment>
+                  ) : (
+                    <motion.div
+                      transition={t.transition}
+                      exit={t.fade_out_scale_1}
+                      animate={t.normalize}
+                      initial={t.fade_out}
+                      key="yes-messages"
+                    >
+                      <AnimatedButton
+                        variant="ghost"
+                        onClick={() => setClearAllOpen((curr) => !curr)}
+                        className="flex items-center"
                       >
-                        <h5 className="px-4">Are you sure?</h5>
-                        <button
-                          onClick={clearAll}
-                          className="w-full text-left px-4 py-2 hover:bg-red-200 text-red-400 transition-colors cursor-pointer"
-                        >
-                          Yes
-                        </button>
-                        <button
-                          onClick={() => setClearAllOpen(false)}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
-                        >
-                          No
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+                        <Eraser className="me-2" />
+                        Clear All
+                      </AnimatedButton>
+                      <AnimatePresence>
+                        {clearAllOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2"
+                          >
+                            <h5 className="px-4">Are you sure?</h5>
+                            <button
+                              onClick={clearAll}
+                              className="w-full text-left px-4 py-2 hover:bg-red-200 text-red-400 transition-colors cursor-pointer"
+                            >
+                              Yes
+                            </button>
+                            <button
+                              onClick={() => setClearAllOpen(false)}
+                              className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer"
+                            >
+                              No
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           {chatMessages.length === 0 ? (
             <motion.div

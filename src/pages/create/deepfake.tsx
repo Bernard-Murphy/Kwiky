@@ -105,7 +105,7 @@ export default function Deepfake({
           style={{
             transition: "width 200ms",
           }}
-          className={hideFace ? "w-0 " : "w-1/2 p-2"}
+          className={`p-2 ${hideFace ? "w-0 " : "w-1/2"}`}
         >
           <AnimatePresence mode="wait">
             {!audioOnly && (
@@ -255,7 +255,7 @@ export default function Deepfake({
               onChange={handleAudioOnly}
               className="mr-2"
             />
-            Audio Only
+            Text to Speech Only
           </label>
         </div>
 

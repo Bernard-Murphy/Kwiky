@@ -55,8 +55,8 @@ export default function ProfilePage() {
             transition={t.transition}
             exit={t.fade_out_scale_1}
             animate={t.normalize}
-            initial={t.fade_out}
-            className="container mx-auto px-6 py-8"
+            initial={t.fade_out_scale_1}
+            className="container mx-auto px-6 py-8 profile-container"
             key="profile"
           >
             <div className="flex">
@@ -72,7 +72,7 @@ export default function ProfilePage() {
                   opacity: 0,
                   x: -100,
                 }}
-                className="w-64 mr-8"
+                className="w-64 mr-8 profile-menu"
               >
                 <div className="space-y-2">
                   <AnimatedButton
@@ -84,8 +84,8 @@ export default function ProfilePage() {
                         : "text-gray-300 hover:text-white hover:bg-white/10"
                     }`}
                   >
-                    <User className="w-5 h-5 mr-2" />
-                    User Info
+                    <User className="w-5 h-5 mr-2 profile-item-icon" />
+                    <span className="profile-menu-item-text">User Info</span>
                   </AnimatedButton>
                   <AnimatedButton
                     onClick={() => setActiveTab("myContent")}
@@ -96,8 +96,8 @@ export default function ProfilePage() {
                         : "text-gray-300 hover:text-white hover:bg-white/10"
                     }`}
                   >
-                    <Palette className="w-5 h-5 mr-2" />
-                    My Content
+                    <Palette className="w-5 h-5 mr-2 profile-item-icon" />
+                    <span className="profile-menu-item-text">My Content</span>
                   </AnimatedButton>
                 </div>
               </motion.div>
@@ -184,6 +184,7 @@ export default function ProfilePage() {
                           x: 100,
                         }}
                         key="myContent"
+                        className="profile-items-screen"
                       >
                         <AnimatePresence mode="wait">
                           {loadingPosts ? (
@@ -207,18 +208,12 @@ export default function ProfilePage() {
                             <motion.div
                               key="loaded"
                               transition={t.transition}
-                              exit={{
-                                opacity: 0,
-                                y: 30,
-                              }}
+                              exit={t.fade_out_scale_1}
                               animate={t.normalize}
-                              initial={{
-                                opacity: 0,
-                                y: 30,
-                              }}
+                              initial={t.fade_out_scale_1}
                             >
                               {posts.length ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 browse-list-container">
                                   <BrowseList posts={posts} />
                                 </div>
                               ) : (
@@ -241,7 +236,7 @@ export default function ProfilePage() {
             transition={t.transition}
             exit={t.fade_out_scale_1}
             animate={t.normalize}
-            initial={t.fade_out}
+            initial={t.fade_out_scale_1}
           ></motion.div>
         )}
       </AnimatePresence>

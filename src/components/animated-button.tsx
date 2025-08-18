@@ -1,11 +1,11 @@
-import type React from "react";
+import { type ButtonHTMLAttributes, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useApp } from "@/App";
 import buttonThemeClasses from "@/lib/buttonThemeClasses";
 
-interface AnimatedButtonProps {
-  children: React.ReactNode;
+interface AnimatedButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
@@ -29,6 +29,7 @@ export default function AnimatedButton({
   className = "",
   variant = "primary",
   id = "test",
+  ...props
 }: AnimatedButtonProps) {
   const [ripples, setRipples] = useState<
     Array<{ id: number; x: number; y: number }>
@@ -71,6 +72,7 @@ export default function AnimatedButton({
       className={`${baseClasses} ${variantClasses[variant]} ${className} ${
         pressing ? "scale-90" : ""
       } ${disabled ? "" : "cursor-pointer"}`}
+      {...props}
     >
       {children}
       {ripples.map((ripple) => (

@@ -102,6 +102,9 @@ export default function Images({
                 })
               }
               className="px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+              style={{
+                maxWidth: "45vw",
+              }}
             />
           </div>
           <div>
@@ -116,6 +119,9 @@ export default function Images({
                   height: Number(e.target.value),
                 })
               }
+              style={{
+                maxWidth: "45vw",
+              }}
               className="px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
             />
           </div>

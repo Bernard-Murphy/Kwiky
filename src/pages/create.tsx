@@ -275,7 +275,7 @@ export default function CreatePage({
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
-      className="container mx-auto px-6 py-8"
+      className="container mx-auto px-6 py-8 create-container"
     >
       {/* Tab Navigation */}
       <motion.div
@@ -296,7 +296,7 @@ export default function CreatePage({
             variant="custom"
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center px-4 py-3 rounded-md transition-all cursor-pointer ${
+            className={`flex items-center px-4 py-3 rounded-md transition-all cursor-pointer tab-button ${
               activeTab === tab.id
                 ? "bg-blue-600 text-white"
                 : ` hover:text-white hover:bg-white/10 ${

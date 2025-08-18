@@ -111,6 +111,33 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.hamburger-menu {
+  display: inline-block;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.hamburger-menu span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: var(--background);
+  margin: 4px 0;
+  transition: 0.3s;
+}
+
+.hamburger-menu.open span:nth-child(1) {
+  transform: rotate(-45deg) translate(-5px, 5px);
+}
+
+.hamburger-menu.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.open span:nth-child(3) {
+  transform: rotate(45deg) translate(-4.5px, -4.5px);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -120,15 +147,102 @@
   }
 }
 
+@media screen and (max-width: 1023px) {
+  .profile-container {
+    max-width: 100% !important;
+    padding-inline: calc(var(--spacing) * 3);
+  }
+}
+
 @media screen and (max-width: 768px) {
   .tab-create {
     display: none;
   }
 }
 
+@media screen and (max-width: 639px) {
+  .profile-menu {
+    width: calc(var(--spacing) * 16);
+    margin-right: calc(var(--spacing) * 4);
+  }
+
+  .profile-menu-item-text {
+    display: none;
+  }
+
+  .profile-item-icon {
+    margin-right: 0;
+    width: calc(var(--spacing) * 8);
+  }
+
+  .profile-items-screen {
+    margin-top: calc(var(--spacing) * 16);
+  }
+}
+
+@media screen and (min-width: 548px) {
+  .hamburger-menu {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 547px) {
+  .nav-main-items {
+    flex-direction: column;
+  }
+}
+
 @media screen and (max-width: 525px) {
   .tab-icon {
     display: none;
+  }
+  .tab-button {
+    width: 25%;
+    margin: 0;
+    border-radius: 0;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .create-container {
+    padding-inline: calc(var(--spacing) * 2);
+    padding-block: calc(var(--spacing) * 4);
+  }
+
+  .browse-search-button-text {
+    display: none;
+  }
+
+  .browse-search-button-icon {
+    margin-right: 0;
+  }
+
+  .browse-upper {
+    padding-inline: calc(var(--spacing) * 2);
+  }
+
+  .browse-container {
+    padding-inline: 0;
+    padding-block: calc(var(--spacing) * 2);
+  }
+
+  .browse-item,
+  .browse-item > .rounded-xl {
+    border-radius: 0;
+  }
+
+  .browse-list-container {
+    gap: 0;
+  }
+
+  .browse-item > .border {
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .browse-item > .border:first-child {
+    border-top: 1px solid;
   }
 }
 

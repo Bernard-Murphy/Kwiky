@@ -24,6 +24,16 @@ const transporter = nodemailer.createTransport(
 const router = Router();
 
 const handler = (io) => {
+  router.get("/logout", (req, res) => {
+    try {
+      delete req.session.user;
+      res.sendStatus(200);
+    } catch (err) {
+      console.log("logout error", err, req.session);
+      res.sendStatus(500);
+    }
+  });
+
   router.post("/login", async (req, res) => {
     try {
       login_schema.validateSync(req.body);

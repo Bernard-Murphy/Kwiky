@@ -63,7 +63,10 @@ interface AppContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   authWorking: boolean;
+  setAuthWorking: (option: boolean) => void;
   postCount: number;
+  showNavMenu: boolean;
+  setShowNavMenu: (option: boolean) => void;
 }
 
 // const testUser = {
@@ -87,6 +90,7 @@ export default function App() {
   const navigate = useNavigate();
   const [theme, setTheme] = useState<Theme>("dark");
   const [createTab, setCreateTab] = useState<CreateTab>("music");
+  const [showNavMenu, setShowNavMenu] = useState(false);
 
   const [authWorking, setAuthWorking] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
@@ -162,6 +166,7 @@ export default function App() {
         }
 
         setBrowseStatus("complete");
+        console.log("ok");
       })
       .catch((err) => {
         console.log("error getting initial browse items", err);
@@ -191,25 +196,33 @@ export default function App() {
   };
 
   const browseReset = () => {
-    setBrowseItems([]);
+    // setBrowseItems([]);
+    // setBrowseStatus("working");
+    // setBrowsePage(1);
+    // setMaxBrowsePages(1);
+    // setBrowseFilters({
+    //   music: true,
+    //   images: true,
+    //   games: true,
+    //   deepfakes: true,
+    // });
+    // setBrowseIncludeUncensored(false);
+    // setBrowseKeywords("");
+    // setBrowseDateRange({
+    //   start: undefined,
+    //   end: undefined,
+    // });
+    // browseQuery({
+    //   includeUncensored: false,
+    // });
     setBrowseStatus("working");
-    setBrowsePage(1);
-    setMaxBrowsePages(1);
-    setBrowseFilters({
-      music: true,
-      images: true,
-      games: true,
-      deepfakes: true,
-    });
-    setBrowseIncludeUncensored(false);
-    setBrowseKeywords("");
-    setBrowseDateRange({
-      start: undefined,
-      end: undefined,
-    });
-    browseQuery({
-      includeUncensored: false,
-    });
+    const constraints: BrowseConstraints = {
+      filters: browseFilters,
+      keywords: browseKeywords,
+      dateRange: browseDateRange,
+      includeUncensored: browseIncludeUncensored,
+    };
+    browseQuery(constraints);
   };
 
   useEffect(() => {
@@ -231,7 +244,17 @@ export default function App() {
 
   return (
     <AppContext.Provider
-      value={{ theme, setTheme, user, setUser, authWorking, postCount }}
+      value={{
+        theme,
+        setTheme,
+        user,
+        setUser,
+        authWorking,
+        setAuthWorking,
+        postCount,
+        showNavMenu,
+        setShowNavMenu,
+      }}
     >
       <div
         className={`min-h-screen transition-colors duration-300 overflow-hidden ${themeClasses[theme]}`}

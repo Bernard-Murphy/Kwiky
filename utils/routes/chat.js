@@ -48,7 +48,7 @@ const handler = (io) => {
 
   router.get("/init", async (req, res) => {
     try {
-      console.log(req.session.chatId);
+      // console.log(req.session.chatId);
       const chatId = req.session.user?._id || req.session.chatId;
       const messages = await db
         .collection("virgilChad")

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, RotateCcw, Search, Ellipsis } from "lucide-react";
 import AnimatedButton from "@/components/animated-button";
@@ -10,6 +10,7 @@ import Spinner from "@/components/ui/spinner";
 import { useApp, themeClasses } from "@/App";
 import BrowseList from "./browse/browse-list";
 import BrowseNav from "./browse/browse-nav";
+import { toast } from "sonner";
 
 export interface Post {
   _id: string;
@@ -134,6 +135,17 @@ export default function BrowsePage({
     }
   }, [browsePage]);
 
+  useEffect(() => {
+    if (includeUncensored)
+      toast.error(
+        "Uncensored results may include HIGHLY offensive materials created by bad actors",
+        {
+          position: "bottom-center",
+          duration: 2000,
+        }
+      );
+  }, [includeUncensored]);
+
   const { theme } = useApp();
 
   const handleFilterChange = (filter: keyof typeof filters) => {
@@ -143,7 +155,8 @@ export default function BrowsePage({
     });
   };
 
-  const triggerQuery = () => {
+  const triggerSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setBrowseStatus("working");
     setShowSearchOptions(false);
     const constraints: BrowseConstraints = {
@@ -156,7 +169,7 @@ export default function BrowsePage({
   };
 
   return (
-    <div className="px-6 py-8">
+    <div className="px-6 py-8 browse-container">
       <motion.div
         transition={t.transition}
         exit={{
@@ -169,51 +182,55 @@ export default function BrowsePage({
           y: -25,
         }}
       >
-        <div className="space-y-6 container max-w-2xl mx-auto relative">
-          <div className="flex space-x-4">
-            <input
-              type="text"
-              value={keywords}
-              onChange={(e) => setKeywords(e.target.value)}
-              placeholder="Search"
-              className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
-            />
-            <AnimatedButton
-              disabled={
-                browseStatus === "working" ||
-                browseItems.length <= 49 * (browsePage - 1)
-              }
-              onClick={triggerQuery}
-            >
-              <AnimatePresence mode="wait">
-                {browseStatus === "working" ||
-                browseItems.length <= 49 * (browsePage - 1) ? (
-                  <motion.div
-                    transition={t.transition}
-                    exit={t.fade_out_scale_1}
-                    animate={t.normalize}
-                    initial={t.fade_out}
-                    className="flex items-center justify-center"
-                    key="working"
-                  >
-                    <Ellipsis />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    transition={t.transition}
-                    exit={t.fade_out_scale_1}
-                    animate={t.normalize}
-                    initial={t.fade_out}
-                    className="flex items-center justify-center"
-                    key="not-working"
-                  >
-                    <Search className="me-2" />
-                    Submit
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </AnimatedButton>
-          </div>
+        <div className="space-y-6 container max-w-2xl mx-auto relative browse-upper">
+          <form onSubmit={triggerSearch}>
+            <div className="flex space-x-4">
+              <input
+                type="text"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+                placeholder="Search"
+                className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+              />
+              <AnimatedButton
+                disabled={
+                  browseStatus === "working"
+                  // ||
+                  // browseItems.length <= 49 * (browsePage - 1)
+                }
+                onClick={triggerSearch}
+              >
+                <AnimatePresence mode="wait">
+                  {browseStatus === "working" ? (
+                    // ||
+                    // browseItems.length <= 49 * (browsePage - 1)
+                    <motion.div
+                      transition={t.transition}
+                      exit={t.fade_out_scale_1}
+                      animate={t.normalize}
+                      initial={t.fade_out}
+                      className="flex items-center justify-center opacity-flash"
+                      key="working"
+                    >
+                      <Ellipsis />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      transition={t.transition}
+                      exit={t.fade_out_scale_1}
+                      animate={t.normalize}
+                      initial={t.fade_out}
+                      className="flex items-center justify-center"
+                      key="not-working"
+                    >
+                      <Search className="me-2 browse-search-button-icon" />
+                      <span className="browse-search-button-text">Submit</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </AnimatedButton>
+            </div>
+          </form>
           <AnimatedButton
             onClick={() => setShowSearchOptions(!showSearchOptions)}
             variant="ghost"
@@ -384,7 +401,7 @@ export default function BrowsePage({
                 </h5>
                 <AnimatedButton
                   variant="ghost"
-                  onClick={triggerQuery}
+                  onClick={triggerSearch}
                   className="flex items-center mx-auto mt-4"
                 >
                   <RotateCcw className="me-2" />
@@ -467,7 +484,7 @@ export default function BrowsePage({
                                 animate={t.normalize}
                                 initial={t.fade_out}
                                 key="items"
-                                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4"
+                                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4 browse-list-container"
                               >
                                 <BrowseList
                                   posts={browseItems.filter((post, index) => {
