@@ -40,10 +40,10 @@ const handler = (io) => {
       const user = await db.collection("users").findOne({
         $or: [
           {
-            email: req.body.username.trim(),
+            email: new RegExp(`^${req.body.username.trim()}$`, "i"),
           },
           {
-            username: req.body.username.trim(),
+            username: new RegExp(`^${req.body.username.trim()}$`, "i"),
           },
         ],
       });
