@@ -1,5 +1,5 @@
 import { transitions as t } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import AnimatedButton from "@/components/animated-button";
 import {
   Tooltip,
