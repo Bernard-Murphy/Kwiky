@@ -24,6 +24,7 @@ export interface Post {
   avatar?: string;
   prompt?: string;
   comments: Comment[];
+  page: number;
   metadata: {
     title?: string;
     uncensored?: boolean;
@@ -51,7 +52,7 @@ export interface Comment {
 
 export type BrowseStatus = "working" | "errored" | "complete";
 
-export type ContentFlavor = "music" | "images" | "games" | "deepfakes";
+export type ContentFlavor = "music" | "images" | "games" | "deepfake";
 
 export interface BrowseConstraints {
   filters?: {
@@ -94,6 +95,7 @@ export interface BrowseProps {
     start: Date | undefined;
     end: Date | undefined;
   }) => void;
+  resultsFound: number;
 }
 
 export default function BrowsePage({
@@ -112,17 +114,17 @@ export default function BrowsePage({
   setFilters,
   dateRange,
   setDateRange,
+  resultsFound,
 }: BrowseProps) {
   const [showSearchOptions, setShowSearchOptions] = useState(false);
   const [animationDirection, setAnimationDirection] = useState<
     "left" | "right" | undefined
   >();
 
+  const posts = browseItems.filter((post) => post.page === browsePage);
+
   useEffect(() => {
-    if (
-      browseItems.length <= 49 * (browsePage - 1) &&
-      browseStatus === "complete"
-    ) {
+    if (!posts.length && browseStatus === "complete" && resultsFound > 0) {
       browseQuery(
         {
           filters,
@@ -193,17 +195,11 @@ export default function BrowsePage({
                 className="flex-1 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
               />
               <AnimatedButton
-                disabled={
-                  browseStatus === "working"
-                  // ||
-                  // browseItems.length <= 49 * (browsePage - 1)
-                }
+                disabled={browseStatus === "working"}
                 onClick={triggerSearch}
               >
                 <AnimatePresence mode="wait">
                   {browseStatus === "working" ? (
-                    // ||
-                    // browseItems.length <= 49 * (browsePage - 1)
                     <motion.div
                       transition={t.transition}
                       exit={t.fade_out_scale_1}
@@ -291,8 +287,8 @@ export default function BrowsePage({
                         <label className="flex items-center">
                           <input
                             type="checkbox"
-                            checked={filters.deepfakes}
-                            onChange={() => handleFilterChange("deepfakes")}
+                            checked={filters.deepfake}
+                            onChange={() => handleFilterChange("deepfake")}
                             className="mr-2"
                           />
                           Deepfakes
@@ -441,6 +437,7 @@ export default function BrowsePage({
                           maxPages={maxBrowsePages}
                           currentPage={browsePage}
                           setPage={setBrowsePage}
+                          resultsFound={resultsFound}
                         />
                       )}
 
@@ -465,8 +462,8 @@ export default function BrowsePage({
                           key={String(browsePage)}
                         >
                           <AnimatePresence mode="wait">
-                            {browseItems.length <= 49 * (browsePage - 1) &&
-                            browseStatus === "complete" ? (
+                            {(!posts.length && resultsFound > 0) ||
+                            browseStatus !== "complete" ? (
                               <motion.div
                                 transition={t.transition}
                                 exit={t.fade_out_scale_1}
@@ -486,15 +483,7 @@ export default function BrowsePage({
                                 key="items"
                                 className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4 browse-list-container"
                               >
-                                <BrowseList
-                                  posts={browseItems.filter((post, index) => {
-                                    if (false) console.log(post);
-                                    return (
-                                      index < 49 * browsePage &&
-                                      index >= 49 * (browsePage - 1)
-                                    );
-                                  })}
-                                />
+                                <BrowseList posts={posts} />
                               </motion.div>
                             )}
                           </AnimatePresence>

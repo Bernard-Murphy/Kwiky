@@ -222,7 +222,7 @@ export default async function music(io, socket) {
           Write a funny poem that incorporates the following:
           ${musicPrompt}
   
-          Make it 4 or more stanzas long. Respond with only the poem itself - do not include the title, author, description, commentary, or any other information.
+          Make the poem unique. Do not start off with "In a x where..." or end with "So here's to... etc." Make it 4 or more stanzas long. Respond with only the poem itself - do not include the title, author, description, commentary, or any other information.
           `;
             let chatCompletion;
             const veniceClient = new OpenAI({

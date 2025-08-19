@@ -73,6 +73,7 @@ export default function Navbar() {
             <AnimatedButton
               variant="custom"
               onClick={() => setExpanded(!expanded)}
+              className="px-4 py-3 rounded-lg"
             >
               <Toggler open={expanded} />
             </AnimatedButton>

@@ -111,7 +111,7 @@ export default function App() {
     music: true,
     images: true,
     games: true,
-    deepfakes: true,
+    deepfake: true,
   });
   const [browseIncludeUncensored, setBrowseIncludeUncensored] =
     useState<boolean>(false);
@@ -123,6 +123,7 @@ export default function App() {
     start: undefined,
     end: undefined,
   });
+  const [browseResultsFound, setBrowseResultsFound] = useState<number>(0);
 
   const [postAnimationDirection, setPostAnimationDirection] = useState<
     "left" | "right" | undefined
@@ -154,19 +155,28 @@ export default function App() {
     axios
       .post(process.env.REACT_APP_API + "/browse/fetch", {
         constraints,
-        skip: keepPrevious ? browseItems.length : 0,
+        skip: keepPrevious ? (browsePage - 1) * 49 : 0,
       })
       .then((res) => {
         setBrowseItems(
-          keepPrevious ? browseItems.concat(res.data.posts) : res.data.posts
+          keepPrevious
+            ? browseItems.concat(
+                res.data.posts.map((post: Post) => ({
+                  ...post,
+                  page: browsePage,
+                }))
+              )
+            : res.data.posts.map((post: Post) => ({
+                ...post,
+                page: 1,
+              }))
         );
         if (!keepPrevious) {
           setBrowsePage(1);
           setMaxBrowsePages(res.data.maxPages);
         }
-
+        if (res.data.resultsFound) setBrowseResultsFound(res.data.resultsFound);
         setBrowseStatus("complete");
-        console.log("ok");
       })
       .catch((err) => {
         console.log("error getting initial browse items", err);
@@ -196,25 +206,6 @@ export default function App() {
   };
 
   const browseReset = () => {
-    // setBrowseItems([]);
-    // setBrowseStatus("working");
-    // setBrowsePage(1);
-    // setMaxBrowsePages(1);
-    // setBrowseFilters({
-    //   music: true,
-    //   images: true,
-    //   games: true,
-    //   deepfakes: true,
-    // });
-    // setBrowseIncludeUncensored(false);
-    // setBrowseKeywords("");
-    // setBrowseDateRange({
-    //   start: undefined,
-    //   end: undefined,
-    // });
-    // browseQuery({
-    //   includeUncensored: false,
-    // });
     setBrowseStatus("working");
     const constraints: BrowseConstraints = {
       filters: browseFilters,
@@ -233,9 +224,7 @@ export default function App() {
     });
     authInit();
     chatInit();
-    browseQuery({
-      includeUncensored: false,
-    });
+    browseQuery();
   }, []);
 
   useEffect(() => {
@@ -317,6 +306,7 @@ export default function App() {
                   setFilters={setBrowseFilters}
                   dateRange={browseDateRange}
                   setDateRange={setBrowseDateRange}
+                  resultsFound={browseResultsFound}
                 />
               }
             />

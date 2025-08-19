@@ -2,6 +2,12 @@ import { Router } from "express";
 import db from "../db.js";
 import { comment_schema } from "../validations.js";
 import crypto from "crypto";
+import dotenv from "dotenv";
+import path from "path";
+import { URL } from "node:url";
+
+const __dirname = new URL(".", import.meta.url).pathname;
+dotenv.config({ path: path.join(__dirname, "..", "..", "./env") });
 
 const router = Router();
 
@@ -14,10 +20,14 @@ const testUser = {
   avatar: null,
 };
 
+const assetRoute = "https://" + process.env.ASSET_LOCATION + "/";
+
 const handler = (io) => {
   router.post("/fetch", async (req, res) => {
     try {
-      const constraints = req.body.constraints;
+      const constraints = req.body.constraints
+        ? req.body.constraints
+        : { includeUncensored: false };
 
       let aggregation = [
         {
@@ -168,13 +178,16 @@ const handler = (io) => {
         },
       ]);
 
-      const posts = await db
-        .collection("posts")
-        .aggregate(aggregation)
-        .toArray();
+      let posts = await db.collection("posts").aggregate(aggregation).toArray();
+      posts = posts.map((post) => {
+        if (post.avatar) post.avatar = assetRoute + post.avatar;
+        return post;
+      });
       const count = await db.collection("posts").countDocuments(match.$match);
+      const data = { posts, maxPages: Math.ceil(count / 49) };
+      if (req.body.constraints) data.resultsFound = count;
 
-      res.status(200).json({ posts, maxPages: Math.ceil(count / 49) });
+      res.status(200).json(data);
     } catch (err) {
       console.log("init error", err);
       res.sendStatus(500);
@@ -183,7 +196,7 @@ const handler = (io) => {
 
   router.get("/by-user/:userID", async (req, res) => {
     try {
-      const posts = await db
+      let posts = await db
         .collection("posts")
         .aggregate([
           {
@@ -273,7 +286,10 @@ const handler = (io) => {
           },
         ])
         .toArray();
-
+      posts = posts.map((post) => {
+        if (post.avatar) post.avatar = assetRoute + post.avatar;
+        return post;
+      });
       res.status(200).json({ posts });
     } catch (err) {
       console.log("error", err);
@@ -283,7 +299,7 @@ const handler = (io) => {
 
   router.get("/post/:postID", async (req, res) => {
     try {
-      const post = await db
+      let post = await db
         .collection("posts")
         .aggregate([
           {
@@ -372,8 +388,10 @@ const handler = (io) => {
         console.log("not found", req.params.postID);
         return res.sendStatus(404);
       }
+      post = post[0];
+      if (post.avatar) post.avatar = assetRoute + post.avatar;
 
-      res.status(200).json({ post: post[0] });
+      res.status(200).json({ post });
     } catch (err) {
       console.log("fetch post error", err);
       res.sendStatus(500);

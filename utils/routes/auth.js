@@ -81,7 +81,7 @@ const handler = (io) => {
           },
         ],
       });
-
+      // console.log(check);
       if (check) return res.sendStatus(409);
       const passHash = await bcrypt.hash(req.body.password1, 8);
       let avatar;
