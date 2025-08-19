@@ -181,6 +181,11 @@ const handler = (io) => {
       let posts = await db.collection("posts").aggregate(aggregation).toArray();
       posts = posts.map((post) => {
         if (post.avatar) post.avatar = assetRoute + post.avatar;
+        if (post.comments?.length)
+          post.comments = post.comments.map((comment) => {
+            if (comment.avatar) comment.avatar = assetRoute + comment.avatar;
+            return comment;
+          });
         return post;
       });
       const count = await db.collection("posts").countDocuments(match.$match);
@@ -288,6 +293,11 @@ const handler = (io) => {
         .toArray();
       posts = posts.map((post) => {
         if (post.avatar) post.avatar = assetRoute + post.avatar;
+        if (post.comments?.length)
+          post.comments = post.comments.map((comment) => {
+            if (comment.avatar) comment.avatar = assetRoute + comment.avatar;
+            return comment;
+          });
         return post;
       });
       res.status(200).json({ posts });
@@ -390,6 +400,11 @@ const handler = (io) => {
       }
       post = post[0];
       if (post.avatar) post.avatar = assetRoute + post.avatar;
+      if (post.comments?.length)
+        post.comments = post.comments.map((comment) => {
+          if (comment.avatar) comment.avatar = assetRoute + comment.avatar;
+          return comment;
+        });
 
       res.status(200).json({ post });
     } catch (err) {
