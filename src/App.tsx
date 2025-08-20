@@ -182,6 +182,7 @@ export default function App() {
         console.log("error getting initial browse items", err);
         setBrowseStatus("errored");
       });
+    // .finally(() => navigate("/post/1805"));
   };
 
   const authInit = () => {
@@ -246,7 +247,7 @@ export default function App() {
       }}
     >
       <div
-        className={`min-h-screen transition-colors duration-300 overflow-hidden ${themeClasses[theme]}`}
+        className={`min-h-screen transition-colors duration-300 overflow-hidden flex flex-col ${themeClasses[theme]}`}
       >
         <Navbar />
         <AnimatePresence mode="wait">
@@ -343,11 +344,11 @@ export default function App() {
         </AnimatePresence>
         <ThemeSelector createTab={createTab} />
         <div
-          className={`fixed bottom-2 ${
+          className={`py-2 px-2 flex-1 flex items-end  ${
             ["/register", "/browse"].includes(location.pathname) ||
             location.pathname.includes("/post/")
-              ? "right-5"
-              : "left-0 text-center right-0"
+              ? "justify-end"
+              : "justify-center"
           } text-xs opacity-75`}
         >
           Created by Bernard Murphy

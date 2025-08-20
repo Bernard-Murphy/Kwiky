@@ -33,15 +33,15 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
               transition={t.transition}
               exit={{
                 opacity: 0,
-                x: animationDirection ? 0 : -50,
+                x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
               }}
               animate={t.normalize}
               initial={{
                 opacity: 0,
-                x: animationDirection ? 0 : -50,
+                x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
               }}
               className="col-span-4 lg:col-span-3 w-3/4 mx-auto"
-              style={{ maxHeight: "75vh" }}
+              style={{ maxHeight: "66vh" }}
             >
               <div className="my-6">
                 <audio className="w-full block mb-2" controls src={link} />
@@ -73,17 +73,21 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
               transition={t.transition}
               exit={{
                 opacity: 0,
-                x: animationDirection ? 0 : -50,
+                x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
               }}
               animate={t.normalize}
               initial={{
                 opacity: 0,
-                x: animationDirection ? 0 : -50,
+                x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
               }}
               className="col-span-4 lg:col-span-3"
-              style={{ maxHeight: "75vh" }}
+              style={{ maxHeight: "66vh" }}
             >
-              <video controls src={link} className="mt-2 block w-full" />
+              <video
+                controls
+                src={link}
+                className="my-2 block w-full h-full mx-auto"
+              />
             </motion.div>
           )}
 
@@ -91,12 +95,12 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
             transition={t.transition}
             exit={{
               opacity: 0,
-              x: animationDirection ? 0 : 50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : 50,
             }}
             animate={t.normalize}
             initial={{
               opacity: 0,
-              x: animationDirection ? 0 : 50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : 50,
             }}
             className="col-span-4 lg:col-span-1 pt-5"
           >
@@ -140,9 +144,7 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {/* {post?.comments && (
-                <CommentSection post={post} setPost={setPost} />
-              )} */}
+            <CommentSection post={post} setPost={setPost} />
           </motion.div>
         </div>
       );
@@ -155,15 +157,15 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
             transition={t.transition}
             exit={{
               opacity: 0,
-              x: animationDirection ? 0 : -50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
             }}
             animate={t.normalize}
             initial={{
               opacity: 0,
-              x: animationDirection ? 0 : -50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
             }}
             className="col-span-4 lg:col-span-3"
-            style={{ height: "75vh" }}
+            style={{ height: "66vh" }}
           >
             <embed className="w-full h-full" src={link} />
           </motion.div>
@@ -171,12 +173,12 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
             transition={t.transition}
             exit={{
               opacity: 0,
-              x: animationDirection ? 0 : 50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : 50,
             }}
             animate={t.normalize}
             initial={{
               opacity: 0,
-              x: animationDirection ? 0 : 50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : 50,
             }}
             className="col-span-4 lg:col-span-1 pt-5"
           >
@@ -216,9 +218,7 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
                 </div>
               ))}
             </div>
-            {/* {post?.comments && (
-                <CommentSection post={post} setPost={setPost} />
-              )} */}
+            <CommentSection post={post} setPost={setPost} />
           </motion.div>
         </div>
       );
@@ -231,15 +231,15 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
             transition={t.transition}
             exit={{
               opacity: 0,
-              x: animationDirection ? 0 : -50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
             }}
             animate={t.normalize}
             initial={{
               opacity: 0,
-              x: animationDirection ? 0 : -50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
             }}
             className="col-span-4 lg:col-span-3 w-3/4 mx-auto"
-            style={{ maxHeight: "75vh" }}
+            style={{ maxHeight: "66vh" }}
           >
             {links.map((link) => {
               const fullLink =
@@ -281,12 +281,12 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
             transition={t.transition}
             exit={{
               opacity: 0,
-              x: animationDirection ? 0 : 50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : 50,
             }}
             animate={t.normalize}
             initial={{
               opacity: 0,
-              x: animationDirection ? 0 : 50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : 50,
             }}
             className="col-span-4 lg:col-span-1 pt-5"
           >
@@ -325,9 +325,7 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {/* {post?.comments && (
-                <CommentSection post={post} setPost={setPost} />
-              )} */}
+            <CommentSection post={post} setPost={setPost} />
           </motion.div>
         </div>
       );
@@ -340,19 +338,19 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
             transition={t.transition}
             exit={{
               opacity: 0,
-              x: animationDirection ? 0 : -50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
             }}
             animate={t.normalize}
             initial={{
               opacity: 0,
-              x: animationDirection ? 0 : -50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : -50,
             }}
             className="col-span-4 lg:col-span-3 mt-2"
           >
             <img
               src={link}
               className="block max-w-full mx-auto cursor-pointer"
-              style={{ maxHeight: "75vh" }}
+              style={{ maxHeight: "66vh" }}
               onClick={() => window.open(link)}
             />
           </motion.div>
@@ -361,12 +359,12 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
             transition={t.transition}
             exit={{
               opacity: 0,
-              x: animationDirection ? 0 : 50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : 50,
             }}
             animate={t.normalize}
             initial={{
               opacity: 0,
-              x: animationDirection ? 0 : 50,
+              x: animationDirection || window.innerWidth < 1024 ? 0 : 50,
             }}
             className="col-span-4 lg:col-span-1 pt-5"
           >

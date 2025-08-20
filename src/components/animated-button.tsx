@@ -57,10 +57,11 @@ export default function AnimatedButton({
     onClick?.();
   };
 
-  const { theme } = useApp();
+  const { theme, showNavMenu } = useApp();
 
-  const baseClasses =
-    "relative overflow-hidden font-medium transition-all duration-200";
+  const baseClasses = `${
+    showNavMenu ? "" : "relative"
+  } overflow-hidden font-medium transition-all duration-200`;
   const variantClasses = buttonThemeClasses[theme];
 
   return (
@@ -75,21 +76,22 @@ export default function AnimatedButton({
       {...props}
     >
       {children}
-      {ripples.map((ripple) => (
-        <motion.span
-          key={ripple.id}
-          className="absolute bg-white/30 rounded-full pointer-events-none"
-          style={{
-            left: ripple.x - 10,
-            top: ripple.y - 10,
-            width: 20,
-            height: 20,
-          }}
-          initial={{ scale: 0, opacity: 1 }}
-          animate={{ scale: 15, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        />
-      ))}
+      {!showNavMenu &&
+        ripples.map((ripple) => (
+          <motion.span
+            key={ripple.id}
+            className="absolute bg-white/30 rounded-full pointer-events-none"
+            style={{
+              left: ripple.x - 10,
+              top: ripple.y - 10,
+              width: 20,
+              height: 20,
+            }}
+            initial={{ scale: 0, opacity: 1 }}
+            animate={{ scale: 15, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          />
+        ))}
     </button>
   );
 }

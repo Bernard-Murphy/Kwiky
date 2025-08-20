@@ -69,7 +69,7 @@ export default function Games({
         <textarea
           value={gameText}
           onChange={(e) => setGameText(e.target.value)}
-          placeholder="A Hangman Game"
+          placeholder="For best results, be as descriptive as possible"
           className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none mb-2"
         />
       </motion.div>
