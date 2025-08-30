@@ -79,7 +79,7 @@ export default function CommentSection({ post, setPost }: CommentsProps) {
         <AnimatedCount
           count={commentText.length}
           max={maxCommentLength}
-          fraction={true}
+          // fraction={true}
         />
         <AnimatedButton
           className="submit-button"
