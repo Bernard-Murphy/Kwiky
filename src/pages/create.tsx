@@ -241,6 +241,10 @@ export default function CreatePage({
 
   const deepfakeSubmit = async () => {
     try {
+      console.log(deepfakeAudio);
+      console.log(deepfakeAudioOnly);
+      console.log(deepfakeImage);
+      console.log(deepfakeMessage);
       if (
         !deepfakeAudio ||
         (!deepfakeAudioOnly && !deepfakeImage) ||
