@@ -395,7 +395,7 @@ export default function CreatePage({
                 imageFile={deepfakeImage}
                 setMessage={setDeepfakeMessage}
                 setAudioFile={setDeepfakeAudio}
-                setImagefile={setDeepfakeImage}
+                setImageFile={setDeepfakeImage}
                 working={deepfakeWorking}
                 submit={deepfakeSubmit}
                 status={deepfakeStatus}

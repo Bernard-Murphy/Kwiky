@@ -95,9 +95,9 @@ export const transitions = {
   },
 
   transition_fast: {
-    x: { duration: 0.25 },
-    y: { duration: 0.25 },
-    opacity: { duration: 0.17 },
-    scale: { duration: 0.18 },
+    x: { duration: 0.19 },
+    y: { duration: 0.19 },
+    opacity: { duration: 0.11 },
+    scale: { duration: 0.12 },
   },
 };

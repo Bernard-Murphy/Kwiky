@@ -1,9 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { UserRound, AudioLines } from "lucide-react";
+import { UserRound, AudioLines, Trash2 } from "lucide-react";
 import { transitions as t } from "@/lib/utils";
 import AnimatedButton from "@/components/animated-button";
+import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/spinner";
 import { getFileSize } from "@/lib/methods";
 import React, { useEffect, useState } from "react";
@@ -14,15 +15,15 @@ export interface DeepfakeProps {
   audioFile: File | undefined;
   imageFile: File | undefined;
   setMessage: (text: string) => void;
-  setAudioFile: (file: File) => void;
-  setImagefile: (file: File) => void;
+  setAudioFile: (file: File | undefined) => void;
+  setImageFile: (file: File | undefined) => void;
   working: boolean;
   submit: () => void;
   status: string;
   imagePreview: string | null;
-  setImagePreview: (url: string) => void;
+  setImagePreview: (url: string | null) => void;
   audioPreview: string | null;
-  setAudioPreview: (url: string) => void;
+  setAudioPreview: (url: string | null) => void;
   videoLink: string | null;
   audioOnly: boolean;
   setAudioOnly: (option: boolean) => void;
@@ -35,7 +36,7 @@ export default function Deepfake({
   imageFile,
   setMessage,
   setAudioFile,
-  setImagefile,
+  setImageFile,
   working,
   submit,
   status,
@@ -57,7 +58,7 @@ export default function Deepfake({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImagefile(file);
+      setImageFile(file);
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
@@ -122,6 +123,7 @@ export default function Deepfake({
                   onChange={handleImageChange}
                   className="hidden"
                   id="image-upload"
+                  key={String(imagePreview)}
                 />
 
                 <AnimatedButton
@@ -135,35 +137,74 @@ export default function Deepfake({
                     className="cursor-pointer h-full w-full block"
                     htmlFor="image-upload"
                   >
-                    {imagePreview ? (
-                      <div className="w-full h-full flex flex-col justify-evenly align-center">
-                        <img
-                          src={imagePreview || "/placeholder.svg"}
-                          alt="Avatar preview"
-                          style={{ height: "80%" }}
-                          className="mx-auto block"
-                        />
-                        <div className="flex items-center w-full">
-                          <div className="text-center font-medium text-gray-400 w-full">
-                            {imageFile?.name || "Face"}
-                            {" • "}
-                            {getFileSize(imageFile?.size || 0)}
+                    <AnimatePresence mode="wait">
+                      {imagePreview ? (
+                        <motion.div
+                          transition={t.transition_fast}
+                          exit={t.fade_out_scale_1}
+                          animate={t.normalize}
+                          initial={t.fade_out}
+                          key="imagePreview"
+                          className="w-full h-full flex flex-col justify-evenly align-center"
+                        >
+                          <img
+                            src={imagePreview || "/placeholder.svg"}
+                            alt="Avatar preview"
+                            style={{ height: "80%" }}
+                            className="mx-auto block"
+                          />
+                          <div className="flex items-center w-full">
+                            <div className="text-center font-medium text-gray-400 w-full">
+                              {imageFile?.name || "Face"}
+                              {" • "}
+                              {getFileSize(imageFile?.size || 0)}
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-full h-full flex flex-col justify-evenly align-center">
-                        <UserRound
-                          className="w-24 text-gray-400 block mx-auto"
-                          style={{ height: "80%" }}
-                        />
-                        <div className="text-center font-medium text-gray-400">
-                          Face
-                        </div>
-                      </div>
-                    )}
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          transition={t.transition_fast}
+                          exit={t.fade_out_scale_1}
+                          animate={t.normalize}
+                          initial={t.fade_out}
+                          className="w-full h-full flex flex-col justify-evenly align-center"
+                          key="noImagePreview"
+                        >
+                          <UserRound
+                            className="w-24 text-gray-400 block mx-auto"
+                            style={{ height: "80%" }}
+                          />
+                          <div className="text-center font-medium text-gray-400">
+                            Face
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </label>
                 </AnimatedButton>
+                <AnimatePresence mode="wait">
+                  {imagePreview && (
+                    <motion.div
+                      transition={t.transition_fast}
+                      exit={t.fade_out_scale_1}
+                      animate={t.normalize}
+                      initial={t.fade_out}
+                    >
+                      <Button
+                        variant="ghost"
+                        className="absolute flex items-center justify-center cursor-pointer"
+                        style={{ top: "5px", right: "5px" }}
+                        onClick={() => {
+                          setImageFile(undefined);
+                          setImagePreview(null);
+                        }}
+                      >
+                        <Trash2 className="block mr-2" />
+                        <div>Clear</div>
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>
@@ -189,6 +230,7 @@ export default function Deepfake({
               onChange={handleAudioChange}
               className="hidden"
               id="audio-upload"
+              key={String(audioPreview)}
             />
             <AnimatedButton
               variant="custom"
@@ -201,36 +243,79 @@ export default function Deepfake({
                 className="cursor-pointer h-full w-full block"
                 htmlFor="audio-upload"
               >
-                {audioPreview ? (
-                  <div className="w-full h-full flex flex-col justify-evenly align-center">
-                    <div
-                      className="flex items-center w-full"
-                      style={{ height: "80%" }}
+                <AnimatePresence mode="wait">
+                  {audioPreview ? (
+                    <motion.div
+                      key="audioPreview"
+                      transition={t.transition_fast}
+                      exit={t.fade_out_scale_1}
+                      animate={t.normalize}
+                      initial={t.fade_out}
+                      className="w-full h-full flex flex-col justify-evenly align-center"
                     >
-                      <audio src={audioPreview} className="mx-auto" controls />
-                    </div>
-
-                    <div className="flex items-center w-full">
-                      <div className="text-center font-medium text-gray-400 w-full">
-                        {audioFile?.name || "Audio Sample"}
-                        {" • "}
-                        {getFileSize(audioFile?.size || 0)}
+                      <div
+                        className="flex items-center w-full"
+                        style={{ height: "80%" }}
+                      >
+                        <audio
+                          src={audioPreview}
+                          className="mx-auto"
+                          controls
+                        />
                       </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="w-full h-full flex flex-col justify-evenly align-center">
-                    <AudioLines
-                      className="w-24 text-gray-400 block mx-auto"
-                      style={{ height: "80%" }}
-                    />
-                    <div className="text-center font-medium text-gray-400">
-                      Audio Sample
-                    </div>
-                  </div>
-                )}
+
+                      <div className="flex items-center w-full">
+                        <div className="text-center font-medium text-gray-400 w-full">
+                          {audioFile?.name || "Audio Sample"}
+                          {" • "}
+                          {getFileSize(audioFile?.size || 0)}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      transition={t.transition_fast}
+                      exit={t.fade_out_scale_1}
+                      animate={t.normalize}
+                      initial={t.fade_out}
+                      key="noAudioPreview"
+                      className="w-full h-full flex flex-col justify-evenly align-center"
+                    >
+                      <AudioLines
+                        className="w-24 text-gray-400 block mx-auto"
+                        style={{ height: "80%" }}
+                      />
+                      <div className="text-center font-medium text-gray-400">
+                        Audio Sample
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </label>
             </AnimatedButton>
+            <AnimatePresence mode="wait">
+              {audioPreview && (
+                <motion.div
+                  transition={t.transition_fast}
+                  exit={t.fade_out_scale_1}
+                  animate={t.normalize}
+                  initial={t.fade_out}
+                >
+                  <Button
+                    variant="ghost"
+                    className="absolute flex items-center justify-center cursor-pointer"
+                    style={{ top: "5px", right: "5px" }}
+                    onClick={() => {
+                      setAudioFile(undefined);
+                      setAudioPreview(null);
+                    }}
+                  >
+                    <Trash2 className="block mr-2" />
+                    <div>Clear</div>
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       </div>
