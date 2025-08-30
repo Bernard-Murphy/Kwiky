@@ -76,7 +76,11 @@ export default function CommentSection({ post, setPost }: CommentsProps) {
         className="w-full h-32 px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
       />
       <div className="flex justify-between mt-2">
-        <AnimatedCount count={commentText.length} max={maxCommentLength} />
+        <AnimatedCount
+          count={commentText.length}
+          max={maxCommentLength}
+          fraction={true}
+        />
         <AnimatedButton
           className="submit-button"
           disabled={working}

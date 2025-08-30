@@ -91,7 +91,7 @@ export default function RegisterPage() {
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
-      className="container mx-auto px-6 py-8 max-w-md h-full overflow-y-hidden"
+      className="container mx-auto px-6 py-8 max-w-md h-full overflow-y-hidden flex-1"
     >
       <motion.div
         transition={t.transition}

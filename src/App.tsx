@@ -344,7 +344,7 @@ export default function App() {
         </AnimatePresence>
         <ThemeSelector createTab={createTab} />
         <div
-          className={`py-2 px-2 flex-1 flex items-end  ${
+          className={`py-2 px-2 flex items-end  ${
             ["/register", "/browse"].includes(location.pathname) ||
             location.pathname.includes("/post/")
               ? "justify-end"

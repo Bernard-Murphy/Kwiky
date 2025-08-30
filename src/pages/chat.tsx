@@ -132,7 +132,8 @@ export default function Chat({
       animate={t.normalize}
       initial={t.fade_out}
       key="chat"
-      className="h-[calc(100vh-100px)] flex flex-col p-3 overflow-y-hidden"
+      // className="h-[calc(100vh-100px)] flex flex-col p-3 overflow-y-hidden"
+      className="h-full flex flex-col p-3 overflow-y-hidden flex-1"
     >
       <motion.div
         transition={t.transition}

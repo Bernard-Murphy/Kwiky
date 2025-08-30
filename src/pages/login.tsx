@@ -79,7 +79,9 @@ export default function LoginPage() {
 
   return (
     <motion.div
-      transition={t.transition}
+      transition={
+        altExit || altEntranceAnimation ? t.transition_fast : t.transition
+      }
       exit={
         altExit
           ? {
@@ -97,7 +99,7 @@ export default function LoginPage() {
             }
           : t.fade_out
       }
-      className="container mx-auto px-6 py-8 max-w-md"
+      className="container mx-auto px-6 py-8 max-w-md flex-1"
     >
       <motion.h1
         transition={t.transition}

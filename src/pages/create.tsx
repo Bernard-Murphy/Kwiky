@@ -275,7 +275,7 @@ export default function CreatePage({
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
-      className="container mx-auto px-6 py-8 create-container"
+      className="container mx-auto px-6 py-8 create-container flex-1"
     >
       {/* Tab Navigation */}
       <motion.div

@@ -65,6 +65,7 @@ export default function PostContent({
           ? t.fade_out_right
           : t.fade_out_scale_1
       }
+      className="flex-1"
     >
       <AnimatePresence mode="wait">
         {loading ? (

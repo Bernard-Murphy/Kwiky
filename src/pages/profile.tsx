@@ -48,6 +48,7 @@ export default function ProfilePage() {
       exit={t.fade_out_scale_1}
       animate={t.normalize}
       initial={t.fade_out}
+      className="flex-1"
     >
       <AnimatePresence mode="wait">
         {user ? (
@@ -62,7 +63,10 @@ export default function ProfilePage() {
             <div className="flex">
               {/* Left Sidebar - Tab Navigation */}
               <motion.div
-                transition={t.transition}
+                transition={{
+                  x: { duration: 0.2 },
+                  opacity: { duration: 0.14 },
+                }}
                 exit={{
                   opacity: 0,
                   x: -100,
