@@ -155,26 +155,32 @@ export default function CreatePage({
   }, []);
 
   useEffect(() => {
-    if (uncensoredMusic)
-      toast.error(
-        "Uncensored music is a WIP and currently returns HIGHLY offensive results",
-        {
-          position: "bottom-center",
-          duration: 2000,
-        }
-      );
-  }, [uncensoredMusic]);
+    // if (uncensoredMusic)
+    //   toast.error(
+    //     "Uncensored music is a WIP and currently returns HIGHLY offensive results",
+    //     {
+    //       position: "bottom-center",
+    //       duration: 2000,
+    //     }
+    //   );
+    // if (uncensoredImages)
+    //   toast.error(
+    //     "Uncensored images is a WIP and currently returns HIGHLY offensive results",
+    //     {
+    //       position: "bottom-center",
+    //       duration: 2000,
+    //     }
+    //   );
 
-  useEffect(() => {
-    if (uncensoredImages)
-      toast.error(
-        "Uncensored images is a WIP and currently returns HIGHLY offensive results",
-        {
-          position: "bottom-center",
-          duration: 2000,
-        }
-      );
-  }, [uncensoredImages]);
+    if (uncensoredImages || uncensoredMusic) {
+      toast.error("Uncensored content is currently disabled", {
+        position: "bottom-center",
+        duration: 2000,
+      });
+      setUncensoredImages(false);
+      setUncensoredMusic(false);
+    }
+  }, [uncensoredMusic, uncensoredImages]);
 
   const tabs = [
     { id: "music" as CreateTab, label: "Music", icon: MusicIcon },

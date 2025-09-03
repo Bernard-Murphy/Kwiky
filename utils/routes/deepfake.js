@@ -22,6 +22,18 @@ const testUser = {
   avatar: null,
 };
 
+const badWords = [
+  "nigger",
+  "faggot",
+  "fag",
+  "bitch",
+  "kike",
+  "chink",
+  "cunt",
+  "spic",
+  "gook",
+];
+
 const handler = (io) => {
   router.post("/", async (req, res) => {
     const socketID = req.body.socketID;
@@ -68,9 +80,15 @@ const handler = (io) => {
                 },
               }
             );
-            const metadata = {
+            let metadata = {
               audioOnly: true,
+              uncensored: false,
             };
+            badWords.forEach((word) => {
+              if (String(req.body.message).toLowerCase().includes(word)) {
+                metadata.uncensored = true;
+              }
+            });
             await db.collection("posts").insertOne({
               _id: crypto.randomUUID(),
               type: "deepfake",
@@ -162,7 +180,13 @@ const handler = (io) => {
             );
             const metadata = {
               thumbnail,
+              uncensored: false,
             };
+            badWords.forEach((word) => {
+              if (String(req.body.message).toLowerCase().includes(word)) {
+                metadata.uncensored = true;
+              }
+            });
             await db.collection("posts").insertOne({
               _id: crypto.randomUUID(),
               type: "deepfake",

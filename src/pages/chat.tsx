@@ -45,14 +45,20 @@ export default function Chat({
   const { showNavMenu } = useApp();
 
   useEffect(() => {
-    if (uncensoredChat)
-      toast.error(
-        "Uncensored chat is a WIP and currently produces HIGHLY offensive results",
-        {
-          position: "bottom-center",
-          duration: 1500,
-        }
-      );
+    if (uncensoredChat) {
+      toast.error("Uncensored chat is currently disabled", {
+        position: "bottom-center",
+        duration: 1500,
+      });
+      setUncensoredChat(false);
+    }
+    // toast.error(
+    //   "Uncensored chat is a WIP and currently produces HIGHLY offensive results",
+    //   {
+    //     position: "bottom-center",
+    //     duration: 1500,
+    //   }
+    // );
   }, [uncensoredChat]);
 
   useEffect(() => {

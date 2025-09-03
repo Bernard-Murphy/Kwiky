@@ -138,14 +138,23 @@ export default function BrowsePage({
   }, [browsePage]);
 
   useEffect(() => {
-    if (includeUncensored)
+    if (includeUncensored) {
       toast.error(
-        "Uncensored results may include HIGHLY offensive materials created by bad actors",
+        "Uncensored results are currently disabled and will not be displayed",
         {
           position: "bottom-center",
           duration: 2000,
         }
       );
+      setIncludeUncensored(false);
+    }
+    // toast.error(
+    //   "Uncensored results may include HIGHLY offensive materials created by bad actors",
+    //   {
+    //     position: "bottom-center",
+    //     duration: 2000,
+    //   }
+    // );
   }, [includeUncensored]);
 
   const { theme } = useApp();

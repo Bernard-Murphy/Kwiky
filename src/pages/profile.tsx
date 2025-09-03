@@ -39,7 +39,7 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (!user) navigate("/login");
+    if (!user) navigate("/");
   }, [user?.username]);
 
   return (
