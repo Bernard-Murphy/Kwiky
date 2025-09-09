@@ -20,6 +20,23 @@ interface BodyProps {
 }
 
 export default function Body({ animationDirection, post, setPost }: BodyProps) {
+  if (post?.metadata?.uncensored)
+    return (
+      <motion.h2
+        transition={t.transition}
+        exit={{
+          opacity: 0,
+        }}
+        animate={t.normalize}
+        initial={{
+          opacity: 0,
+        }}
+        className="text-center mt-16 text-xl"
+      >
+        Uncensored results are currently disabled and will not be displayed
+      </motion.h2>
+    );
+
   let link: string = "";
   switch (post?.type) {
     case "deepfake":
@@ -105,7 +122,7 @@ export default function Body({ animationDirection, post, setPost }: BodyProps) {
             className="col-span-4 lg:col-span-1 pt-5"
           >
             <Info post={post} />
-            <p className="mt-5">Video Link:</p>
+            <p className="mt-5">{audioOnly ? "Audio" : "Video"} Link:</p>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="w-full my-1">
