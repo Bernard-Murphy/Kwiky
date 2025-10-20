@@ -132,7 +132,7 @@ const handler = (io) => {
         baseURL: "https://api.venice.ai/api/v1",
       });
       chatCompletion = await veniceClient.chat.completions.create({
-        model: "dolphin-2.9.2-qwen2-72b",
+        model: "venice-uncensored",
         messages: [
           ...preReqs,
           {
